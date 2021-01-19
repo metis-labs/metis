@@ -3,14 +3,13 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import AddBoxIcon from '@material-ui/icons/AddBox';
 
-const drawerWidth = 240;
+const drawerWidth = 60;
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -22,7 +21,7 @@ const useStyles = makeStyles(() =>
       width: drawerWidth,
     },
     drawerContainer: {
-      overflow: 'auto',
+      overflow: 'hidden',
     },
   }),
 );
@@ -41,21 +40,15 @@ export default function SideBar() {
       <Toolbar />
       <div className={classes.drawerContainer}>
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
+            <ListItem button >
+              <ListItemIcon><ArrowDownwardIcon /></ListItemIcon>
             </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <ListItem button >
+            <ListItemIcon><ArrowUpwardIcon /></ListItemIcon>
+          </ListItem>
+          <ListItem button >
+            <ListItemIcon><AddBoxIcon /></ListItemIcon>
+          </ListItem>
         </List>
       </div>
     </Drawer>
