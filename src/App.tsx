@@ -1,7 +1,7 @@
 import React from 'react';
-import './App.css';
-import NavBar from "./components/NavBar";
-import SideBar from "./components/SideBar";
+import 'App.css';
+import NavBar from "components/NavBar";
+import SideBar from "components/SideBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
