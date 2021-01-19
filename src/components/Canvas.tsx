@@ -2,6 +2,7 @@ import React from "react";
 import createEngine, {
   DefaultLinkModel,
   DefaultNodeModel,
+  DefaultPortModel,
   DiagramModel
 } from '@projectstorm/react-diagrams';
 
@@ -9,6 +10,7 @@ import {
   CanvasWidget
 } from '@projectstorm/react-canvas-core';
 import { createStyles, makeStyles } from "@material-ui/core/styles";
+import { testModel} from "components/model";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -16,33 +18,44 @@ const useStyles = makeStyles(() =>
       height: '100vh',
     },
   }),
-  );
+);
 
 // create an instance of the engine with all the defaults
 const engine = createEngine();
 
-// node 1
-const node1 = new DefaultNodeModel({
-  name: 'Node 1',
-  color: 'rgb(0,192,255)',
-});
-node1.setPosition(100, 100);
-let port1 = node1.addOutPort('Out');
+const nodes = [];
 
-// node 2
-const node2 = new DefaultNodeModel({
-  name: 'Node 1',
-  color: 'rgb(0,192,255)',
-});
-node2.setPosition(100, 100);
-let port2 = node2.addOutPort('Out');
+interface NodeInfo {
+  node: DefaultNodeModel;
+  inPort: DefaultPortModel;
+  outPort: DefaultPortModel;
+}
 
-// link them and add a label to the link
-const link = port1.link<DefaultLinkModel>(port2);
-link.addLabel('Hello World!');
+const nodeInfoMap: {[key: string]: NodeInfo} = {};
+
+for ( const block of testModel.blocks ) {
+  const node = new DefaultNodeModel({
+    name: block.name,
+    color: 'rgb(0,192,255)',
+  });
+  node.setPosition(block.position.x, block.position.y);
+  const inPort = node.addInPort('In');
+  const outPort = node.addOutPort('Out');
+  nodes.push(node);
+
+  nodeInfoMap[block.id] = {node, inPort, outPort};
+}
+
+const links: Array<any> = [];
+
+for (const link of testModel.links ) {
+  const out = nodeInfoMap[link.from].outPort;
+  const iin = nodeInfoMap[link.to].inPort;
+  links.push(out.link<DefaultLinkModel>(iin));
+}
 
 const model = new DiagramModel();
-model.addAll(node1, node2, link);
+model.addAll(...nodes, ...links);
 engine.setModel(model);
 
 export default function Canvas() {
