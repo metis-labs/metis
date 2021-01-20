@@ -64,12 +64,12 @@ const links = [{
   to: 'test_output'
 }]
 
-const fragment = new NetworkFragment();
+const testFragment = new NetworkFragment();
 for (const block of blocks) {
-  fragment.addBlock(block);
+  testFragment.addBlock(block);
 }
 for (const link of links) {
-  fragment.addLink(link);
+  testFragment.addLink(link);
 }
 
-export default fragment;
+export default testFragment;
