@@ -23,9 +23,13 @@ function App() {
   return (
     <div className={classes.root}>
       <NavBar/>
-      <SideBar/>
+      <SideBar
+        addBlock={addBlock}
+      />
       <main className={classes.content}>
-        <Canvas />
+        <Canvas
+          fragment={fragment}
+        />
       </main>
     </div>
   );

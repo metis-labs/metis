@@ -26,7 +26,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-export default function SideBar() {
+export default function SideBar(props: {addBlock: Function}) {
   const classes = useStyles();
 
   return (
