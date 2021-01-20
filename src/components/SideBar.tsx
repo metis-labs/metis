@@ -40,9 +40,9 @@ export default function SideBar() {
       <Toolbar />
       <div className={classes.drawerContainer}>
         <List>
-            <ListItem button >
-              <ListItemIcon><ArrowDownwardIcon /></ListItemIcon>
-            </ListItem>
+          <ListItem button >
+            <ListItemIcon><ArrowDownwardIcon /></ListItemIcon>
+          </ListItem>
           <ListItem button >
             <ListItemIcon><ArrowUpwardIcon /></ListItemIcon>
           </ListItem>
