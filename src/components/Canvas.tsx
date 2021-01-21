@@ -19,7 +19,11 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-export default function Canvas(props: {fragment: NetworkFragment, count: number}) {
+export default function Canvas(props: {
+  fragment: NetworkFragment,
+  count: number,
+  setSelectedBlock: Function,
+}) {
   const classes = useStyles();
 
   console.log(props.fragment.getBlocks().length)
@@ -69,14 +73,19 @@ export default function Canvas(props: {fragment: NetworkFragment, count: number}
   models.forEach((item) => {
     item.registerListener({
       eventDidFire: function(event: any) {
-        const blockId = modelKeyMap[event.entity.getID()];
-        const position = event.entity.position;
-        for (const block of props.fragment.getBlocks()) {
-          if (block.getID() === blockId) {
+        if (event.function === 'positionChanged') {
+          const blockId = modelKeyMap[event.entity.getID()];
+          const block = props.fragment.getBlock(blockId);
+          if (block) {
+            const position = event.entity.position;
             block.setPosition(position.x, position.y);
-            console.log(event.function);
-            console.log(block.getPosition());
           }
+        } else if(event.function === 'selectionChanged') {
+          const blockId = modelKeyMap[event.entity.getID()];
+          const block = props.fragment.getBlock(blockId);
+          props.setSelectedBlock(event.isSelected ? block : undefined);
+        } else {
+          console.log('event: ', event.function);
         }
       },
     });

@@ -86,6 +86,15 @@ export class NetworkFragment {
     return this.blocks;
   }
 
+  public getBlock(id: string): Block | undefined {
+    for (const block of this.blocks) {
+      if (block.getID() === id) {
+        return block;
+      }
+    }
+    return;
+  }
+
   public getLinks(): Array<Link> {
     return this.links;
   }

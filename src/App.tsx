@@ -23,9 +23,10 @@ const useStyles = makeStyles(() =>
 
 function App() {
   const classes = useStyles();
+
   const [fragment, setFragment] = useState(testFragment);
-  // TODO: need to use immutability for copy
-  const [count, setCount] = useState(1);
+  const [count, setCount] = useState(1); // TODO: need to use immutability for copy
+  const [selectedBlock, setSelectedBlock] = useState(undefined);
 
   const addBlock = () => {
     const len = fragment.getBlocks().length;
@@ -52,9 +53,10 @@ function App() {
         <Canvas
           fragment={fragment}
           count={count}
+          setSelectedBlock={setSelectedBlock}
         />
       </main>
-      <PropertyBar />
+      <PropertyBar selectedBlock={selectedBlock}/>
     </div>
   );
 }

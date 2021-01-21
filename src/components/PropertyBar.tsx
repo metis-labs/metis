@@ -1,17 +1,13 @@
 import React from 'react';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import FormControl from '@material-ui/core/FormControl/FormControl';
+
+import Select from "@material-ui/core/Select";
+import { Block, BlockType } from 'model/model';
+import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 
 const drawerWidth = 240;
 
@@ -38,41 +34,43 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.background.default,
       padding: theme.spacing(3),
     },
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+    },
+    formSelect: {
+        marginTop: 16,
+    }
   }),
 );
 
-export default function PropertyBar() {
+export default function PropertyBar(props: {
+    selectedBlock: Block | undefined,
+}) {
   const classes = useStyles();
+  const { selectedBlock } = props;
 
   return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <AppBar position="fixed" className={classes.appBar}>
-        <Toolbar>
-          <Typography variant="h6" noWrap>
-            Permanent drawer
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-        anchor="right"
-      >
-        <div className={classes.toolbar} />
-        <Divider />
-        <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-    </div>
+    <Drawer
+      className={classes.drawer}
+      variant="permanent"
+      classes={{
+        paper: classes.drawerPaper,
+      }}
+      anchor="right"
+    >
+      <Toolbar />
+      <Divider />
+      <FormControl className={classes.formControl}>
+          <InputLabel htmlFor="grouped-native-select">Type</InputLabel>
+          <Select native defaultValue="" id="grouped-select" className={classes.formSelect}>
+            {
+                Object.keys(BlockType).map((item) =>
+                    <option key={item} value={item} selected={selectedBlock?.getType() === item}>{item}</option>
+                )
+            }
+          </Select>
+      </FormControl>
+    </Drawer>
   );
 }
