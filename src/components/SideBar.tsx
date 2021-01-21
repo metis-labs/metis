@@ -29,6 +29,10 @@ const useStyles = makeStyles(() =>
 export default function SideBar(props: {addBlock: Function}) {
   const classes = useStyles();
 
+  const handleClick = () => {
+    props.addBlock();
+  };
+
   return (
     <Drawer
       className={classes.drawer}
@@ -46,7 +50,7 @@ export default function SideBar(props: {addBlock: Function}) {
           <ListItem button >
             <ListItemIcon><ArrowUpwardIcon /></ListItemIcon>
           </ListItem>
-          <ListItem button >
+          <ListItem button onClick={handleClick}>
             <ListItemIcon><AddBoxIcon /></ListItemIcon>
           </ListItem>
         </List>

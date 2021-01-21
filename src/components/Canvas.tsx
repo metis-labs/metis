@@ -1,16 +1,15 @@
 import React from "react";
+import { createStyles, makeStyles } from "@material-ui/core/styles";
 import createEngine, {
   DefaultLinkModel,
   DefaultNodeModel,
   DefaultPortModel,
   DiagramModel
 } from '@projectstorm/react-diagrams';
-
 import {
   CanvasWidget
 } from '@projectstorm/react-canvas-core';
-import { createStyles, makeStyles } from "@material-ui/core/styles";
-import { testModel} from "components/model";
+import {NetworkFragment} from "../model/model";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -20,7 +19,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-export default function Canvas(props: {fragment: NetworkFragment}) {
+export default function Canvas(props: {fragment: NetworkFragment, count: number}) {
   const classes = useStyles();
 
   console.log(props.fragment.getBlocks().length)
@@ -91,6 +90,8 @@ export default function Canvas(props: {fragment: NetworkFragment}) {
   engine.setModel(model);
 
   return (
-    <CanvasWidget className={ classes.canvas } engine={engine} />
+    <div>
+      <CanvasWidget className={ classes.canvas } engine={engine} />
+    </div>
   )
-};
+}
