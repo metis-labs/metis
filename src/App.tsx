@@ -42,7 +42,6 @@ function App() {
 
     setFragment(fragment);
   };
-
   return (
     <div className={classes.root}>
       <NavBar/>
@@ -56,7 +55,7 @@ function App() {
           setSelectedBlock={setSelectedBlock}
         />
       </main>
-      <PropertyBar selectedBlock={selectedBlock}/>
+      {selectedBlock && <PropertyBar selectedBlock={selectedBlock!}/>}
     </div>
   );
 }

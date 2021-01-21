@@ -11,14 +11,16 @@ export interface Position {
   y: number;
 }
 
-export type Properties = {[key: string]: string | number | boolean};
+export type Property = string | number | boolean;
+
+export type Properties = {[key: string]: Property};
 
 export class Block {
   private readonly id: string;
   private readonly name: string;
   private readonly type: BlockType;
   private readonly position: Position;
-  private readonly properties?: Properties;
+  private readonly properties: Properties;
 
   constructor(
     id: string,
@@ -31,7 +33,7 @@ export class Block {
     this.name = name;
     this.type = type;
     this.position = position;
-    this.properties = properties;
+    this.properties = properties || {};
   }
 
   public getID(): string {
@@ -50,8 +52,12 @@ export class Block {
     return this.position;
   }
 
-  public getProperties(): Properties | undefined {
+  public getProperties(): Properties {
     return this.properties;
+  }
+
+  public getProperty(key: string): Property | undefined {
+    return this.properties[ key ];
   }
 
   public setPosition(x: number, y: number): void {

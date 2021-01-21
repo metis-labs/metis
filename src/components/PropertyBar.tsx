@@ -6,8 +6,10 @@ import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl/FormControl';
 
 import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
 import { Block, BlockType } from 'model/model';
 import InputLabel from '@material-ui/core/InputLabel/InputLabel';
+import TextField from '@material-ui/core/TextField';
 
 const drawerWidth = 240;
 
@@ -45,10 +47,13 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export default function PropertyBar(props: {
-    selectedBlock: Block | undefined,
+    selectedBlock: Block,
 }) {
   const classes = useStyles();
   const { selectedBlock } = props;
+  const onChange = (event: React.ChangeEvent<{value: unknown}>) => {
+    console.log(event.target.value)
+  };
 
   return (
     <Drawer
@@ -63,13 +68,18 @@ export default function PropertyBar(props: {
       <Divider />
       <FormControl className={classes.formControl}>
           <InputLabel htmlFor="grouped-native-select">Type</InputLabel>
-          <Select native defaultValue="" id="grouped-select" className={classes.formSelect}>
+          <Select value={selectedBlock.getType()} id="grouped-select" className={classes.formSelect} onChange={onChange} >
             {
                 Object.keys(BlockType).map((item) =>
-                    <option key={item} value={item} selected={selectedBlock?.getType() === item}>{item}</option>
+                    <MenuItem key={item} value={item}>{item}</MenuItem>
                 )
             }
           </Select>
+        {
+          Object.keys(selectedBlock.getProperties()).map(property =>
+            <TextField key={property} label={property} value={selectedBlock.getProperty(property)} />
+          )
+        }
       </FormControl>
     </Drawer>
   );
