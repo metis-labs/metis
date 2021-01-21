@@ -74,6 +74,7 @@ export default function Canvas(props: {fragment: NetworkFragment, count: number}
         for (const block of props.fragment.getBlocks()) {
           if (block.getID() === blockId) {
             block.setPosition(position.x, position.y);
+            console.log(event.function);
             console.log(block.getPosition());
           }
         }

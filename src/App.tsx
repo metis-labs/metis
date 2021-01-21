@@ -8,6 +8,7 @@ import Canvas from "components/Canvas";
 import 'App.css';
 import testFragment from 'model/testNetworFragment';
 import {Block, BlockType} from 'model/model';
+import PropertyBar from "components/PropertyBar";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -53,6 +54,7 @@ function App() {
           count={count}
         />
       </main>
+      <PropertyBar />
     </div>
   );
 }
