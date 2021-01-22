@@ -38,7 +38,6 @@ function App() {
       BlockType.Conv2d,
       {x: 100 + 10 * len, y: 100 + 10 * len},
     ));
-    console.log(len);
 
     setFragment(fragment);
   };

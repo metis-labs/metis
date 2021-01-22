@@ -1,15 +1,16 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import createEngine, {
   DefaultLinkModel,
   DefaultNodeModel,
   DefaultPortModel,
-  DiagramModel
+  DiagramModel,
+  DiagramEngine
 } from '@projectstorm/react-diagrams';
 import {
   CanvasWidget
 } from '@projectstorm/react-canvas-core';
-import {NetworkFragment} from "../model/model";
+import {NetworkFragment, Block, Position} from "../model/model";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -19,6 +20,12 @@ const useStyles = makeStyles(() =>
   }),
 );
 
+interface NodeInfo {
+  node: DefaultNodeModel;
+  inPort: DefaultPortModel;
+  outPort: DefaultPortModel;
+}
+
 export default function Canvas(props: {
   fragment: NetworkFragment,
   count: number,
@@ -26,82 +33,76 @@ export default function Canvas(props: {
 }) {
   const classes = useStyles();
 
-  console.log(props.fragment.getBlocks().length)
+  const {fragment, setSelectedBlock, count} = props;
 
-  // create an instance of the engine with all the defaults
-  const engine = createEngine();
+  const [engine, setEngine] = useState<DiagramEngine>();
+  const [lastFunction, setLastFunction] = useState<string>();
+  const [lastBlock, setLastBlock] = useState<Block>();
+  const [lastPosition, setLastPosition] = useState<Position>();
 
-  const nodes = [];
+  useEffect(() => {
+    const engine = createEngine();
 
-  interface NodeInfo {
-    node: DefaultNodeModel;
-    inPort: DefaultPortModel;
-    outPort: DefaultPortModel;
-  }
-
-// model.key -> node
-  const nodeInfoMap: {[key: string]: NodeInfo} = {};
-
-// node.id -> model.key
-  const modelKeyMap: {[key: string]: string} = {};
-
-  for (const block of props.fragment.getBlocks()) {
-    const node = new DefaultNodeModel({
-      name: block.getName(),
-      color: 'rgb(0,192,255)',
-    });
-    node.setPosition(block.getPosition().x, block.getPosition().y);
-    const inPort = node.addInPort('In');
-    const outPort = node.addOutPort('Out');
-    nodes.push(node);
-
-    nodeInfoMap[block.getID()] = {node, inPort, outPort};
-    modelKeyMap[node.getID()] = block.getID();
-  }
-
-  const links: Array<any> = [];
-
-  for (const link of props.fragment.getLinks() ) {
-    const out = nodeInfoMap[link.from].outPort;
-    const iin = nodeInfoMap[link.to].inPort;
-    links.push(out.link<DefaultLinkModel>(iin));
-  }
-
-  const model = new DiagramModel();
-  const models = model.addAll(...nodes, ...links);
-
-  models.forEach((item) => {
-    item.registerListener({
-      eventDidFire: function(event: any) {
-        if (event.function === 'positionChanged') {
-          const blockId = modelKeyMap[event.entity.getID()];
-          const block = props.fragment.getBlock(blockId);
-          if (block) {
-            const position = event.entity.position;
-            block.setPosition(position.x, position.y);
-          }
-        } else if(event.function === 'selectionChanged') {
-          const blockId = modelKeyMap[event.entity.getID()];
-          const block = props.fragment.getBlock(blockId);
-          props.setSelectedBlock(event.isSelected ? block : undefined);
-        } else {
-          console.log('event: ', event.function);
-        }
-      },
-    });
-  });
-
-  model.registerListener({
-    eventDidFire: function () {
-      console.log('model:', arguments[0].entity);
+    const nodes = [];
+    const nodeInfoMap: {[key: string]: NodeInfo} = {};
+    const modelKeyMap: {[key: string]: string} = {};
+  
+    for (const block of fragment.getBlocks()) {
+      const node = new DefaultNodeModel({
+        name: block.getName(),
+        color: 'rgb(0,192,255)',
+      });
+      node.setPosition(block.getPosition().x, block.getPosition().y);
+      const inPort = node.addInPort('In');
+      const outPort = node.addOutPort('Out');
+      nodes.push(node);
+  
+      nodeInfoMap[block.getID()] = {node, inPort, outPort};
+      modelKeyMap[node.getID()] = block.getID();
     }
-  });
+  
+    const links: Array<DefaultLinkModel> = [];
+  
+    for (const link of fragment.getLinks() ) {
+      const out = nodeInfoMap[link.from].outPort;
+      const iin = nodeInfoMap[link.to].inPort;
+      links.push(out.link<DefaultLinkModel>(iin));
+    }
+  
+    const model = new DiagramModel();
+    const models = model.addAll(...nodes, ...links);
+  
+    models.forEach((item) => {
+      item.registerListener({
+        eventDidFire: function(event: any) {
+          const blockId = modelKeyMap[event.entity.getID()];
+          const block = fragment.getBlock(blockId);
+  
+          setLastFunction(event.function);
+          setLastBlock(block);
+          if (event.function === 'positionChanged') {
+            setLastPosition(event.entity.position);
+          }
+        },
+      });
+    });
 
-  engine.setModel(model);
+    engine.setModel(model);
+    setEngine(engine);
+  }, [fragment, count, setSelectedBlock, setLastPosition, setLastFunction, setLastBlock]);
+
+  const handleMouseUp = (event: any) => {
+    if (lastFunction === 'selectionChanged' && lastBlock) {
+      setSelectedBlock(lastBlock);
+    } else if (lastFunction === 'positionChanged' && lastBlock) {
+      lastBlock.setPosition(lastPosition!.x, lastPosition!.y);
+      setSelectedBlock(lastBlock);
+    }
+  }
 
   return (
-    <div>
-      <CanvasWidget className={ classes.canvas } engine={engine} />
+    <div onMouseUp={handleMouseUp}>
+      {engine && <CanvasWidget className={classes.canvas} engine={engine!} />}
     </div>
   )
 }
