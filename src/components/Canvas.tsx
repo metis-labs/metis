@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import createEngine, {
   DefaultLinkModel,
@@ -91,14 +91,14 @@ export default function Canvas(props: {
     setEngine(engine);
   }, [fragment, count, setSelectedBlock, setLastPosition, setLastFunction, setLastBlock]);
 
-  const handleMouseUp = (event: any) => {
+  const handleMouseUp = useCallback((event: any) => {
     if (lastFunction === 'selectionChanged' && lastBlock) {
       setSelectedBlock(lastBlock);
     } else if (lastFunction === 'positionChanged' && lastBlock) {
       lastBlock.setPosition(lastPosition!.x, lastPosition!.y);
       setSelectedBlock(lastBlock);
     }
-  }
+  }, [lastFunction, lastBlock, lastPosition]);
 
   return (
     <div onMouseUp={handleMouseUp}>

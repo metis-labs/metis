@@ -25,7 +25,9 @@
     "react-scripts": "4.0.1",
     "resize-observer-polyfill": "^1.5.1",
     "typescript": "^4.0.3",
-    "web-vitals": "^0.2.4"
+    "web-vitals": "^0.2.4",
+    "jsplumbtoolkit": "file:./libs/jsplumbtoolkit.tgz",
+    "jsplumbtoolkit-react": "file:./libs/jsplumbtoolkit-react.tgz"
   },
   "scripts": {
     "start": "react-scripts start",
