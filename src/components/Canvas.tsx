@@ -1,16 +1,11 @@
 import React, {useState, useEffect, useCallback} from "react";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-import createEngine, {
-  DefaultLinkModel,
-  DefaultNodeModel,
-  DefaultPortModel,
-  DiagramModel,
-  DiagramEngine
-} from '@projectstorm/react-diagrams';
-import {
-  CanvasWidget
-} from '@projectstorm/react-canvas-core';
-import {NetworkFragment, Block, Position} from "../model/model";
+import createEngine, { DefaultLinkModel, DiagramModel, DiagramEngine } from '@projectstorm/react-diagrams';
+import { CanvasWidget } from '@projectstorm/react-canvas-core';
+
+import { MetisNodeFactory } from 'components/MetisNodeFactory'
+import { MetisNodeModel } from 'components/MetisNodeModel'
+import { NetworkFragment, Block, Position } from "model/model";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -19,12 +14,6 @@ const useStyles = makeStyles(() =>
     },
   }),
 );
-
-interface NodeInfo {
-  node: DefaultNodeModel;
-  inPort: DefaultPortModel;
-  outPort: DefaultPortModel;
-}
 
 export default function Canvas(props: {
   fragment: NetworkFragment,
@@ -42,31 +31,30 @@ export default function Canvas(props: {
 
   useEffect(() => {
     const engine = createEngine();
+    engine.getNodeFactories().registerFactory(new MetisNodeFactory());
 
     const nodes = [];
-    const nodeInfoMap: {[key: string]: NodeInfo} = {};
+    const nodeInfoMap: {[key: string]: MetisNodeModel} = {};
     const modelKeyMap: {[key: string]: string} = {};
   
     for (const block of fragment.getBlocks()) {
-      const node = new DefaultNodeModel({
-        name: block.getName(),
-        color: 'rgb(0,192,255)',
+      const node = new MetisNodeModel({
+        blockType: block.getType(),
+        name: block.getName()
       });
       node.setPosition(block.getPosition().x, block.getPosition().y);
-      const inPort = node.addInPort('In');
-      const outPort = node.addOutPort('Out');
       nodes.push(node);
   
-      nodeInfoMap[block.getID()] = {node, inPort, outPort};
+      nodeInfoMap[block.getID()] = node;
       modelKeyMap[node.getID()] = block.getID();
     }
   
     const links: Array<DefaultLinkModel> = [];
   
     for (const link of fragment.getLinks() ) {
-      const out = nodeInfoMap[link.from].outPort;
-      const iin = nodeInfoMap[link.to].inPort;
-      links.push(out.link<DefaultLinkModel>(iin));
+      const outPort = nodeInfoMap[link.from].getOutPort();
+      const inPort = nodeInfoMap[link.to].getInPort();
+      links.push(outPort.link<DefaultLinkModel>(inPort));
     }
   
     const model = new DiagramModel();
@@ -98,7 +86,7 @@ export default function Canvas(props: {
       lastBlock.setPosition(lastPosition!.x, lastPosition!.y);
       setSelectedBlock(lastBlock);
     }
-  }, [lastFunction, lastBlock, lastPosition]);
+  }, [lastFunction, lastBlock, lastPosition, setSelectedBlock]);
 
   return (
     <div onMouseUp={handleMouseUp}>
