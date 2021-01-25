@@ -52,7 +52,8 @@ export default function PropertyBar(props: {
   const classes = useStyles();
   const { selectedBlock } = props;
   const onChange = (event: React.ChangeEvent<{value: unknown}>) => {
-    console.log(event.target.value)
+    selectedBlock.setType(event.target.value as BlockType);
+    console.log(selectedBlock.getType());
   };
 
   return (

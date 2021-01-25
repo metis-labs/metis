@@ -18,7 +18,7 @@ export type Properties = {[key: string]: Property};
 export class Block {
   private readonly id: string;
   private readonly name: string;
-  private readonly type: BlockType;
+  private type: BlockType;
   private readonly position: Position;
   private readonly properties: Properties;
 
@@ -58,6 +58,10 @@ export class Block {
 
   public getProperty(key: string): Property | undefined {
     return this.properties[ key ];
+  }
+
+  public setType(type: BlockType): void {
+    this.type = type;
   }
 
   public setPosition(x: number, y: number): void {
