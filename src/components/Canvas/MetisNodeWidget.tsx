@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { DiagramEngine, PortWidget } from '@projectstorm/react-diagrams-core';
 
-import { MetisNodeModel } from 'components/MetisNodeModel';
+import { MetisNodeModel } from 'components/Canvas/MetisNodeModel';
 
 export interface MetisNodeWidgetProps {
     node: MetisNodeModel;

@@ -6,9 +6,10 @@ import SideBar from "components/SideBar";
 import Canvas from "components/Canvas";
 
 import 'App.css';
-import testFragment from 'model/testNetworFragment';
+import testFragment from 'model/testNetworkFragment';
 import {Block, BlockType} from 'model/model';
 import PropertyBar from "components/PropertyBar";
+import { DiagramApp } from 'components/DiagramApp';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -28,19 +29,27 @@ function App() {
   const [count, setCount] = useState(1); // TODO: need to use immutability for copy
   const [selectedBlock, setSelectedBlock] = useState(undefined);
 
-  const addBlock = () => {
-    const len = fragment.getBlocks().length;
-    // TODO: Block should be repainted when push the button
-    setCount(count + 1);
-    fragment.addBlock(new Block(
-      `${len + 1}`,
-      `test_${len + 1}`,
-      BlockType.Conv2d,
-      {x: 100 + 10 * len, y: 100 + 10 * len},
-    ));
+  let app = new DiagramApp();
 
-    setFragment(fragment);
+  // const addBlock = () => {
+  //   const len = fragment.getBlocks().length;
+  //   // TODO: Block should be repainted when push the button
+  //   setCount(count + 1);
+  //   fragment.addBlock(new Block(
+  //     `${len + 1}`,
+  //     `test_${len + 1}`,
+  //     BlockType.Conv2d,
+  //     {x: 100 + 10 * len, y: 100 + 10 * len},
+  //   ));
+  //
+  //   setFragment(fragment);
+  // };
+
+  const addBlock = (): number => {
+    console.log(app.addNode());
+    return app.addNode();
   };
+
   return (
     <div className={classes.root}>
       <NavBar/>
@@ -52,6 +61,7 @@ function App() {
           fragment={fragment}
           count={count}
           setSelectedBlock={setSelectedBlock}
+          app={app}
         />
       </main>
       {selectedBlock && <PropertyBar selectedBlock={selectedBlock!}/>}
