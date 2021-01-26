@@ -1,7 +1,8 @@
 import * as SRD from "@projectstorm/react-diagrams";
+
 import {MetisNodeModel} from "components/DiagramView/MetisNodeModel";
 import {MetisNodeFactory} from "components/DiagramView/MetisNodeFactory";
-import {NetworkFragment} from "../model/model";
+import {NetworkFragment} from "model/model";
 
 export class DiagramEngine {
   protected activeModel!: SRD.DiagramModel;
@@ -59,15 +60,22 @@ export class DiagramEngine {
     return this.getDiagramEngine().getModel().getNodes().length;
   }
 
-  public registerListener(listener: Function): void {
+  public registerListener(listener: Function): Function {
+    const deregisters = [];
     for (const node of this.getDiagramEngine().getModel().getNodes()) {
-      node.registerListener({
+      const handle = node.registerListener({
         eventDidFire: (event: any) => {
           const blockId = this.modelKeyMap[event.entity.getID()];
           const block = this.fragment.getBlock(blockId);
           listener(event, block);
         }
-      })
+      });
+      deregisters.push(handle.deregister);
     }
+    return () => {
+      for (const deregister of deregisters) {
+          deregister();
+      }
+    };
   }
 }

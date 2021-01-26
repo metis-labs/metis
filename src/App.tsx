@@ -4,6 +4,8 @@ import {createStyles, makeStyles} from "@material-ui/core/styles";
 import NavBar from "components/NavBar";
 import SideBar from "components/SideBar";
 import DiagramView from "components/DiagramView";
+import CodeView from "components/CodeView";
+import StatusBar from "components/StatusBar";
 
 import 'App.scss';
 import testFragment from 'model/testNetworkFragment';
@@ -17,6 +19,7 @@ const useStyles = makeStyles(() =>
       display: 'flex',
     },
     content: {
+      position: 'relative',
       flexGrow: 1,
     },
   }),
@@ -29,6 +32,8 @@ function App() {
   const [count, setCount] = useState(1); // TODO: need to use immutability for copy
   const [selectedBlock, setSelectedBlock] = useState(undefined);
   const [engine, setEngine] = useState(new DiagramEngine(fragment));
+  const [viewMode, setViewMode] = useState('diagram');
+
   // const addBlock = () => {
   //   const len = fragment.getBlocks().length;
   //   // TODO: Block should be repainted when push the button
@@ -55,12 +60,17 @@ function App() {
         addBlock={addBlock}
       />
       <main className={classes.content}>
-        <DiagramView
-          fragment={fragment}
-          count={count}
-          setSelectedBlock={setSelectedBlock}
-          engine={engine}
-        />
+        {
+            viewMode === 'diagram' ?
+                <DiagramView
+                    fragment={fragment}
+                    count={count}
+                    setSelectedBlock={setSelectedBlock}
+                    engine={engine}
+                /> : <CodeView />
+        }
+
+        <StatusBar viewMode={viewMode} setViewMode={setViewMode}/>
       </main>
       {selectedBlock && <PropertyBar selectedBlock={selectedBlock!}/>}
     </div>
