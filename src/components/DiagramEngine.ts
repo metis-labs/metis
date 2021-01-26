@@ -1,17 +1,19 @@
 import * as SRD from "@projectstorm/react-diagrams";
-import testFragment from "model/testNetworkFragment";
-import {MetisNodeModel} from "components/Canvas/MetisNodeModel";
-import {MetisNodeFactory} from "components/Canvas/MetisNodeFactory";
+import {MetisNodeModel} from "components/DiagramView/MetisNodeModel";
+import {MetisNodeFactory} from "components/DiagramView/MetisNodeFactory";
+import {NetworkFragment} from "../model/model";
 
-export class DiagramApp {
+export class DiagramEngine {
   protected activeModel!: SRD.DiagramModel;
   protected diagramEngine: SRD.DiagramEngine;
-
   protected modelKeyMap: {[key: string]: string};
-  constructor() {
+  protected fragment: NetworkFragment;
+
+  constructor(fragment: NetworkFragment) {
     this.diagramEngine = SRD.default();
     this.diagramEngine.getNodeFactories().registerFactory(new MetisNodeFactory());
     this.modelKeyMap = {};
+    this.fragment = fragment;
     this.newModel();
   }
 
@@ -22,7 +24,7 @@ export class DiagramApp {
     const nodes = [];
     const nodeInfoMap: {[key: string]: MetisNodeModel} = {};
 
-    for (const block of testFragment.getBlocks()) {
+    for (const block of this.fragment.getBlocks()) {
       const node = new MetisNodeModel({
         blockType: block.getType(),
         name: block.getName()
@@ -36,7 +38,7 @@ export class DiagramApp {
 
     const links: Array<SRD.DefaultLinkModel> = [];
 
-    for (const link of testFragment.getLinks() ) {
+    for (const link of this.fragment.getLinks() ) {
       const outPort = nodeInfoMap[link.from].getOutPort();
       const inPort = nodeInfoMap[link.to].getInPort();
       links.push(outPort.link<SRD.DefaultLinkModel>(inPort));
@@ -62,7 +64,7 @@ export class DiagramApp {
       node.registerListener({
         eventDidFire: (event: any) => {
           const blockId = this.modelKeyMap[event.entity.getID()];
-          const block = testFragment.getBlock(blockId);
+          const block = this.fragment.getBlock(blockId);
           listener(event, block);
         }
       })

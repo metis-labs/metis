@@ -3,13 +3,13 @@ import {createStyles, makeStyles} from "@material-ui/core/styles";
 
 import NavBar from "components/NavBar";
 import SideBar from "components/SideBar";
-import Canvas from "components/Canvas";
+import DiagramView from "components/DiagramView";
 
 import 'App.css';
 import testFragment from 'model/testNetworkFragment';
 import {Block, BlockType} from 'model/model';
 import PropertyBar from "components/PropertyBar";
-import { DiagramApp } from 'components/DiagramApp';
+import { DiagramEngine } from 'components/DiagramEngine';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -29,8 +29,7 @@ function App() {
   const [count, setCount] = useState(1); // TODO: need to use immutability for copy
   const [selectedBlock, setSelectedBlock] = useState(undefined);
 
-  let app = new DiagramApp();
-
+  const engine = new DiagramEngine(fragment);
   // const addBlock = () => {
   //   const len = fragment.getBlocks().length;
   //   // TODO: Block should be repainted when push the button
@@ -46,8 +45,8 @@ function App() {
   // };
 
   const addBlock = (): number => {
-    console.log(app.addNode());
-    return app.addNode();
+    console.log(engine.addNode());
+    return engine.addNode();
   };
 
   return (
@@ -57,11 +56,11 @@ function App() {
         addBlock={addBlock}
       />
       <main className={classes.content}>
-        <Canvas
+        <DiagramView
           fragment={fragment}
           count={count}
           setSelectedBlock={setSelectedBlock}
-          app={app}
+          engine={engine}
         />
       </main>
       {selectedBlock && <PropertyBar selectedBlock={selectedBlock!}/>}

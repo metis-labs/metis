@@ -3,7 +3,7 @@ import { createStyles, makeStyles } from "@material-ui/core/styles";
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 
 import { NetworkFragment, Block, Position } from "model/model";
-import {DiagramApp} from "components/DiagramApp";
+import {DiagramEngine} from "components/DiagramEngine";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -13,11 +13,11 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-export default function Canvas(props: {
+export default function DiagramView(props: {
   fragment: NetworkFragment,
   count: number,
   setSelectedBlock: Function,
-  app: DiagramApp
+  engine: DiagramEngine
 }) {
   const classes = useStyles();
 
@@ -36,7 +36,7 @@ export default function Canvas(props: {
     }
   }, [lastFunction, lastBlock, lastPosition, setSelectedBlock]);
 
-  // TODO: Should find a way to resolve unexpected Canvas behavior
+  // TODO: Should find a way to resolve unexpected DiagramView behavior
   // useMemo(() => {
   //   props.app.registerListener((event: any, block: Block) => {
   //     setLastFunction(event.function);
@@ -51,7 +51,7 @@ export default function Canvas(props: {
     <div onMouseUp={handleMouseUp}>
       <CanvasWidget
         className={classes.canvas}
-        engine={props.app.getDiagramEngine()}
+        engine={props.engine.getDiagramEngine()}
       />
     </div>
   );
