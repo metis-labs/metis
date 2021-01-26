@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useMemo} from "react";
+import React, {useState, useCallback, useMemo} from "react";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 
@@ -9,6 +9,7 @@ const useStyles = makeStyles(() =>
   createStyles({
     canvas: {
       height: "100vh",
+      backgroundColor: "#eaeaeb",
     },
   }),
 );
@@ -21,8 +22,7 @@ export default function DiagramView(props: {
 }) {
   const classes = useStyles();
 
-  const { setSelectedBlock } = props;
-
+  const { setSelectedBlock, engine } = props;
   const [lastFunction, setLastFunction] = useState<string>();
   const [lastBlock, setLastBlock] = useState<Block>();
   const [lastPosition, setLastPosition] = useState<Position>();
@@ -36,16 +36,15 @@ export default function DiagramView(props: {
     }
   }, [lastFunction, lastBlock, lastPosition, setSelectedBlock]);
 
-  // TODO: Should find a way to resolve unexpected DiagramView behavior
   useMemo(() => {
-    props.engine.registerListener((event: any, block: Block) => {
+    engine.registerListener((event: any, block: Block) => {
       setLastFunction(event.function);
       setLastBlock(block);
       if (event.function === 'positionChanged') {
         setLastPosition(event.entity.position);
       }
     })
-  }, [setLastFunction, setLastBlock, setLastPosition]);
+  }, [setLastFunction, setLastBlock, setLastPosition, engine]);
 
   return (
     <div onMouseUp={handleMouseUp}>

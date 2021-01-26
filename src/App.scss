@@ -1,0 +1,54 @@
+.metis-node-port-in {
+  position: absolute;
+  top: -8px;
+  left: 52px;
+}
+
+.metis-node-port-out {
+  position: absolute;
+  bottom: -14px;
+  left: 52px;
+}
+
+.metis-node {
+  width: 120px;
+  height: 50px;
+  border: solid 1px darkgray;
+  border-radius: 4px;
+  background-color: white;
+  box-shadow: 0 1px 5px 0 #888;
+  opacity: 0.9;
+  padding: 4px;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  &.selected {
+    border-color: #00C0FF;
+    box-shadow: 0 1px 5px 0 #00C0FF;
+  }
+}
+
+.metis-node-type {
+  font-size: 8px;
+  font-weight: bold;
+}
+
+.metis-node-name {
+  font-size: 16px;
+  text-align: center;
+}
+
+.circle-port{
+  width: 14px;
+  height: 14px;
+  margin: 2px;
+  border-radius: 7px;
+  font-size: 4px;
+  color: white;
+  background: #111;
+  cursor: pointer;
+
+  &:hover{
+    background: #00C0FF;
+  }
+}

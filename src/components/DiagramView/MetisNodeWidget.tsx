@@ -1,7 +1,10 @@
 import * as React from 'react';
 import { DiagramEngine, PortWidget } from '@projectstorm/react-diagrams-core';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 
 import { MetisNodeModel } from 'components/DiagramView/MetisNodeModel';
+import {BlockType} from "model/model";
 
 export interface MetisNodeWidgetProps {
     node: MetisNodeModel;
@@ -17,19 +20,28 @@ export class MetisNodeWidget extends React.Component<MetisNodeWidgetProps, Metis
     }
 
     render() {
-        const { node } = this.props;
+        const {node, engine} = this.props;
+
         return (
             <div>
-                <PortWidget className="metis-node-port-in" engine={this.props.engine} port={this.props.node.getInPort()}>
-                    <div className="circle-port" />
-                </PortWidget>
-                <div className="metis-node">
+                <div className={node.getOptions().selected ? "metis-node selected" : "metis-node"}>
                     <div className="metis-node-type">{node.getBlockType()}</div>
                     <div className="metis-node-name">{node.getName()}</div>
                 </div>
-                <PortWidget className="metis-node-port-out" engine={this.props.engine} port={this.props.node.getOutPort()}>
-                    <div className="circle-port" />
-                </PortWidget>
+                {
+                    node.getBlockType() !== BlockType.In && (
+                        <PortWidget className="metis-node-port-in" engine={engine} port={node.getInPort()}>
+                            <ArrowUpwardIcon className="circle-port" fontSize="inherit"/>
+                        </PortWidget>
+                    )
+                }
+                {
+                    node.getBlockType() !== BlockType.Out && (
+                        <PortWidget className="metis-node-port-out" engine={engine} port={node.getOutPort()}>
+                            <ArrowDownwardIcon className="circle-port" fontSize="inherit"/>
+                        </PortWidget>
+                    )
+                }
             </div>
         );
     }

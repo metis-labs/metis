@@ -5,7 +5,7 @@ import NavBar from "components/NavBar";
 import SideBar from "components/SideBar";
 import DiagramView from "components/DiagramView";
 
-import 'App.css';
+import 'App.scss';
 import testFragment from 'model/testNetworkFragment';
 import {Block, BlockType} from 'model/model';
 import PropertyBar from "components/PropertyBar";
