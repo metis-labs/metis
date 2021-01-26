@@ -37,15 +37,15 @@ export default function DiagramView(props: {
   }, [lastFunction, lastBlock, lastPosition, setSelectedBlock]);
 
   // TODO: Should find a way to resolve unexpected DiagramView behavior
-  // useMemo(() => {
-  //   props.app.registerListener((event: any, block: Block) => {
-  //     setLastFunction(event.function);
-  //     setLastBlock(block);
-  //     if (event.function === 'positionChanged') {
-  //       setLastPosition(event.entity.position);
-  //     }
-  //   })
-  // }, []);
+  useMemo(() => {
+    props.engine.registerListener((event: any, block: Block) => {
+      setLastFunction(event.function);
+      setLastBlock(block);
+      if (event.function === 'positionChanged') {
+        setLastPosition(event.entity.position);
+      }
+    })
+  }, [setLastFunction, setLastBlock, setLastPosition]);
 
   return (
     <div onMouseUp={handleMouseUp}>

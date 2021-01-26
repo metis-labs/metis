@@ -28,8 +28,7 @@ function App() {
   const [fragment, setFragment] = useState(testFragment);
   const [count, setCount] = useState(1); // TODO: need to use immutability for copy
   const [selectedBlock, setSelectedBlock] = useState(undefined);
-
-  const engine = new DiagramEngine(fragment);
+  const [engine, setEngine] = useState(new DiagramEngine(fragment));
   // const addBlock = () => {
   //   const len = fragment.getBlocks().length;
   //   // TODO: Block should be repainted when push the button
@@ -44,9 +43,9 @@ function App() {
   //   setFragment(fragment);
   // };
 
-  const addBlock = (): number => {
-    console.log(engine.addNode());
-    return engine.addNode();
+  const addBlock = (): void => {
+  //   console.log(engine.addNode());
+    // return engine.addNode();
   };
 
   return (
