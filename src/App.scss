@@ -23,8 +23,8 @@
   justify-content: space-between;
 
   &.selected {
-    border-color: #00C0FF;
-    box-shadow: 0 1px 5px 0 #00C0FF;
+    border-color: #00c0ff;
+    box-shadow: 0 1px 5px 0 #00c0ff;
   }
 }
 
@@ -38,7 +38,7 @@
   text-align: center;
 }
 
-.circle-port{
+.circle-port {
   width: 14px;
   height: 14px;
   margin: 2px;
@@ -48,7 +48,7 @@
   background: #111;
   cursor: pointer;
 
-  &:hover{
-    background: #00C0FF;
+  &:hover {
+    background: #00c0ff;
   }
 }

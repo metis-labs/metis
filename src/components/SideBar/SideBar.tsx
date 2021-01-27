@@ -8,8 +8,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import AddBoxIcon from '@material-ui/icons/AddBox';
-import {useFragment} from "../../index";
-import {BlockType} from "../../store/store";
+import { useFragment } from '../../index';
+import { BlockType } from '../../store/store';
 
 const drawerWidth = 60;
 
@@ -39,9 +39,9 @@ export default function SideBar() {
         id,
         name: `test_${length + 1}`,
         type: BlockType.Conv2d,
-        position: {x: 100 + 10 * length, y: 100 + 10 * length}
+        position: { x: 100 + 10 * length, y: 100 + 10 * length },
       };
-    })
+    });
   };
 
   return (
@@ -55,14 +55,20 @@ export default function SideBar() {
       <Toolbar />
       <div className={classes.drawerContainer}>
         <List>
-          <ListItem button >
-            <ListItemIcon><ArrowDownwardIcon /></ListItemIcon>
+          <ListItem button>
+            <ListItemIcon>
+              <ArrowDownwardIcon />
+            </ListItemIcon>
           </ListItem>
-          <ListItem button >
-            <ListItemIcon><ArrowUpwardIcon /></ListItemIcon>
+          <ListItem button>
+            <ListItemIcon>
+              <ArrowUpwardIcon />
+            </ListItemIcon>
           </ListItem>
           <ListItem button onClick={handleClick}>
-            <ListItemIcon><AddBoxIcon /></ListItemIcon>
+            <ListItemIcon>
+              <AddBoxIcon />
+            </ListItemIcon>
           </ListItem>
         </List>
       </div>

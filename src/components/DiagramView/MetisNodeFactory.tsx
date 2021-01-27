@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { AbstractReactFactory } from '@projectstorm/react-canvas-core';
 import { DiagramEngine } from '@projectstorm/react-diagrams-core';
-import { GenerateModelEvent } from "@projectstorm/react-canvas-core/src/core/AbstractModelFactory";
+import { GenerateModelEvent } from '@projectstorm/react-canvas-core/src/core/AbstractModelFactory';
 
 import { MetisNodeModel, MetisNodeModelOptions } from 'components/DiagramView/MetisNodeModel';
 import { MetisNodeWidget } from 'components/DiagramView/MetisNodeWidget';

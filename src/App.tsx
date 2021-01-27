@@ -1,12 +1,12 @@
-import React, {useState} from 'react';
-import {createStyles, makeStyles} from "@material-ui/core/styles";
+import React, { useState } from 'react';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-import NavBar from "components/NavBar";
-import SideBar from "components/SideBar";
-import DiagramView from "components/DiagramView";
-import CodeView from "components/CodeView";
-import StatusBar from "components/StatusBar";
-import PropertyBar from "components/PropertyBar";
+import NavBar from 'components/NavBar';
+import SideBar from 'components/SideBar';
+import DiagramView from 'components/DiagramView';
+import CodeView from 'components/CodeView';
+import StatusBar from 'components/StatusBar';
+import PropertyBar from 'components/PropertyBar';
 
 import 'App.scss';
 
@@ -28,13 +28,13 @@ function App() {
 
   return (
     <div className={classes.root}>
-      <NavBar/>
+      <NavBar />
       <SideBar />
       <main className={classes.content}>
-        {viewMode === 'diagram' ? <DiagramView/> : <CodeView />}
-        <StatusBar viewMode={viewMode} setViewMode={setViewMode}/>
+        {viewMode === 'diagram' ? <DiagramView /> : <CodeView />}
+        <StatusBar viewMode={viewMode} setViewMode={setViewMode} />
       </main>
-      <PropertyBar/>
+      <PropertyBar />
     </div>
   );
 }

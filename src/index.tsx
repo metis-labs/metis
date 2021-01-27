@@ -5,7 +5,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 
 import reportWebVitals from 'reportWebVitals';
 import App from 'App';
-import theme from "theme";
+import theme from 'theme';
 import { createStore } from 'store/store';
 import testFragment from 'store/testNetworkFragment';
 
@@ -21,7 +21,7 @@ ReactDOM.render(
       <App />
     </FragmentStore.Provider>
   </ThemeProvider>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
 
 // If you want to start measuring performance in your app, pass a function

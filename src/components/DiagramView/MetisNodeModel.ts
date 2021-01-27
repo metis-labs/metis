@@ -1,7 +1,7 @@
-import {DefaultPortModel, NodeModel, PortModelAlignment} from '@projectstorm/react-diagrams';
-import {BaseModelOptions} from '@projectstorm/react-canvas-core';
+import { DefaultPortModel, NodeModel, PortModelAlignment } from '@projectstorm/react-diagrams';
+import { BaseModelOptions } from '@projectstorm/react-canvas-core';
 
-import {BlockType} from 'store/store';
+import { BlockType } from 'store/store';
 
 export interface MetisNodeModelOptions extends BaseModelOptions {
   blockID: string;
@@ -69,7 +69,7 @@ export class MetisNodeModel extends NodeModel {
       ...super.serialize(),
       blockType: this.blockType,
       name: this.name,
-    }
+    };
   }
 
   deserialize(event: any): void {
