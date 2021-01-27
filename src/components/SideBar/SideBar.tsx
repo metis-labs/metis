@@ -8,6 +8,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import AddBoxIcon from '@material-ui/icons/AddBox';
+import {useFragment} from "../../index";
+import {BlockType} from "../../store/store";
 
 const drawerWidth = 60;
 
@@ -26,11 +28,20 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-export default function SideBar(props: {addBlock: Function}) {
+export default function SideBar() {
   const classes = useStyles();
-
+  const [, updateFragment] = useFragment();
   const handleClick = () => {
-    props.addBlock();
+    updateFragment((fragment) => {
+      const length = fragment.blocks.length;
+      const id = `${length + 1}`;
+      fragment.blocks[id] = {
+        id,
+        name: `test_${length + 1}`,
+        type: BlockType.Conv2d,
+        position: {x: 100 + 10 * length, y: 100 + 10 * length}
+      };
+    })
   };
 
   return (

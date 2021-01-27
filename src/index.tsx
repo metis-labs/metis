@@ -3,16 +3,24 @@ import ReactDOM from 'react-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 
-import App from 'App';
 import reportWebVitals from 'reportWebVitals';
-import theme from "tneme";
+import App from 'App';
+import theme from "theme";
+import { createStore } from 'store/store';
+import testFragment from 'store/testNetworkFragment';
+
 import 'index.css';
 
+const FragmentStore = createStore(testFragment);
+export const useFragment = FragmentStore.useStore;
+
 ReactDOM.render(
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+  <ThemeProvider theme={theme}>
+    <CssBaseline />
+    <FragmentStore.Provider>
       <App />
-    </ThemeProvider>,
+    </FragmentStore.Provider>
+  </ThemeProvider>,
   document.getElementById('root')
 );
 

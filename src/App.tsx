@@ -6,12 +6,9 @@ import SideBar from "components/SideBar";
 import DiagramView from "components/DiagramView";
 import CodeView from "components/CodeView";
 import StatusBar from "components/StatusBar";
+import PropertyBar from "components/PropertyBar";
 
 import 'App.scss';
-import testFragment from 'model/testNetworkFragment';
-import {Block, BlockType} from 'model/model';
-import PropertyBar from "components/PropertyBar";
-import { DiagramEngine } from 'components/DiagramEngine';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -27,52 +24,17 @@ const useStyles = makeStyles(() =>
 
 function App() {
   const classes = useStyles();
-
-  const [fragment, setFragment] = useState(testFragment);
-  const [count, setCount] = useState(1); // TODO: need to use immutability for copy
-  const [selectedBlock, setSelectedBlock] = useState(undefined);
-  const [engine, setEngine] = useState(new DiagramEngine(fragment));
   const [viewMode, setViewMode] = useState('diagram');
-
-  // const addBlock = () => {
-  //   const len = fragment.getBlocks().length;
-  //   // TODO: Block should be repainted when push the button
-  //   setCount(count + 1);
-  //   fragment.addBlock(new Block(
-  //     `${len + 1}`,
-  //     `test_${len + 1}`,
-  //     BlockType.Conv2d,
-  //     {x: 100 + 10 * len, y: 100 + 10 * len},
-  //   ));
-  //
-  //   setFragment(fragment);
-  // };
-
-  const addBlock = (): void => {
-  //   console.log(engine.addNode());
-    // return engine.addNode();
-  };
 
   return (
     <div className={classes.root}>
       <NavBar/>
-      <SideBar
-        addBlock={addBlock}
-      />
+      <SideBar />
       <main className={classes.content}>
-        {
-            viewMode === 'diagram' ?
-                <DiagramView
-                    fragment={fragment}
-                    count={count}
-                    setSelectedBlock={setSelectedBlock}
-                    engine={engine}
-                /> : <CodeView />
-        }
-
+        {viewMode === 'diagram' ? <DiagramView/> : <CodeView />}
         <StatusBar viewMode={viewMode} setViewMode={setViewMode}/>
       </main>
-      {selectedBlock && <PropertyBar selectedBlock={selectedBlock!}/>}
+      <PropertyBar/>
     </div>
   );
 }

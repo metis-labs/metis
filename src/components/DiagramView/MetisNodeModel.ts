@@ -1,14 +1,16 @@
 import {DefaultPortModel, NodeModel, PortModelAlignment} from '@projectstorm/react-diagrams';
 import {BaseModelOptions} from '@projectstorm/react-canvas-core';
 
-import {BlockType} from 'model/model';
+import {BlockType} from 'store/store';
 
 export interface MetisNodeModelOptions extends BaseModelOptions {
+  blockID: string;
   blockType: BlockType;
   name: string;
 }
 
 export class MetisNodeModel extends NodeModel {
+  private readonly blockID: string;
   private blockType: BlockType;
   private name: string;
   private readonly inPort?: DefaultPortModel;
@@ -18,8 +20,8 @@ export class MetisNodeModel extends NodeModel {
     super({
       ...options,
       type: 'metis-node',
-
     });
+    this.blockID = options.blockID;
     this.blockType = options.blockType;
     this.name = options.name;
 
@@ -44,6 +46,10 @@ export class MetisNodeModel extends NodeModel {
 
   getName(): string {
     return this.name;
+  }
+
+  getBlockID(): string {
+    return this.blockID;
   }
 
   getBlockType(): BlockType {

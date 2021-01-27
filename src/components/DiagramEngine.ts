@@ -2,44 +2,38 @@ import * as SRD from "@projectstorm/react-diagrams";
 
 import {MetisNodeModel} from "components/DiagramView/MetisNodeModel";
 import {MetisNodeFactory} from "components/DiagramView/MetisNodeFactory";
-import {NetworkFragment} from "model/model";
+import {NetworkFragment} from "store/store";
 
 export class DiagramEngine {
   protected activeModel!: SRD.DiagramModel;
   protected diagramEngine: SRD.DiagramEngine;
-  protected modelKeyMap: {[key: string]: string};
   protected fragment: NetworkFragment;
 
   constructor(fragment: NetworkFragment) {
     this.diagramEngine = SRD.default();
     this.diagramEngine.getNodeFactories().registerFactory(new MetisNodeFactory());
-    this.modelKeyMap = {};
     this.fragment = fragment;
-    this.newModel();
-  }
-
-  public newModel() {
     this.activeModel = new SRD.DiagramModel();
     this.diagramEngine.setModel(this.activeModel);
 
     const nodes = [];
     const nodeInfoMap: {[key: string]: MetisNodeModel} = {};
 
-    for (const block of this.fragment.getBlocks()) {
+    for (const [, block] of Object.entries(fragment.blocks)) {
       const node = new MetisNodeModel({
-        blockType: block.getType(),
-        name: block.getName()
+        blockType: block.type,
+        name: block.name,
+        blockID: block.id,
       });
-      node.setPosition(block.getPosition().x, block.getPosition().y);
+      node.setPosition(block.position.x, block.position.y);
       nodes.push(node);
 
-      nodeInfoMap[block.getID()] = node;
-      this.modelKeyMap[node.getID()] = block.getID();
+      nodeInfoMap[block.id] = node;
     }
 
     const links: Array<SRD.DefaultLinkModel> = [];
 
-    for (const link of this.fragment.getLinks() ) {
+    for (const link of this.fragment.links) {
       const outPort = nodeInfoMap[link.from].getOutPort();
       const inPort = nodeInfoMap[link.to].getInPort();
       links.push(outPort.link<SRD.DefaultLinkModel>(inPort));
@@ -48,33 +42,23 @@ export class DiagramEngine {
     this.activeModel.addAll(...nodes, ...links);
   }
 
-  public getActiveDiagram(): SRD.DiagramModel {
-    return this.activeModel;
-  }
-
   public getDiagramEngine(): SRD.DiagramEngine {
     return this.diagramEngine;
   }
 
-  public addNode(): number {
-    return this.getDiagramEngine().getModel().getNodes().length;
-  }
-
   public registerListener(listener: Function): Function {
     const deregisters = [];
-    for (const node of this.getDiagramEngine().getModel().getNodes()) {
+    for (const node of this.diagramEngine.getModel().getNodes()) {
       const handle = node.registerListener({
         eventDidFire: (event: any) => {
-          const blockId = this.modelKeyMap[event.entity.getID()];
-          const block = this.fragment.getBlock(blockId);
-          listener(event, block);
+          listener(event, event.entity.getBlockID());
         }
       });
       deregisters.push(handle.deregister);
     }
     return () => {
       for (const deregister of deregisters) {
-          deregister();
+        deregister();
       }
     };
   }
