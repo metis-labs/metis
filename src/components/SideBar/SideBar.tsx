@@ -33,7 +33,7 @@ export default function SideBar() {
   const [, updateFragment] = useFragment();
   const handleClick = () => {
     updateFragment((fragment) => {
-      const length = fragment.blocks.length;
+      const length = Object.keys(fragment.blocks).length;
       const id = `${length + 1}`;
       fragment.blocks[id] = {
         id,

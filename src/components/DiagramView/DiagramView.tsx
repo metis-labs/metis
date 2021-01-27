@@ -1,10 +1,12 @@
 import React, {useState, useCallback, useEffect} from "react";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
+import {DefaultLinkModel} from "@projectstorm/react-diagrams";
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 
 import { Position } from "store/store";
-import {DiagramEngine} from "components/DiagramEngine";
+import {DiagramEngine} from "components/DiagramView/DiagramEngine";
 import {useFragment} from "../../index";
+import {MetisNodeModel} from "./MetisNodeModel";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -20,7 +22,7 @@ export default function DiagramView() {
   const classes = useStyles();
 
   const [fragment, updateFragment] = useFragment();
-  const [engine,] = useState(new DiagramEngine(fragment));
+  const [engine,] = useState(new DiagramEngine());
   const [lastFunction, setLastFunction] = useState<string>();
   const [lastBlockID, setLastBlockID] = useState<string>();
   const [lastPosition, setLastPosition] = useState<Position>();
@@ -39,16 +41,27 @@ export default function DiagramView() {
   }, [lastFunction, lastBlockID, lastPosition, updateFragment]);
 
   useEffect(() => {
-    const deregister = engine.registerListener((event: any, blockID: string) => {
+    engine.update(fragment);
+    const deregister = engine.registerListener((event: any, entity: any) => {
       setLastFunction(event.function);
-      setLastBlockID(blockID);
-      if (event.function === 'positionChanged') {
-        setLastPosition(event.entity.position);
+      if (entity instanceof MetisNodeModel) {
+        setLastBlockID(entity.getBlockID());
+        if (event.function === 'positionChanged') {
+          setLastPosition(event.entity.position);
+        }
+      } else if (entity instanceof DefaultLinkModel) {
+        if (event.function === 'targetPortChanged') {
+          updateFragment((fragment) => {
+            fragment.links.push({
+              from: event.entity.sourcePort.parent.getBlockID(),
+              to: event.entity.targetPort.parent.getBlockID()
+            });
+          });
+        }
       }
     });
-
     return () => deregister();
-  }, [setLastFunction, setLastBlockID, setLastPosition, engine]);
+  }, [engine, fragment, setLastFunction, setLastBlockID, setLastPosition]);
 
   return (
     <div onMouseUp={handleMouseUp}>
