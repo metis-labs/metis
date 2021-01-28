@@ -10,7 +10,7 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 
 import { useFragment } from '../../index';
-import { BlockType } from 'store/types';
+import { BlockType, PreservedBlockTypes } from 'store/types';
 
 const drawerWidth = 240;
 
@@ -72,13 +72,21 @@ export default function PropertyBar() {
       <Divider />
       <FormControl className={classes.formControl}>
         <InputLabel htmlFor="grouped-native-select">Type</InputLabel>
-        <Select id="grouped-select" value={selectedBlock.type} className={classes.formSelect} onChange={onChange}>
+        <Select
+          id="grouped-select"
+          value={selectedBlock.type}
+          className={classes.formSelect}
+          onChange={onChange}
+          disabled={PreservedBlockTypes.has(selectedBlock.type)}
+        >
           {Object.keys(BlockType).map((item) => (
-            <MenuItem key={item} value={item}>
+            <MenuItem key={item} value={item} disabled={PreservedBlockTypes.has(item as BlockType)}>
               {item}
             </MenuItem>
           ))}
         </Select>
+      </FormControl>
+      <FormControl className={classes.formControl}>
         {selectedBlock.properties &&
           Object.entries(selectedBlock.properties).map(([key, value]) => (
             <TextField key={key} label={key} value={value} />
