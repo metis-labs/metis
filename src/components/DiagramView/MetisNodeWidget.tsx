@@ -4,7 +4,7 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 
 import { MetisNodeModel } from 'components/DiagramView/MetisNodeModel';
-import { BlockType } from 'store/store';
+import { BlockType } from 'store/types';
 
 export interface MetisNodeWidgetProps {
   node: MetisNodeModel;

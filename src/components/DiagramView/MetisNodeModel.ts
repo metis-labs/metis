@@ -1,7 +1,7 @@
 import { DefaultPortModel, NodeModel, PortModelAlignment } from '@projectstorm/react-diagrams';
 import { BaseModelOptions } from '@projectstorm/react-canvas-core';
 
-import { BlockType } from 'store/store';
+import { BlockType } from 'store/types';
 
 export interface MetisNodeModelOptions extends BaseModelOptions {
   blockID: string;

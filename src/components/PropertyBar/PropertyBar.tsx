@@ -10,7 +10,7 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 
 import { useFragment } from '../../index';
-import { BlockType } from 'store/store';
+import { BlockType } from 'store/types';
 
 const drawerWidth = 240;
 
@@ -54,7 +54,8 @@ export default function PropertyBar() {
   const onChange = useCallback(
     (event: React.ChangeEvent<{ value: unknown }>) => {
       updateFragment((fragment) => {
-        fragment.blocks[fragment.selectedBlockID].type = event.target.value;
+        fragment.blocks[fragment.selectedBlockID].type = event.target.value as BlockType;
+        return fragment;
       });
     },
     [updateFragment],

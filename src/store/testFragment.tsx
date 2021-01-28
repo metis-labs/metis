@@ -1,4 +1,4 @@
-import { Block, BlockType, Link, NetworkFragment } from './store';
+import { Block, BlockType, Link, NetworkFragment } from './types';
 
 const blocks: { [id: string]: Block } = {
   test_input: {

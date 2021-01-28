@@ -1,22 +1,20 @@
-import * as SRD from '@projectstorm/react-diagrams';
+import createEngine, { DefaultLinkModel, DiagramEngine, DiagramModel } from '@projectstorm/react-diagrams';
 
 import { MetisNodeModel } from 'components/DiagramView/MetisNodeModel';
 import { MetisNodeFactory } from 'components/DiagramView/MetisNodeFactory';
-import { NetworkFragment } from 'store/store';
+import { NetworkFragment } from 'store/types';
 
-export class DiagramEngine {
-  protected activeModel: SRD.DiagramModel;
-  protected diagramEngine: SRD.DiagramEngine;
+export class Engine {
+  protected engine: DiagramEngine;
 
   constructor() {
-    this.diagramEngine = SRD.default();
-    this.diagramEngine.getNodeFactories().registerFactory(new MetisNodeFactory());
-    this.activeModel = new SRD.DiagramModel();
-    this.diagramEngine.setModel(this.activeModel);
+    this.engine = createEngine();
+    this.engine.getNodeFactories().registerFactory(new MetisNodeFactory());
+    this.engine.setModel(new DiagramModel());
   }
 
   update(fragment: NetworkFragment) {
-    this.activeModel = new SRD.DiagramModel();
+    const diagramModel = new DiagramModel();
     const nodes = [];
     const nodeInfoMap: { [key: string]: MetisNodeModel } = {};
 
@@ -32,20 +30,20 @@ export class DiagramEngine {
       nodeInfoMap[block.id] = node;
     }
 
-    const links: Array<SRD.DefaultLinkModel> = [];
+    const links: Array<DefaultLinkModel> = [];
 
     for (const link of fragment.links) {
       const outPort = nodeInfoMap[link.from].getOutPort();
       const inPort = nodeInfoMap[link.to].getInPort();
-      links.push(outPort.link<SRD.DefaultLinkModel>(inPort));
+      links.push(outPort.link<DefaultLinkModel>(inPort));
     }
 
-    this.activeModel.addAll(...nodes, ...links);
-    this.diagramEngine.setModel(this.activeModel);
+    diagramModel.addAll(...nodes, ...links);
+    this.engine.setModel(diagramModel);
   }
 
-  public getDiagramEngine(): SRD.DiagramEngine {
-    return this.diagramEngine;
+  public getEngine(): DiagramEngine {
+    return this.engine;
   }
 
   public registerListener(listener: Function): Function {
@@ -57,7 +55,7 @@ export class DiagramEngine {
       },
     };
 
-    const handle = this.diagramEngine.getModel().registerListener({
+    const handle = this.engine.getModel().registerListener({
       eventDidFire: (event: any) => {
         if (event.function === 'linksUpdated' && event.isCreated && event.link) {
           const handle = event.link.registerListener(listeners);
@@ -67,7 +65,7 @@ export class DiagramEngine {
     });
     deregisters.push(handle.deregister);
 
-    for (const node of this.diagramEngine.getModel().getModels()) {
+    for (const node of this.engine.getModel().getModels()) {
       const handle = node.registerListener(listeners);
       deregisters.push(handle.deregister);
     }

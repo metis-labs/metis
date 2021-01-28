@@ -3,8 +3,8 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { DefaultLinkModel } from '@projectstorm/react-diagrams';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 
-import { Position } from 'store/store';
-import { DiagramEngine } from 'components/DiagramView/DiagramEngine';
+import { Engine } from 'components/DiagramView/Engine';
+import { Position } from 'store/types';
 import { useFragment } from '../../index';
 import { MetisNodeModel } from './MetisNodeModel';
 
@@ -22,7 +22,7 @@ export default function DiagramView() {
   const classes = useStyles();
 
   const [fragment, updateFragment] = useFragment();
-  const [engine] = useState(new DiagramEngine());
+  const [engine] = useState(new Engine());
   const [lastFunction, setLastFunction] = useState<string>();
   const [lastBlockID, setLastBlockID] = useState<string>();
   const [lastPosition, setLastPosition] = useState<Position>();
@@ -32,11 +32,13 @@ export default function DiagramView() {
       if (lastFunction === 'selectionChanged' && lastBlockID) {
         updateFragment((fragment) => {
           fragment.selectedBlockID = lastBlockID;
+          return fragment;
         });
       } else if (lastFunction === 'positionChanged' && lastBlockID) {
         updateFragment((fragment) => {
           fragment.blocks[lastBlockID].position = lastPosition;
           fragment.selectedBlockID = lastBlockID;
+          return fragment;
         });
       }
     },
@@ -59,6 +61,7 @@ export default function DiagramView() {
               from: event.entity.sourcePort.parent.getBlockID(),
               to: event.entity.targetPort.parent.getBlockID(),
             });
+            return fragment;
           });
         }
       }
@@ -68,7 +71,7 @@ export default function DiagramView() {
 
   return (
     <div onMouseUp={handleMouseUp}>
-      <CanvasWidget className={classes.canvas} engine={engine.getDiagramEngine()} />
+      <CanvasWidget className={classes.canvas} engine={engine.getEngine()} />
     </div>
   );
 }

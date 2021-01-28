@@ -1,57 +1,32 @@
-import produce from 'immer';
-import { createContext, useContext, useReducer } from 'react';
+import produce, { Draft } from 'immer';
+import { createContext, Dispatch, ReducerAction, useContext, useReducer } from 'react';
+import { NetworkFragment } from './types';
 
-export enum BlockType {
-  In = 'In',
-  Out = 'Out',
-  Conv2d = 'Conv2d',
-  ReLU = 'ReLU',
-  MaxPool2d = 'MaxPool2d',
-}
-
-export type Position = {
-  x: number;
-  y: number;
-};
-
-export type PropertyValue = string | number | boolean;
-export type Properties = { [key: string]: PropertyValue };
-
-export type Block = {
-  id: string;
-  name: string;
-  type: BlockType;
-  position: Position;
-  properties?: Properties;
-};
-
-export type Link = {
-  from: string;
-  to: string;
-};
-
-export type NetworkFragment = {
-  blocks: { [id: string]: Block };
-  links: Link[];
-  selectedBlockID?: string;
-};
+type NetworkFragmentReducer = (
+  state: NetworkFragment,
+  producer: (draft: Draft<NetworkFragment>) => NetworkFragment,
+) => NetworkFragment;
 
 export function createStore(initialState: NetworkFragment) {
-  const StateContext = createContext(initialState);
+  const StateContext = createContext<NetworkFragment>(initialState);
   const UpdateContext = createContext(null);
 
+  const reducer: NetworkFragmentReducer = (state, producer) => {
+    return produce(state, producer);
+  };
+
   function StoreProvider({ children }) {
-    const [state, updater] = useReducer(produce, initialState);
+    const [state, updater] = useReducer(reducer, initialState);
     return (
       <UpdateContext.Provider value={updater}>
-        <StateContext.Provider value={state as any}>{children}</StateContext.Provider>
+        <StateContext.Provider value={state}>{children}</StateContext.Provider>
       </UpdateContext.Provider>
     );
   }
 
-  function useFragment() {
+  function useFragment(): [NetworkFragment, Dispatch<ReducerAction<NetworkFragmentReducer>>] {
     return [useContext(StateContext), useContext(UpdateContext)];
   }
 
-  return { Provider: StoreProvider, useStore: useFragment };
+  return { Provider: StoreProvider, useFragment };
 }

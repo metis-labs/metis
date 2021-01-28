@@ -9,7 +9,7 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import { useFragment } from '../../index';
-import { BlockType } from '../../store/store';
+import { BlockType } from '../../store/types';
 
 const drawerWidth = 60;
 
@@ -41,6 +41,7 @@ export default function SideBar() {
         type: BlockType.Conv2d,
         position: { x: 100 + 10 * length, y: 100 + 10 * length },
       };
+      return fragment;
     });
   };
 

@@ -7,12 +7,12 @@ import reportWebVitals from 'reportWebVitals';
 import App from 'App';
 import theme from 'theme';
 import { createStore } from 'store/store';
-import testFragment from 'store/testNetworkFragment';
+import testFragment from 'store/testFragment';
 
 import 'index.css';
 
 const FragmentStore = createStore(testFragment);
-export const useFragment = FragmentStore.useStore;
+export const useFragment = FragmentStore.useFragment;
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>
