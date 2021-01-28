@@ -53,6 +53,11 @@ export default function DiagramView() {
         setLastBlockID(entity.getBlockID());
         if (event.function === 'positionChanged') {
           setLastPosition(event.entity.position);
+        } else if (event.function === 'entityRemoved') {
+          updateFragment((fragment) => {
+            delete fragment.blocks[entity.getBlockID()];
+            return fragment;
+          });
         }
       } else if (entity instanceof DefaultLinkModel) {
         if (event.function === 'targetPortChanged') {
@@ -63,6 +68,8 @@ export default function DiagramView() {
             });
             return fragment;
           });
+        } else if (event.function === 'entityRemoved') {
+          console.log(event);
         }
       }
     });
