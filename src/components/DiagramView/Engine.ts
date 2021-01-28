@@ -2,18 +2,28 @@ import createEngine, { DefaultLinkModel, DiagramEngine, DiagramModel } from '@pr
 
 import { MetisNodeModel } from 'components/DiagramView/MetisNodeModel';
 import { MetisNodeFactory } from 'components/DiagramView/MetisNodeFactory';
-import { NetworkFragment } from 'store/types';
+import { NetworkFragment, EmptyNetworkFragment } from 'store/types';
 
 export class Engine {
-  protected engine: DiagramEngine;
+  private engine: DiagramEngine;
+  private previousFragment: NetworkFragment;
 
   constructor() {
     this.engine = createEngine();
+    this.engine.maxNumberPointsPerLink = 0;
     this.engine.getNodeFactories().registerFactory(new MetisNodeFactory());
     this.engine.setModel(new DiagramModel());
+    this.previousFragment = EmptyNetworkFragment;
   }
 
   update(fragment: NetworkFragment) {
+    if (
+      fragment.blocks === this.previousFragment.blocks &&
+      fragment.links === this.previousFragment.links
+    ) {
+      return;
+    }
+
     const diagramModel = new DiagramModel();
     const nodes = [];
     const nodeInfoMap: { [key: string]: MetisNodeModel } = {};
@@ -33,6 +43,10 @@ export class Engine {
     const links: Array<DefaultLinkModel> = [];
 
     for (const link of fragment.links) {
+      if (!nodeInfoMap[link.from] || !nodeInfoMap[link.to]) {
+        continue;
+      }
+
       const outPort = nodeInfoMap[link.from].getOutPort();
       const inPort = nodeInfoMap[link.to].getInPort();
       links.push(outPort.link<DefaultLinkModel>(inPort));
@@ -40,6 +54,7 @@ export class Engine {
 
     diagramModel.addAll(...nodes, ...links);
     this.engine.setModel(diagramModel);
+    this.previousFragment = fragment;
   }
 
   public getEngine(): DiagramEngine {
