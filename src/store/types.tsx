@@ -25,17 +25,18 @@ export type Block = {
 };
 
 export type Link = {
+  id: string;
   from: string;
   to: string;
 };
 
 export type NetworkFragment = {
   blocks: { [id: string]: Block };
-  links: Link[];
+  links: { [id: string]: Link };
   selectedBlockID?: string;
 };
 
 export const EmptyNetworkFragment = {
   blocks: {},
-  links: [],
+  links: {},
 };

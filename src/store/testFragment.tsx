@@ -56,24 +56,28 @@ const blocks: { [id: string]: Block } = {
   },
 };
 
-const links: Link[] = [
-  {
+const links: { [id: string]: Link } = {
+  link1: {
+    id: 'link1',
     from: 'test_input',
     to: 'conv_1',
   },
-  {
+  link2: {
+    id: 'link2',
     from: 'conv_1',
     to: 'maxpool_1',
   },
-  {
+  link3: {
+    id: 'link3',
     from: 'maxpool_1',
     to: 'relu',
   },
-  {
+  link4: {
+    id: 'link4',
     from: 'relu',
     to: 'test_output',
   },
-];
+};
 
 const testFragment = {
   blocks,

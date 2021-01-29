@@ -1,8 +1,10 @@
-import createEngine, { DefaultLinkModel, DiagramEngine, DiagramModel } from '@projectstorm/react-diagrams';
+import createEngine, { DiagramEngine, DiagramModel } from '@projectstorm/react-diagrams';
 
 import { MetisNodeModel } from 'components/DiagramView/MetisNodeModel';
 import { MetisNodeFactory } from 'components/DiagramView/MetisNodeFactory';
 import { NetworkFragment, EmptyNetworkFragment } from 'store/types';
+import { MetisLinkFactory } from './MetisLinkFactory';
+import { MetisLinkModel } from './MetisLinkModel';
 
 export class Engine {
   private engine: DiagramEngine;
@@ -12,6 +14,7 @@ export class Engine {
     this.engine = createEngine();
     this.engine.maxNumberPointsPerLink = 0;
     this.engine.getNodeFactories().registerFactory(new MetisNodeFactory());
+    this.engine.getLinkFactories().registerFactory(new MetisLinkFactory());
     this.engine.setModel(new DiagramModel());
     this.previousFragment = EmptyNetworkFragment;
   }
@@ -40,16 +43,18 @@ export class Engine {
       nodeInfoMap[block.id] = node;
     }
 
-    const links: Array<DefaultLinkModel> = [];
+    const links: Array<MetisLinkModel> = [];
 
-    for (const link of fragment.links) {
+    for (const [, link] of Object.entries(fragment.links)) {
       if (!nodeInfoMap[link.from] || !nodeInfoMap[link.to]) {
         continue;
       }
 
       const outPort = nodeInfoMap[link.from].getOutPort();
       const inPort = nodeInfoMap[link.to].getInPort();
-      links.push(outPort.link<DefaultLinkModel>(inPort));
+      const linkModel = outPort.link<MetisLinkModel>(inPort) as MetisLinkModel;
+      linkModel.setLinkID(link.id);
+      links.push(linkModel);
     }
 
     diagramModel.addAll(...nodes, ...links);

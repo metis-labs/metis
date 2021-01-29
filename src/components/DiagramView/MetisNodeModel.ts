@@ -1,7 +1,8 @@
-import { DefaultPortModel, NodeModel, PortModelAlignment } from '@projectstorm/react-diagrams';
+import { NodeModel, PortModelAlignment } from '@projectstorm/react-diagrams';
 import { BaseModelOptions } from '@projectstorm/react-canvas-core';
 
 import { BlockType } from 'store/types';
+import { MetisPortModel } from './MetisPortModel';
 
 export interface MetisNodeModelOptions extends BaseModelOptions {
   blockID: string;
@@ -13,8 +14,8 @@ export class MetisNodeModel extends NodeModel {
   private readonly blockID: string;
   private blockType: BlockType;
   private name: string;
-  private readonly inPort?: DefaultPortModel;
-  private readonly outPort?: DefaultPortModel;
+  private readonly inPort?: MetisPortModel;
+  private readonly outPort?: MetisPortModel;
 
   constructor(options: MetisNodeModelOptions) {
     super({
@@ -26,7 +27,7 @@ export class MetisNodeModel extends NodeModel {
     this.name = options.name;
 
     if (this.blockType !== BlockType.In) {
-      this.inPort = new DefaultPortModel({
+      this.inPort = new MetisPortModel({
         in: true,
         name: 'in',
         alignment: PortModelAlignment.TOP,
@@ -35,7 +36,7 @@ export class MetisNodeModel extends NodeModel {
     }
 
     if (this.blockType !== BlockType.Out) {
-      this.outPort = new DefaultPortModel({
+      this.outPort = new MetisPortModel({
         in: false,
         name: 'out',
         alignment: PortModelAlignment.BOTTOM,
@@ -56,11 +57,11 @@ export class MetisNodeModel extends NodeModel {
     return this.blockType;
   }
 
-  getInPort(): DefaultPortModel {
+  getInPort(): MetisPortModel {
     return this.inPort;
   }
 
-  getOutPort(): DefaultPortModel {
+  getOutPort(): MetisPortModel {
     return this.outPort;
   }
 

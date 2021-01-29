@@ -1,12 +1,12 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { DefaultLinkModel } from '@projectstorm/react-diagrams';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 
 import { Engine } from 'components/DiagramView/Engine';
-import { Position } from 'store/types';
+import {Link, Position } from 'store/types';
 import { useFragment } from '../../index';
 import { MetisNodeModel } from './MetisNodeModel';
+import { MetisLinkModel } from './MetisLinkModel';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -59,17 +59,33 @@ export default function DiagramView() {
             return fragment;
           });
         }
-      } else if (entity instanceof DefaultLinkModel) {
+      } else if (entity instanceof MetisLinkModel) {
         if (event.function === 'targetPortChanged') {
           updateFragment((fragment) => {
-            fragment.links.push({
-              from: event.entity.sourcePort.parent.getBlockID(),
-              to: event.entity.targetPort.parent.getBlockID(),
-            });
+            let from, to;
+            if (event.entity.sourcePort.getName() === 'in') {
+              from = event.entity.targetPort.parent;
+              to = event.entity.sourcePort.parent;
+            } else if (event.entity.sourcePort.getName() === 'out') {
+              from = event.entity.sourcePort.parent;
+              to = event.entity.targetPort.parent;
+            } else {
+              return fragment;
+            }
+
+            const link = {
+              id: entity.getID(),
+              from: from.getBlockID() as string,
+              to: to.getBlockID() as string,
+            } as Link;
+            fragment.links[entity.getID()] = link;
             return fragment;
           });
         } else if (event.function === 'entityRemoved') {
-          console.log(event);
+          updateFragment((fragment) => {
+            delete fragment.links[entity.getLinkID()];
+            return fragment;
+          });
         }
       }
     });
