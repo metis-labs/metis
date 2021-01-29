@@ -1,8 +1,4 @@
-import { DefaultLinkModel, DefaultLinkModelOptions } from "@projectstorm/react-diagrams";
-
-export interface MetisLinkModelOptions extends DefaultLinkModelOptions {
-  linkID: string;
-}
+import { DefaultLinkModel } from "@projectstorm/react-diagrams";
 
 export class MetisLinkModel extends DefaultLinkModel {
   private linkID: string;

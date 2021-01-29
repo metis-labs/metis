@@ -7,6 +7,7 @@ import {Link, Position } from 'store/types';
 import { useFragment } from '../../index';
 import { MetisNodeModel } from './MetisNodeModel';
 import { MetisLinkModel } from './MetisLinkModel';
+import { DiagramModel } from '@projectstorm/react-diagrams';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -84,6 +85,14 @@ export default function DiagramView() {
         } else if (event.function === 'entityRemoved') {
           updateFragment((fragment) => {
             delete fragment.links[entity.getLinkID()];
+            return fragment;
+          });
+        }
+      } else if (entity instanceof DiagramModel) {
+        if (event.function === 'offsetUpdated') {
+          updateFragment((fragment) => {
+            fragment.offset.x =  entity.getOffsetX();
+            fragment.offset.y =  entity.getOffsetY();
             return fragment;
           });
         }

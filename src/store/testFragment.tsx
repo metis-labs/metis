@@ -82,6 +82,7 @@ const links: { [id: string]: Link } = {
 const testFragment = {
   blocks,
   links,
+  offset: {x: 0, y: 0},
 } as NetworkFragment;
 
 export default testFragment;

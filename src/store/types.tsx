@@ -33,10 +33,12 @@ export type Link = {
 export type NetworkFragment = {
   blocks: { [id: string]: Block };
   links: { [id: string]: Link };
+  offset: Position;
   selectedBlockID?: string;
 };
 
 export const EmptyNetworkFragment = {
   blocks: {},
   links: {},
+  offset: { x: 0, y: 0},
 };

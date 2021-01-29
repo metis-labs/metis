@@ -1,4 +1,5 @@
 import React from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -34,7 +35,7 @@ export default function SideBar() {
   const handleClick = () => {
     updateFragment((fragment) => {
       const length = Object.keys(fragment.blocks).length;
-      const id = `${length + 1}`;
+      const id = uuidv4();
       fragment.blocks[id] = {
         id,
         name: `test_${length + 1}`,

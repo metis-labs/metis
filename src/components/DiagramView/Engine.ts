@@ -30,6 +30,7 @@ export class Engine {
     const diagramModel = new DiagramModel();
     const nodes = [];
     const nodeInfoMap: { [key: string]: MetisNodeModel } = {};
+    diagramModel.setOffset(fragment.offset.x, fragment.offset.y);
 
     for (const [, block] of Object.entries(fragment.blocks)) {
       const node = new MetisNodeModel({
@@ -81,6 +82,7 @@ export class Engine {
           const handle = event.link.registerListener(listeners);
           deregisters.push(handle.deregister);
         }
+        listener(event, event.entity);
       },
     });
     deregisters.push(handle.deregister);
