@@ -1,0 +1,45 @@
+[
+  {
+    "name": "torch.nn.modules.conv.Conv2d",
+    "abbrev": "Conv2d",
+    "schema": {
+      "attributes": [
+        { "name": "in_channels", "visible": false },
+        { "name": "out_channels", "visible": false },
+        { "name": "kernel_size", "visible": false },
+        { "name": "stride", "default": [1, 1] },
+        { "name": "padding", "default": [0, 0] },
+        { "name": "dilation", "default": [1, 1] },
+        { "name": "groups", "default": 1 },
+        { "name": "bias", "default": true },
+        { "name": "padding_mode", "default": "zeros" }
+      ],
+      "category": "Layer"
+    }
+  },
+  {
+    "name": "torch.nn.modules.pooling.MaxPool2d",
+    "abbrev": "MaxPool2d",
+    "schema": {
+      "attributes": [
+        { "name": "padding", "default": 0 },
+        { "name": "dilation", "default": 1 },
+        { "name": "return_indices", "default": false },
+        { "name": "ceil_mode", "visible": false }
+      ],
+      "category": "Pool"
+    }
+  },
+  {
+    "name": "torch.nn.modules.activation.ReLU",
+    "abbrev": "ReLU",
+    "schema": {
+      "attributes": [
+        { "name": "inplace", "default": false, "visible": false },
+        { "name": "threshold", "default": 0 },
+        { "name": "value", "default": 0 }
+      ],
+      "category": "Activation"
+    }
+  }
+]

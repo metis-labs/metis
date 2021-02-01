@@ -1,3 +1,8 @@
+export enum DiagramType {
+  Main = 'Main',
+  Module = 'Module',
+}
+
 export enum BlockType {
   In = 'In',
   Out = 'Out',
@@ -30,7 +35,21 @@ export type Link = {
   to: string;
 };
 
+export type Dependency = {
+  id: string;
+  name: string;
+  alias?: string;
+  package?: string;
+};
+
+export type DiagramInfo = {
+  name: string;
+  type: DiagramType;
+};
+
 export type NetworkFragment = {
+  diagramInfo: DiagramInfo;
+  dependencies: { [id: string]: Dependency };
   blocks: { [id: string]: Block };
   links: { [id: string]: Link };
   offset: Position;
@@ -38,7 +57,9 @@ export type NetworkFragment = {
 };
 
 export const EmptyNetworkFragment = {
+  diagramInfo: { name: '', type: DiagramType.Main },
+  dependencies: {},
   blocks: {},
   links: {},
-  offset: { x: 0, y: 0},
+  offset: { x: 0, y: 0 },
 };

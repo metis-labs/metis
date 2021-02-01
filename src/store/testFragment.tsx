@@ -1,4 +1,21 @@
-import { Block, BlockType, Link, NetworkFragment } from './types';
+import { Block, BlockType, Dependency, DiagramInfo, DiagramType, Link, NetworkFragment } from './types';
+
+const diagramInfo: DiagramInfo = {
+  name: 'test',
+  type: DiagramType.Main,
+};
+
+const dependencies: { [id: string]: Dependency } = {
+  pytorch: {
+    id: 'pytorch',
+    name: 'pytorch',
+  },
+  pytorchNN: {
+    id: 'pytorchNN',
+    name: 'pytorch.nn',
+    alias: 'nn',
+  },
+};
 
 const blocks: { [id: string]: Block } = {
   test_input: {
@@ -80,9 +97,11 @@ const links: { [id: string]: Link } = {
 };
 
 const testFragment = {
+  diagramInfo,
+  dependencies,
   blocks,
   links,
-  offset: {x: 0, y: 0},
+  offset: { x: 0, y: 0 },
 } as NetworkFragment;
 
 export default testFragment;
