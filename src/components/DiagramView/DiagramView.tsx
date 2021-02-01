@@ -3,7 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 
 import { Engine } from 'components/DiagramView/Engine';
-import {Link, Position } from 'store/types';
+import { Position } from 'store/types';
 import { useFragment } from '../../index';
 import { MetisNodeModel } from './MetisNodeModel';
 import { MetisLinkModel } from './MetisLinkModel';
@@ -74,12 +74,11 @@ export default function DiagramView() {
               return fragment;
             }
 
-            const link = {
+            fragment.links[entity.getID()] = {
               id: entity.getID(),
               from: from.getBlockID() as string,
               to: to.getBlockID() as string,
-            } as Link;
-            fragment.links[entity.getID()] = link;
+            };
             return fragment;
           });
         } else if (event.function === 'entityRemoved') {
@@ -91,8 +90,15 @@ export default function DiagramView() {
       } else if (entity instanceof DiagramModel) {
         if (event.function === 'offsetUpdated') {
           updateFragment((fragment) => {
-            fragment.offset.x =  entity.getOffsetX();
-            fragment.offset.y =  entity.getOffsetY();
+            fragment.diagramInfo.offset = {
+              x: entity.getOffsetX(),
+              y: entity.getOffsetY(),
+            };
+            return fragment;
+          });
+        } else if (event.function === 'zoomUpdated') {
+          updateFragment((fragment) => {
+            fragment.diagramInfo.zoom = event.zoom;
             return fragment;
           });
         }

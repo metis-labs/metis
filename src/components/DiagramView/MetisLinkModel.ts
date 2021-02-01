@@ -1,4 +1,4 @@
-import { DefaultLinkModel } from "@projectstorm/react-diagrams";
+import { DefaultLinkModel } from '@projectstorm/react-diagrams';
 
 export class MetisLinkModel extends DefaultLinkModel {
   private linkID: string;
@@ -6,7 +6,6 @@ export class MetisLinkModel extends DefaultLinkModel {
   constructor() {
     super({
       type: 'metis-link',
-      width: 4,
     });
   }
 

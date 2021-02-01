@@ -20,17 +20,20 @@ export class Engine {
   }
 
   update(fragment: NetworkFragment) {
-    if (
-      fragment.blocks === this.previousFragment.blocks &&
-      fragment.links === this.previousFragment.links
-    ) {
+    if (fragment.blocks === this.previousFragment.blocks && fragment.links === this.previousFragment.links) {
       return;
     }
 
     const diagramModel = new DiagramModel();
     const nodes = [];
     const nodeInfoMap: { [key: string]: MetisNodeModel } = {};
-    diagramModel.setOffset(fragment.offset.x, fragment.offset.y);
+
+    if (fragment.diagramInfo.offset) {
+      diagramModel.setOffset(fragment.diagramInfo.offset.x, fragment.diagramInfo.offset.y);
+    }
+    if (fragment.diagramInfo.zoom) {
+      diagramModel.setZoomLevel(fragment.diagramInfo.zoom);
+    }
 
     for (const [, block] of Object.entries(fragment.blocks)) {
       const node = new MetisNodeModel({
