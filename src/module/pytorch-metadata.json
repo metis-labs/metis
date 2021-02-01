@@ -22,10 +22,12 @@
     "abbrev": "MaxPool2d",
     "schema": {
       "attributes": [
+        { "name": "kernel_size", "visible": false },
+        { "name": "stride", "default_ref": "kernel_size" },
         { "name": "padding", "default": 0 },
         { "name": "dilation", "default": 1 },
         { "name": "return_indices", "default": false },
-        { "name": "ceil_mode", "visible": false }
+        { "name": "ceil_mode", "default": false }
       ],
       "category": "Pool"
     }
@@ -34,11 +36,7 @@
     "name": "torch.nn.modules.activation.ReLU",
     "abbrev": "ReLU",
     "schema": {
-      "attributes": [
-        { "name": "inplace", "default": false, "visible": false },
-        { "name": "threshold", "default": 0 },
-        { "name": "value", "default": 0 }
-      ],
+      "attributes": [{ "name": "inplace", "default": false, "visible": false }],
       "category": "Activation"
     }
   }

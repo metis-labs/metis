@@ -6,13 +6,13 @@ const diagramInfo: DiagramInfo = {
 };
 
 const dependencies: { [id: string]: Dependency } = {
-  pytorch: {
-    id: 'pytorch',
-    name: 'pytorch',
+  torch: {
+    id: 'torch',
+    name: 'torch',
   },
-  pytorchNN: {
-    id: 'pytorchNN',
-    name: 'pytorch.nn',
+  torchNN: {
+    id: 'torchNN',
+    name: 'torch.nn',
     alias: 'nn',
   },
 };
@@ -37,15 +37,15 @@ const blocks: { [id: string]: Block } = {
     position: { x: 100, y: 200 },
     properties: {
       repeats: 1,
-      inChannel: 3,
-      outChannel: 1,
+      inChannels: 3,
+      outChannels: 1,
       kernelSize: 3,
       stride: 1,
       padding: 0,
       paddingMode: 'zeros', // categorical
       dilation: 1,
       groups: 1,
-      base: false, // boolean
+      bias: false, // boolean
     },
   },
   maxpool_1: {
@@ -59,6 +59,8 @@ const blocks: { [id: string]: Block } = {
       stride: 2,
       padding: 0,
       dilation: 1,
+      returnIndices: false,
+      ceilMode: false,
     },
   },
   relu: {
@@ -68,7 +70,7 @@ const blocks: { [id: string]: Block } = {
     position: { x: 100, y: 400 },
     properties: {
       repeats: 1,
-      inplace: true, // boolean
+      inplace: false, // boolean
     },
   },
 };

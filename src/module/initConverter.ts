@@ -52,18 +52,47 @@ export class InitConverter {
       for (let i = 0; i < this.indentDepth + 1; i++) {
         this.resultInit += this.indentSize;
       }
-      this.resultInit += `self.${blocks[blockId].name} = nn.${blocks[blockId].type} \n`;
+      this.resultInit += `self.${blocks[blockId].name} = nn.${blocks[blockId].type}(`;
       this.updateOption(blocks[blockId]);
+      this.resultInit += `) \n`;
     }
   }
 
   updateOption(block: Block): void {
     const idx = metadata.findIndex((data) => data.abbrev === block.type);
-    this.options = metadata[idx].name;
-    console.log(this.options);
+    const options = [];
+
+    for (const attr of metadata[idx].schema.attributes) {
+      const camlAttr = attr.name.replace(/_([a-z])/g, function (g) {
+        return g[1].toUpperCase();
+      });
+      const attrValue = block.properties[camlAttr];
+      // TODO: Need convert function to validate equality between default-value and assigned-value
+      if (attr.default === attrValue) {
+        continue;
+      }
+      if (attr.visible !== false) {
+        options.push(`${attr.name}=${printOptionValue(attrValue)}`);
+      } else {
+        options.push(`${printOptionValue(attrValue)}`);
+      }
+    }
+    this.resultInit += options.join(', ');
   }
 
   getResult(): string {
     return this.resultInit;
+  }
+}
+
+function printOptionValue(value: any): string {
+  if (value === true) {
+    return 'True';
+  } else if (value === false) {
+    return 'False';
+  } else if (typeof value === 'string') {
+    return `"${value}"`;
+  } else {
+    return value;
   }
 }

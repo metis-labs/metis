@@ -27,7 +27,7 @@ export default function NavBar() {
     <AppBar position="fixed" className={classes.appBar}>
       <Toolbar>
         <Typography variant="h6" className={classes.title}>
-          METIS
+          ML DESIGNER
         </Typography>
       </Toolbar>
     </AppBar>
