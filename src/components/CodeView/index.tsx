@@ -26,7 +26,7 @@ export default function CodeView() {
   useEffect(() => {
     converter.update(project.fragments[project.selectedFragmentId]);
     setCodeString(converter.getResult());
-  }, [converter]);
+  }, [converter, project]);
 
   return (
     <div className={classes.root}>

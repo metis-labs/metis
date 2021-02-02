@@ -3,6 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 import NavBar from 'components/NavBar';
 import SideBar from 'components/SideBar';
+import FileTreeBar from './components/FileTreeBar';
 import DiagramView from 'components/DiagramView';
 import CodeView from 'components/CodeView';
 import StatusBar from 'components/StatusBar';
@@ -30,6 +31,7 @@ function App() {
     <div className={classes.root}>
       <NavBar />
       <SideBar />
+      <FileTreeBar />
       <main className={classes.content}>
         {viewMode === 'diagram' ? <DiagramView /> : <CodeView />}
         <StatusBar viewMode={viewMode} setViewMode={setViewMode} />
