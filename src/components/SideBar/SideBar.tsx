@@ -41,6 +41,18 @@ export default function SideBar() {
         name: `test_${length + 1}`,
         type: BlockType.Conv2d,
         position: { x: 100 + 10 * length, y: 100 + 10 * length },
+        properties: {
+          repeats: 1,
+          inChannels: ' ',
+          outChannels: ' ',
+          kernelSize: ' ',
+          stride: 1,
+          padding: 0,
+          paddingMode: 'zeros', // categorical
+          dilation: 1,
+          groups: 1,
+          bias: false, // boolean
+        },
       };
       return fragment;
     });

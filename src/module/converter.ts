@@ -1,6 +1,7 @@
 import { EmptyNetworkFragment, NetworkFragment } from '../store/types';
 import { ImportConverter } from './importConverter';
 import { InitConverter } from './initConverter';
+import { ForwardConverter } from './forwardConverter';
 
 export class Converter {
   private previousFragment: NetworkFragment;
@@ -27,8 +28,13 @@ export class Converter {
     initTemplate.updateInitFront(fragment.diagramInfo);
     initTemplate.updateInitBody(fragment.blocks);
 
+    const forwardTemplate = new ForwardConverter();
+    forwardTemplate.updateForwardFront(fragment.links, fragment.blocks);
+    forwardTemplate.updateForwardBody(fragment.blocks);
+
     this.codeString += importTemplate.getResult();
     this.codeString += initTemplate.getResult();
+    this.codeString += forwardTemplate.getResult();
 
     this.previousFragment = fragment;
   }
