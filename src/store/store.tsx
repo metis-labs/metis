@@ -1,17 +1,14 @@
 import produce, { Draft } from 'immer';
 import { createContext, Dispatch, ReducerAction, useContext, useReducer } from 'react';
-import { NetworkFragment } from './types';
+import { Project } from './types';
 
-type NetworkFragmentReducer = (
-  state: NetworkFragment,
-  producer: (draft: Draft<NetworkFragment>) => NetworkFragment,
-) => NetworkFragment;
+type ProjectReducer = (state: Project, producer: (draft: Draft<Project>) => Project) => Project;
 
-export function createStore(initialState: NetworkFragment) {
-  const StateContext = createContext<NetworkFragment>(initialState);
+export function createStore(initialState: Project) {
+  const StateContext = createContext<Project>(initialState);
   const UpdateContext = createContext(null);
 
-  const reducer: NetworkFragmentReducer = (state, producer) => {
+  const reducer: ProjectReducer = (state, producer) => {
     return produce(state, producer);
   };
 
@@ -24,9 +21,9 @@ export function createStore(initialState: NetworkFragment) {
     );
   }
 
-  function useFragment(): [NetworkFragment, Dispatch<ReducerAction<NetworkFragmentReducer>>] {
+  function useProject(): [Project, Dispatch<ReducerAction<ProjectReducer>>] {
     return [useContext(StateContext), useContext(UpdateContext)];
   }
 
-  return { Provider: StoreProvider, useFragment };
+  return { Provider: StoreProvider, useProject };
 }

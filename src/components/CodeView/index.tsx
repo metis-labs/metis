@@ -4,7 +4,7 @@ import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Converter } from '../../module/converter';
-import { useFragment } from '../../index';
+import { useProject } from '../../index';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -19,14 +19,14 @@ const useStyles = makeStyles(() =>
 
 export default function CodeView() {
   const classes = useStyles();
-  const [fragment] = useFragment();
+  const [project] = useProject();
   const [converter] = useState(new Converter());
   const [codeString, setCodeString] = useState('');
 
   useEffect(() => {
-    converter.update(fragment);
+    converter.update(project.fragments[project.selectedFragmentId]);
     setCodeString(converter.getResult());
-  }, [converter, fragment]);
+  }, [converter]);
 
   return (
     <div className={classes.root}>

@@ -1,6 +1,7 @@
-import { Block, BlockType, Dependency, DiagramInfo, DiagramType, Link, NetworkFragment } from './types';
+import { Block, BlockType, Dependency, DiagramInfo, DiagramType, Link, NetworkFragment, Project } from './types';
 
 const diagramInfo: DiagramInfo = {
+  id: 'test',
   name: 'test',
   type: DiagramType.Main,
 };
@@ -103,7 +104,27 @@ const testFragment = {
   dependencies,
   blocks,
   links,
-  offset: { x: 0, y: 0 },
 } as NetworkFragment;
 
-export default testFragment;
+const testFragment2 = {
+  diagramInfo: {
+    id: 'test2',
+    name: 'test2',
+    type: DiagramType.Module,
+  },
+  dependencies,
+  blocks: {},
+  links: {},
+};
+
+const testProject: Project = {
+  id: 'testProject',
+  name: 'testProject',
+  fragments: {
+    test: testFragment,
+    test2: testFragment2,
+  },
+  selectedFragmentId: 'test',
+};
+
+export default testProject;

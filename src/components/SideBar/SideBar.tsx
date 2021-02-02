@@ -9,7 +9,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import AddBoxIcon from '@material-ui/icons/AddBox';
-import { useFragment } from '../../index';
+import { useProject } from '../../index';
 import { BlockType } from '../../store/types';
 
 const drawerWidth = 60;
@@ -31,9 +31,10 @@ const useStyles = makeStyles(() =>
 
 export default function SideBar() {
   const classes = useStyles();
-  const [, updateFragment] = useFragment();
+  const [, updateProject] = useProject();
   const handleClick = () => {
-    updateFragment((fragment) => {
+    updateProject((project) => {
+      const fragment = project.fragments[project.selectedFragmentId];
       const length = Object.keys(fragment.blocks).length;
       const id = uuidv4();
       fragment.blocks[id] = {
@@ -54,7 +55,7 @@ export default function SideBar() {
           bias: false, // boolean
         },
       };
-      return fragment;
+      return project;
     });
   };
 

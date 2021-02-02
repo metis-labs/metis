@@ -43,6 +43,7 @@ export type Dependency = {
 };
 
 export type DiagramInfo = {
+  id: string;
   name: string;
   type: DiagramType;
   offset?: Position;
@@ -57,8 +58,16 @@ export type NetworkFragment = {
   selectedBlockID?: string;
 };
 
+export type Project = {
+  id: string;
+  name: string;
+  fragments: { [fragmentId: string]: NetworkFragment };
+  selectedFragmentId: string;
+};
+
 export const EmptyNetworkFragment = {
   diagramInfo: {
+    id: '',
     name: '',
     type: DiagramType.Main,
   },

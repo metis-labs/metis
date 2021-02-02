@@ -7,19 +7,19 @@ import reportWebVitals from 'reportWebVitals';
 import App from 'App';
 import theme from 'theme';
 import { createStore } from 'store/store';
-import testFragment from 'store/testFragment';
+import testProject from 'store/testFragment';
 
 import 'index.css';
 
-const FragmentStore = createStore(testFragment);
-export const useFragment = FragmentStore.useFragment;
+const ProjectStore = createStore(testProject);
+export const useProject = ProjectStore.useProject;
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>
     <CssBaseline />
-    <FragmentStore.Provider>
+    <ProjectStore.Provider>
       <App />
-    </FragmentStore.Provider>
+    </ProjectStore.Provider>
   </ThemeProvider>,
   document.getElementById('root'),
 );

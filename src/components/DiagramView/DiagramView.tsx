@@ -4,7 +4,7 @@ import { CanvasWidget } from '@projectstorm/react-canvas-core';
 
 import { Engine } from 'components/DiagramView/Engine';
 import { Position } from 'store/types';
-import { useFragment } from '../../index';
+import { useProject } from '../../index';
 import { MetisNodeModel } from './MetisNodeModel';
 import { MetisLinkModel } from './MetisLinkModel';
 import { DiagramModel } from '@projectstorm/react-diagrams';
@@ -22,7 +22,7 @@ const useStyles = makeStyles(() =>
 export default function DiagramView() {
   const classes = useStyles();
 
-  const [fragment, updateFragment] = useFragment();
+  const [project, updateProject] = useProject();
   const [engine] = useState(new Engine());
   const [lastFunction, setLastFunction] = useState<string>();
   const [lastBlockID, setLastBlockID] = useState<string>();
@@ -31,22 +31,25 @@ export default function DiagramView() {
   const handleMouseUp = useCallback(
     (event: any) => {
       if (lastFunction === 'selectionChanged' && lastBlockID) {
-        updateFragment((fragment) => {
+        updateProject((project) => {
+          const fragment = project.fragments[project.selectedFragmentId];
           fragment.selectedBlockID = lastBlockID;
-          return fragment;
+          return project;
         });
       } else if (lastFunction === 'positionChanged' && lastBlockID) {
-        updateFragment((fragment) => {
+        updateProject((project) => {
+          const fragment = project.fragments[project.selectedFragmentId];
           fragment.blocks[lastBlockID].position = lastPosition;
           fragment.selectedBlockID = lastBlockID;
-          return fragment;
+          return project;
         });
       }
     },
-    [lastFunction, lastBlockID, lastPosition, updateFragment],
+    [lastFunction, lastBlockID, lastPosition, updateProject],
   );
 
   useEffect(() => {
+    const fragment = project.fragments[project.selectedFragmentId];
     engine.update(fragment);
     const deregister = engine.registerListener((event: any, entity: any) => {
       setLastFunction(event.function);
@@ -55,14 +58,16 @@ export default function DiagramView() {
         if (event.function === 'positionChanged') {
           setLastPosition(event.entity.position);
         } else if (event.function === 'entityRemoved') {
-          updateFragment((fragment) => {
+          updateProject((project) => {
+            const fragment = project.fragments[project.selectedFragmentId];
             delete fragment.blocks[entity.getBlockID()];
-            return fragment;
+            return project;
           });
         }
       } else if (entity instanceof MetisLinkModel) {
         if (event.function === 'targetPortChanged') {
-          updateFragment((fragment) => {
+          updateProject((project) => {
+            const fragment = project.fragments[project.selectedFragmentId];
             let from, to;
             if (event.entity.sourcePort.getName() === 'in') {
               from = event.entity.targetPort.parent;
@@ -71,7 +76,7 @@ export default function DiagramView() {
               from = event.entity.sourcePort.parent;
               to = event.entity.targetPort.parent;
             } else {
-              return fragment;
+              return project;
             }
 
             fragment.links[entity.getID()] = {
@@ -79,33 +84,36 @@ export default function DiagramView() {
               from: from.getBlockID() as string,
               to: to.getBlockID() as string,
             };
-            return fragment;
+            return project;
           });
         } else if (event.function === 'entityRemoved') {
-          updateFragment((fragment) => {
+          updateProject((project) => {
+            const fragment = project.fragments[project.selectedFragmentId];
             delete fragment.links[entity.getLinkID()];
-            return fragment;
+            return project;
           });
         }
       } else if (entity instanceof DiagramModel) {
         if (event.function === 'offsetUpdated') {
-          updateFragment((fragment) => {
+          updateProject((project) => {
+            const fragment = project.fragments[project.selectedFragmentId];
             fragment.diagramInfo.offset = {
               x: entity.getOffsetX(),
               y: entity.getOffsetY(),
             };
-            return fragment;
+            return project;
           });
         } else if (event.function === 'zoomUpdated') {
-          updateFragment((fragment) => {
+          updateProject((project) => {
+            const fragment = project.fragments[project.selectedFragmentId];
             fragment.diagramInfo.zoom = event.zoom;
-            return fragment;
+            return project;
           });
         }
       }
     });
     return () => deregister();
-  }, [engine, fragment, updateFragment, setLastFunction, setLastBlockID, setLastPosition]);
+  }, [engine, project, updateProject, setLastFunction, setLastBlockID, setLastPosition]);
 
   return (
     <div onMouseUp={handleMouseUp}>

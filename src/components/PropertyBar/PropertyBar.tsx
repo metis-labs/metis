@@ -9,7 +9,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 
-import { useFragment } from '../../index';
+import { useProject } from '../../index';
 import { BlockType, PreservedBlockTypes } from 'store/types';
 
 const drawerWidth = 240;
@@ -49,18 +49,20 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function PropertyBar() {
   const classes = useStyles();
-  const [fragment, updateFragment] = useFragment();
+  const [project, updateProject] = useProject();
 
   const onChange = useCallback(
     (event: React.ChangeEvent<{ value: unknown }>) => {
-      updateFragment((fragment) => {
+      updateProject((project) => {
+        const fragment = project.fragments[project.selectedFragmentId];
         fragment.blocks[fragment.selectedBlockID].type = event.target.value as BlockType;
-        return fragment;
+        return project;
       });
     },
-    [updateFragment],
+    [updateProject],
   );
 
+  const fragment = project.fragments[project.selectedFragmentId];
   if (!fragment.selectedBlockID || !fragment.blocks[fragment.selectedBlockID]) {
     return <></>;
   }
