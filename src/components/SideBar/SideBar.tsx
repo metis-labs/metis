@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -32,32 +32,54 @@ const useStyles = makeStyles(() =>
 export default function SideBar() {
   const classes = useStyles();
   const [, updateProject] = useProject();
-  const handleClick = () => {
+  const handleAddBlockClick = useCallback((type: BlockType) => {
     updateProject((project) => {
       const fragment = project.fragments[project.selectedFragmentId];
-      const length = Object.keys(fragment.blocks).length;
+      const blockLength = Object.keys(fragment.blocks).length;
+      const position = { x: 100 + 10 * blockLength, y: 100 + 10 * blockLength };
       const id = uuidv4();
-      fragment.blocks[id] = {
-        id,
-        name: `test_${length + 1}`,
-        type: BlockType.Conv2d,
-        position: { x: 100 + 10 * length, y: 100 + 10 * length },
-        properties: {
-          repeats: 1,
-          inChannels: ' ',
-          outChannels: ' ',
-          kernelSize: ' ',
-          stride: 1,
-          padding: 0,
-          paddingMode: 'zeros', // categorical
-          dilation: 1,
-          groups: 1,
-          bias: false, // boolean
-        },
-      };
+      switch(type) {
+        case BlockType.In:
+          fragment.blocks[id] = {
+            id,
+            name: `test_in_${blockLength + 1}`,
+            type: BlockType.In,
+            position,
+            properties: {},
+          };
+          break;
+        case BlockType.Out:
+          fragment.blocks[id] = {
+            id,
+            name: `test_out_${blockLength + 1}`,
+            type: BlockType.Out,
+            position, properties: {},
+          };
+          break;
+        default:
+          fragment.blocks[id] = {
+            id,
+            name: `test_${blockLength + 1}`,
+            type: BlockType.Conv2d,
+            position,
+            properties: {
+              repeats: 1,
+              inChannels: ' ',
+              outChannels: ' ',
+              kernelSize: ' ',
+              stride: 1,
+              padding: 0,
+              paddingMode: 'zeros', // categorical
+              dilation: 1,
+              groups: 1,
+              bias: false, // boolean
+            },
+          };
+      }
+
       return project;
     });
-  };
+  }, [updateProject]);
 
   return (
     <Drawer
@@ -70,17 +92,17 @@ export default function SideBar() {
       <Toolbar />
       <div className={classes.drawerContainer}>
         <List>
-          <ListItem button>
+          <ListItem button onClick={() => handleAddBlockClick(BlockType.In)}>
             <ListItemIcon>
               <ArrowDownwardIcon />
             </ListItemIcon>
           </ListItem>
-          <ListItem button>
+          <ListItem button onClick={() => handleAddBlockClick(BlockType.Out)}>
             <ListItemIcon>
               <ArrowUpwardIcon />
             </ListItemIcon>
           </ListItem>
-          <ListItem button onClick={handleClick}>
+          <ListItem button onClick={() => handleAddBlockClick(BlockType.Conv2d)}>
             <ListItemIcon>
               <AddBoxIcon />
             </ListItemIcon>
