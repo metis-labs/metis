@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, {ChangeEvent, FocusEvent, useCallback} from 'react';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -10,7 +10,7 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 
 import { useProject } from '../../index';
-import { BlockType, PreservedBlockTypes } from 'store/types';
+import { BlockType, PreservedBlockTypes, PropertyValue } from 'store/types';
 
 const drawerWidth = 240;
 
@@ -38,16 +38,37 @@ export default function PropertyBar() {
   const classes = useStyles();
   const [project, updateProject] = useProject();
 
-  const onChange = useCallback(
-    (event: React.ChangeEvent<{ value: unknown }>) => {
-      updateProject((project) => {
-        const fragment = project.fragments[project.selectedFragmentId];
-        fragment.blocks[fragment.selectedBlockID].type = event.target.value as BlockType;
-        return project;
-      });
-    },
-    [updateProject],
-  );
+  const onChange = useCallback((event: ChangeEvent<{ value: unknown }>) => {
+    updateProject((project) => {
+      const fragment = project.fragments[project.selectedFragmentId];
+      fragment.blocks[fragment.selectedBlockID].type = event.target.value as BlockType;
+      return project;
+    });
+  }, [updateProject]);
+
+  const handleBlur = useCallback((event: FocusEvent<{value: unknown}>, key: string) => {
+    updateProject((project) => {
+      const fragment = project.fragments[project.selectedFragmentId];
+      fragment.blocks[fragment.selectedBlockID].properties[key] = valueTransition(event.target.value as string);
+      return project;
+    });
+  }, [updateProject]);
+
+  const handleKeyDown = useCallback((event: any) => {
+    event.nativeEvent.stopImmediatePropagation();
+  }, []);
+
+  const valueTransition = (value: string): PropertyValue => {
+    if (value === 'True' || value === 'true') {
+      return true;
+    } else if (value === 'False' || value === 'false') {
+      return false;
+    } else if (!isNaN(+value)) {
+      return +value;
+    } else {
+      return value;
+    }
+  }
 
   const fragment = project.fragments[project.selectedFragmentId];
   if (!fragment.selectedBlockID || !fragment.blocks[fragment.selectedBlockID]) {
@@ -75,10 +96,16 @@ export default function PropertyBar() {
           ))}
         </Select>
       </FormControl>
-      <FormControl className={classes.formControl}>
+      <FormControl className={classes.formControl} >
         {selectedBlock.properties &&
           Object.entries(selectedBlock.properties).map(([key, value]) => (
-            <TextField key={key} label={key} value={value} />
+            <TextField
+              key={key}
+              label={key}
+              defaultValue={value}
+              onBlur={(event) => handleBlur(event, key)}
+              onKeyDown={handleKeyDown}
+            />
           ))}
       </FormControl>
     </Drawer>
