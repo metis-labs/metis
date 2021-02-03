@@ -114,7 +114,7 @@ export default function PropertyBar() {
           </Select>
           {selectedBlock.name &&
           <TextField
-            label="Instance Name"
+            label="Instance name"
             defaultValue={selectedBlock.name}
             onBlur={(event) => handlePropertyBlur(event, "name")}
             onKeyDown={handleKeyDown}
@@ -122,7 +122,7 @@ export default function PropertyBar() {
           }
           {selectedBlock.repeats &&
             <TextField
-              label="repeats"
+              label="Repeats"
               defaultValue={selectedBlock.repeats}
               onBlur={(event) => handlePropertyBlur(event, "repeats")}
               onKeyDown={handleKeyDown}
@@ -130,8 +130,8 @@ export default function PropertyBar() {
           }
         </FormControl>
       </div>
-      {selectedBlock.parameters && [
-        <Divider className={classes.divider}/>,
+      {selectedBlock.parameters && <>
+        <Divider className={classes.divider}/>
         <div className={classes.section}>
           <Typography variant="h6">Parameters</Typography>
           <FormControl className={classes.formControl}>
@@ -146,7 +146,7 @@ export default function PropertyBar() {
             ))}
           </FormControl>
         </div>
-        ]
+        </>
       }
     </Drawer>
   );

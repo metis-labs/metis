@@ -40,6 +40,7 @@ export class Engine {
         blockType: block.type,
         name: block.name,
         blockID: block.id,
+        repeats: block.repeats,
       });
       node.setPosition(block.position.x, block.position.y);
       nodes.push(node);

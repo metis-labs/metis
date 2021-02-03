@@ -8,12 +8,14 @@ export interface MetisNodeModelOptions extends BaseModelOptions {
   blockID: string;
   blockType: BlockType;
   name: string;
+  repeats: number;
 }
 
 export class MetisNodeModel extends NodeModel {
   private readonly blockID: string;
   private blockType: BlockType;
   private name: string;
+  private readonly repeats: number;
   private readonly inPort?: MetisPortModel;
   private readonly outPort?: MetisPortModel;
 
@@ -25,6 +27,7 @@ export class MetisNodeModel extends NodeModel {
     this.blockID = options.blockID;
     this.blockType = options.blockType;
     this.name = options.name;
+    this.repeats = options.repeats;
 
     if (this.blockType !== BlockType.In) {
       this.inPort = new MetisPortModel({
@@ -77,5 +80,9 @@ export class MetisNodeModel extends NodeModel {
     super.deserialize(event);
     this.blockType = event.data.blockType as BlockType;
     this.name = event.data.name as string;
+  }
+
+  getRepeats() {
+    return this.repeats;
   }
 }
