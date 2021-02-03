@@ -78,6 +78,7 @@ const useStyles = makeStyles((theme: Theme) =>
       height: 264,
       flexGrow: 1,
       maxWidth: 400,
+      margin: theme.spacing(1.5),
     },
     drawer: {
       width: drawerWidth,
@@ -88,7 +89,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: drawerWidth,
     },
     margin: {
-      margin: theme.spacing(1),
+      margin: theme.spacing(1.5),
     },
   }),
 );
@@ -118,7 +119,7 @@ export default function FileTreeBar() {
             <AccountCircle />
           </Grid>
           <Grid item>
-            <TextField id="input-with-icon-grid" label="With a grid" />
+            <TextField id="input-with-icon-grid" label="Search" />
           </Grid>
         </Grid>
       </div>

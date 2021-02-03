@@ -21,6 +21,8 @@ export class Converter {
       return;
     }
 
+    this.codeString = '';
+
     const importTemplate = new ImportConverter();
     importTemplate.update(fragment.dependencies);
 

@@ -12,10 +12,11 @@ const useStyles = makeStyles(() =>
       top: '64px',
       left: 0,
       width: '100%',
-      height: '30px',
-    },
-    toggleView: {
-      float: 'right',
+      height: '60px',
+      padding: '10px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center'
     },
   }),
 );
