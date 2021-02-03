@@ -8,6 +8,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 
 import { useProject } from '../../index';
 import { BlockType, PreservedBlockTypes, PropertyValue } from 'store/types';
@@ -22,6 +23,12 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     drawerPaper: {
       width: drawerWidth,
+    },
+    divider: {
+      margin: '15px 0',
+    },
+    section: {
+      margin: theme.spacing(1, 1),
     },
     // necessary for content to be below app bar
     formControl: {
@@ -38,7 +45,7 @@ export default function PropertyBar() {
   const classes = useStyles();
   const [project, updateProject] = useProject();
 
-  const onChange = useCallback((event: ChangeEvent<{ value: unknown }>) => {
+  const onTypeChange = useCallback((event: ChangeEvent<{ value: unknown }>) => {
     updateProject((project) => {
       const fragment = project.fragments[project.selectedFragmentId];
       fragment.blocks[fragment.selectedBlockID].type = event.target.value as BlockType;
@@ -46,10 +53,18 @@ export default function PropertyBar() {
     });
   }, [updateProject]);
 
-  const handleBlur = useCallback((event: FocusEvent<{value: unknown}>, key: string) => {
+  const handlePropertyBlur = useCallback((event: FocusEvent<{value: unknown}>, key: string) => {
     updateProject((project) => {
       const fragment = project.fragments[project.selectedFragmentId];
-      fragment.blocks[fragment.selectedBlockID].properties[key] = valueTransition(event.target.value as string);
+      fragment.blocks[fragment.selectedBlockID][key] = valueTransition(event.target.value as string);
+      return project;
+    });
+  }, [updateProject]);
+
+  const handleParameterBlur = useCallback((event: FocusEvent<{value: unknown}>, key: string) => {
+    updateProject((project) => {
+      const fragment = project.fragments[project.selectedFragmentId];
+      fragment.blocks[fragment.selectedBlockID].parameters[key] = valueTransition(event.target.value as string);
       return project;
     });
   }, [updateProject]);
@@ -72,7 +87,7 @@ export default function PropertyBar() {
 
   const fragment = project.fragments[project.selectedFragmentId];
   if (!fragment.selectedBlockID || !fragment.blocks[fragment.selectedBlockID]) {
-    return <></>;
+    return null;
   }
 
   const selectedBlock = fragment.blocks[fragment.selectedBlockID];
@@ -80,34 +95,59 @@ export default function PropertyBar() {
     <Drawer className={classes.drawer} variant="permanent" classes={{ paper: classes.drawerPaper }} anchor="right">
       <Toolbar />
       <Divider />
-      <FormControl className={classes.formControl}>
-        <InputLabel htmlFor="grouped-native-select">Type</InputLabel>
-        <Select
-          id="grouped-select"
-          value={selectedBlock.type}
-          className={classes.formSelect}
-          onChange={onChange}
-          disabled={PreservedBlockTypes.has(selectedBlock.type)}
-        >
-          {Object.keys(BlockType).map((item) => (
-            <MenuItem key={item} value={item} disabled={PreservedBlockTypes.has(item as BlockType)}>
-              {item}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      <FormControl className={classes.formControl} >
-        {selectedBlock.properties &&
-          Object.entries(selectedBlock.properties).map(([key, value]) => (
+      <div className={classes.section}>
+        <Typography variant="h6">Properties</Typography>
+        <FormControl className={classes.formControl}>
+          <InputLabel htmlFor="grouped-native-select">Type</InputLabel>
+          <Select
+            id="grouped-select"
+            value={selectedBlock.type}
+            className={classes.formSelect}
+            onChange={onTypeChange}
+            disabled={PreservedBlockTypes.has(selectedBlock.type)}
+          >
+            {Object.keys(BlockType).map((item) => (
+              <MenuItem key={item} value={item} disabled={PreservedBlockTypes.has(item as BlockType)}>
+                {item}
+              </MenuItem>
+            ))}
+          </Select>
+          {selectedBlock.name &&
+          <TextField
+            label="Instance Name"
+            defaultValue={selectedBlock.name}
+            onBlur={(event) => handlePropertyBlur(event, "name")}
+            onKeyDown={handleKeyDown}
+          />
+          }
+          {selectedBlock.repeats &&
             <TextField
-              key={key}
-              label={key}
-              defaultValue={value}
-              onBlur={(event) => handleBlur(event, key)}
+              label="repeats"
+              defaultValue={selectedBlock.repeats}
+              onBlur={(event) => handlePropertyBlur(event, "repeats")}
               onKeyDown={handleKeyDown}
             />
-          ))}
-      </FormControl>
+          }
+        </FormControl>
+      </div>
+      {selectedBlock.parameters && [
+        <Divider className={classes.divider}/>,
+        <div className={classes.section}>
+          <Typography variant="h6">Parameters</Typography>
+          <FormControl className={classes.formControl}>
+            {Object.entries(selectedBlock.parameters).map(([key, value]) => (
+              <TextField
+                key={key}
+                label={key}
+                defaultValue={value}
+                onBlur={(event) => handleParameterBlur(event, key)}
+                onKeyDown={handleKeyDown}
+              />
+            ))}
+          </FormControl>
+        </div>
+        ]
+      }
     </Drawer>
   );
 }

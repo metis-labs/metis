@@ -26,7 +26,8 @@ export type Block = {
   name: string;
   type: BlockType;
   position: Position;
-  properties?: Properties;
+  repeats?: number;
+  parameters?: Properties;
 };
 
 export type Link = {

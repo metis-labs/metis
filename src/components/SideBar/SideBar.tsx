@@ -45,7 +45,7 @@ export default function SideBar() {
             name: `test_in_${blockLength + 1}`,
             type: BlockType.In,
             position,
-            properties: {},
+            parameters: {},
           };
           break;
         case BlockType.Out:
@@ -53,7 +53,8 @@ export default function SideBar() {
             id,
             name: `test_out_${blockLength + 1}`,
             type: BlockType.Out,
-            position, properties: {},
+            position,
+            parameters: {},
           };
           break;
         default:
@@ -62,8 +63,8 @@ export default function SideBar() {
             name: `test_${blockLength + 1}`,
             type: BlockType.Conv2d,
             position,
-            properties: {
-              repeats: 1,
+            repeats: 1,
+            parameters: {
               inChannels: ' ',
               outChannels: ' ',
               kernelSize: ' ',

@@ -36,8 +36,8 @@ const blocks: { [id: string]: Block } = {
     name: 'conv_1',
     type: BlockType.Conv2d,
     position: { x: 100, y: 200 },
-    properties: {
-      repeats: 1,
+    repeats: 1,
+    parameters: {
       inChannels: 3,
       outChannels: 1,
       kernelSize: 3,
@@ -54,8 +54,8 @@ const blocks: { [id: string]: Block } = {
     name: 'maxpool_1',
     type: BlockType.MaxPool2d,
     position: { x: 100, y: 300 },
-    properties: {
-      repeats: 1,
+    repeats: 1,
+    parameters: {
       kernelSize: 3,
       stride: 2,
       padding: 0,
@@ -69,8 +69,8 @@ const blocks: { [id: string]: Block } = {
     name: 'relu',
     type: BlockType.ReLU,
     position: { x: 100, y: 400 },
-    properties: {
-      repeats: 1,
+    repeats: 1,
+    parameters: {
       inplace: false, // boolean
     },
   },

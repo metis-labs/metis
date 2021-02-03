@@ -66,7 +66,7 @@ export class InitConverter {
       const camlAttr = attr.name.replace(/_([a-z])/g, function (g) {
         return g[1].toUpperCase();
       });
-      const attrValue = block.properties[camlAttr];
+      const attrValue = block.parameters[camlAttr];
       // TODO: Need convert function to validate equality between default-value and assigned-value
       if (attr.default === attrValue) {
         continue;
