@@ -45,7 +45,6 @@ export default function SideBar() {
             name: `test_in_${blockLength + 1}`,
             type: BlockType.In,
             position,
-            parameters: {},
           };
           break;
         case BlockType.Out:
@@ -54,7 +53,6 @@ export default function SideBar() {
             name: `test_out_${blockLength + 1}`,
             type: BlockType.Out,
             position,
-            parameters: {},
           };
           break;
         default:

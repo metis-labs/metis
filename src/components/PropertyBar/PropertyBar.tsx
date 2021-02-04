@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FocusEvent, useCallback} from 'react';
+import React, {ChangeEvent, useCallback} from 'react';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) =>
     // necessary for content to be below app bar
     formControl: {
       margin: theme.spacing(1),
-      minWidth: 120,
+      width: 200,
     },
     formSelect: {
       marginTop: 16,
