@@ -5,7 +5,7 @@ import Divider from '@material-ui/core/Divider';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 import TreeView from '@material-ui/lab/TreeView';
-import FileTreeItem, { StyledTreeItem } from './fileTreeItem';
+import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 
 import { useProject } from '../../index';
 
@@ -99,7 +99,7 @@ export default function FileTreeBar() {
       >
         <StyledTreeItem nodeId={project.id} label={project.name}>
           {Object.values(project.fragments).map((fragment) => (
-            <FileTreeItem fragment={fragment} />
+            <FileTreeItem key={fragment.diagramInfo.id} fragment={fragment} />
           ))}
         </StyledTreeItem>
       </TreeView>
