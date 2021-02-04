@@ -2,16 +2,10 @@ import React, { ChangeEvent, useCallback } from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
 import Divider from '@material-ui/core/Divider';
-import { createStyles, makeStyles, Theme, fade, withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import { AccountCircle } from '@material-ui/icons';
-import TextField from '@material-ui/core/TextField';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 import TreeView from '@material-ui/lab/TreeView';
-import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
-import Collapse from '@material-ui/core/Collapse';
-import { useSpring, animated } from 'react-spring/web.cjs'; // web.cjs is required for IE 11 support
-import { TransitionProps } from '@material-ui/core/transitions';
+import FileTreeItem, { StyledTreeItem } from './fileTreeItem';
 
 import { useProject } from '../../index';
 
@@ -42,38 +36,15 @@ function CloseSquare(props: SvgIconProps) {
   );
 }
 
-function TransitionComponent(props: TransitionProps) {
-  const style = useSpring({
-    from: { opacity: 0, transform: 'translate3d(20px,0,0)' },
-    to: { opacity: props.in ? 1 : 0, transform: `translate3d(${props.in ? 0 : 20}px,0,0)` },
-  });
-
-  return (
-    <animated.div style={style}>
-      <Collapse {...props} />
-    </animated.div>
-  );
-}
-
 const drawerWidth = 240;
-
-const StyledTreeItem = withStyles((theme: Theme) =>
-  createStyles({
-    iconContainer: {
-      '& .close': {
-        opacity: 0.3,
-      },
-    },
-    group: {
-      marginLeft: 7,
-      paddingLeft: 18,
-      borderLeft: `1px dashed ${fade(theme.palette.text.primary, 0.4)}`,
-    },
-  }),
-)((props: TreeItemProps) => <TreeItem {...props} TransitionComponent={TransitionComponent} />);
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    treeItemStyle: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
     root: {
       height: 264,
       flexGrow: 1,
@@ -91,12 +62,16 @@ const useStyles = makeStyles((theme: Theme) =>
     margin: {
       margin: theme.spacing(1.5),
     },
+    buttonContainer: {
+      position: 'relative',
+    },
   }),
 );
 
 export default function FileTreeBar() {
   const classes = useStyles();
   const [project, updateProject] = useProject();
+
   const handleNodeSelect = useCallback(
     (event: ChangeEvent, nodeId: any) => {
       updateProject((project) => {
@@ -113,16 +88,6 @@ export default function FileTreeBar() {
     <Drawer className={classes.drawer} variant="permanent" classes={{ paper: classes.drawerPaper }}>
       <Toolbar />
       <Divider />
-      <div className={classes.margin}>
-        <Grid container spacing={1} alignItems="flex-end">
-          <Grid item>
-            <AccountCircle />
-          </Grid>
-          <Grid item>
-            <TextField id="input-with-icon-grid" label="Search" />
-          </Grid>
-        </Grid>
-      </div>
       <TreeView
         className={classes.root}
         selected={[project.selectedFragmentId]}
@@ -134,11 +99,7 @@ export default function FileTreeBar() {
       >
         <StyledTreeItem nodeId={project.id} label={project.name}>
           {Object.values(project.fragments).map((fragment) => (
-            <StyledTreeItem
-              key={fragment.diagramInfo.id}
-              nodeId={fragment.diagramInfo.id}
-              label={fragment.diagramInfo.name}
-            />
+            <FileTreeItem fragment={fragment} />
           ))}
         </StyledTreeItem>
       </TreeView>
