@@ -19,8 +19,6 @@
   box-shadow: 0 1px 5px 0 #888;
   opacity: 0.9;
   padding: 4px;
-  align-items: flex-start;
-  justify-content: space-between;
 
   &.selected {
     border-color: #00c0ff;
@@ -31,16 +29,20 @@
 .metis-node-type {
   font-size: 8px;
   font-weight: bold;
+  height: 30%;
 }
 
 .metis-node-name {
   font-size: 16px;
   text-align: center;
+  align-items: center;
+  height: 40%;
 }
 
 .metis-node-repeats {
   float: right;
-  font-size: 1px;
+  font-size: 10px;
+  height: 20%;
 }
 
 .circle-port {
