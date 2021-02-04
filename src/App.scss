@@ -12,7 +12,7 @@
 
 .metis-node {
   width: 120px;
-  height: 50px;
+  height: 60px;
   border: solid 1px darkgray;
   border-radius: 4px;
   background-color: white;
@@ -36,7 +36,9 @@
   font-size: 16px;
   text-align: center;
   align-items: center;
-  height: 40%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .metis-node-repeats {
