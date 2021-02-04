@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { DiagramEngine, PortWidget } from '@projectstorm/react-diagrams-core';
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 import { MetisNodeModel } from 'components/DiagramView/MetisNodeModel';
 import { BlockType } from 'store/types';
@@ -33,12 +33,12 @@ export class MetisNodeWidget extends React.Component<MetisNodeWidgetProps, Metis
         </div>
         {node.getBlockType() !== BlockType.In && (
           <PortWidget className="metis-node-port-in" engine={engine} port={node.getInPort()}>
-            <ArrowUpwardIcon className="circle-port" fontSize="inherit" />
+            <KeyboardArrowUpIcon className="circle-port" fontSize="inherit" />
           </PortWidget>
         )}
         {node.getBlockType() !== BlockType.Out && (
           <PortWidget className="metis-node-port-out" engine={engine} port={node.getOutPort()}>
-            <ArrowDownwardIcon className="circle-port" fontSize="inherit" />
+            <KeyboardArrowDownIcon className="circle-port" fontSize="inherit" />
           </PortWidget>
         )}
       </div>

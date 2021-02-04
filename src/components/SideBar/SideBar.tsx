@@ -6,9 +6,9 @@ import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import AddBoxIcon from '@material-ui/icons/AddBox';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import AddIcon from '@material-ui/icons/Add';
 import { useProject } from '../../index';
 import { BlockType } from '../../store/types';
 
@@ -25,6 +25,10 @@ const useStyles = makeStyles(() =>
     },
     drawerContainer: {
       overflow: 'hidden',
+    },
+    button: {
+      border: '1px solid gray',
+      borderRadius: '3px',
     },
   }),
 );
@@ -93,17 +97,17 @@ export default function SideBar() {
         <List>
           <ListItem button onClick={() => handleAddBlockClick(BlockType.In)}>
             <ListItemIcon>
-              <ArrowDownwardIcon />
+              <KeyboardArrowDownIcon className={classes.button} />
             </ListItemIcon>
           </ListItem>
           <ListItem button onClick={() => handleAddBlockClick(BlockType.Out)}>
             <ListItemIcon>
-              <ArrowUpwardIcon />
+              <KeyboardArrowUpIcon className={classes.button} />
             </ListItemIcon>
           </ListItem>
           <ListItem button onClick={() => handleAddBlockClick(BlockType.Conv2d)}>
             <ListItemIcon>
-              <AddBoxIcon />
+              <AddIcon className={classes.button} />
             </ListItemIcon>
           </ListItem>
         </List>
