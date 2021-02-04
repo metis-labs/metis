@@ -53,7 +53,7 @@ export default function PropertyBar() {
     });
   }, [updateProject]);
 
-  const handlePropertyBlur = useCallback((event: FocusEvent<{value: unknown}>, key: string) => {
+  const handlePropertyChange = useCallback((event: ChangeEvent<{ value: unknown}>, key: string) => {
     updateProject((project) => {
       const fragment = project.fragments[project.selectedFragmentId];
       fragment.blocks[fragment.selectedBlockID][key] = valueTransition(event.target.value as string);
@@ -61,7 +61,7 @@ export default function PropertyBar() {
     });
   }, [updateProject]);
 
-  const handleParameterBlur = useCallback((event: FocusEvent<{value: unknown}>, key: string) => {
+  const handleParameterChange = useCallback((event: ChangeEvent<{value: unknown}>, key: string) => {
     updateProject((project) => {
       const fragment = project.fragments[project.selectedFragmentId];
       fragment.blocks[fragment.selectedBlockID].parameters[key] = valueTransition(event.target.value as string);
@@ -112,19 +112,19 @@ export default function PropertyBar() {
               </MenuItem>
             ))}
           </Select>
-          {selectedBlock.name &&
+          {selectedBlock.name !== undefined &&
           <TextField
             label="Instance name"
-            defaultValue={selectedBlock.name}
-            onBlur={(event) => handlePropertyBlur(event, "name")}
+            value={selectedBlock.name}
+            onChange={(event) => handlePropertyChange(event, "name")}
             onKeyDown={handleKeyDown}
           />
           }
-          {selectedBlock.repeats &&
+          {selectedBlock.repeats !== undefined &&
             <TextField
               label="Repeats"
-              defaultValue={selectedBlock.repeats}
-              onBlur={(event) => handlePropertyBlur(event, "repeats")}
+              value={selectedBlock.repeats}
+              onChange={(event) => handlePropertyChange(event, "repeats")}
               onKeyDown={handleKeyDown}
             />
           }
@@ -139,8 +139,8 @@ export default function PropertyBar() {
               <TextField
                 key={key}
                 label={key}
-                defaultValue={value}
-                onBlur={(event) => handleParameterBlur(event, key)}
+                value={value}
+                onChange={(event) => handleParameterChange(event, key)}
                 onKeyDown={handleKeyDown}
               />
             ))}
