@@ -7,6 +7,7 @@ export enum BlockType {
   In = 'In',
   Out = 'Out',
   Conv2d = 'Conv2d',
+  BatchNorm2d = 'BatchNorm2d',
   ReLU = 'ReLU',
   MaxPool2d = 'MaxPool2d',
 }

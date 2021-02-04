@@ -39,5 +39,27 @@
       "attributes": [{ "name": "inplace", "default": false, "visible": false }],
       "category": "Activation"
     }
+  },
+  {
+    "name": "torch.nn.modules.batchnorm.BatchNorm2d",
+    "abbrev": "BatchNorm2d",
+    "schema": {
+      "attributes": [
+        { "name": "num_features", "visible": false },
+        { "name": "eps", "default": 1e-5 },
+        { "name": "momentum", "default": 0.1 },
+        { "name": "affine", "default": true },
+        { "name": "track_running_stats", "default": true }
+      ],
+      "category": "Normalization",
+      "inputs": [
+        { "name": "input" },
+        { "name": "weight" },
+        { "name": "bias" },
+        { "name": "running_mean" },
+        { "name": "running_var" },
+        { "name": "num_batches_tracked", "visible": false }
+      ]
+    }
   }
 ]
