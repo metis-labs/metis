@@ -1,0 +1,19 @@
+syntax = "proto3";
+package api;
+
+service Metis {
+    rpc CreateDiagram (CreateDiagramRequest) returns (CreateDiagramResponse);
+}
+
+message CreateDiagramRequest {
+    string diagram_name = 1;
+}
+
+message CreateDiagramResponse {
+    Diagram diagram = 1;
+}
+
+message Diagram {
+    uint32 id = 1;
+    string name = 2;
+}

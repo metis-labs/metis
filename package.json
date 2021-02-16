@@ -12,6 +12,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "@types/google-protobuf": "^3.7.4",
     "@types/jest": "^26.0.15",
     "@types/lodash": "^4.14.168",
     "@types/material-ui": "^0.21.8",
@@ -20,6 +21,8 @@
     "@types/react-dom": "^16.9.8",
     "closest": "^0.0.1",
     "dagre": "^0.8.5",
+    "google-protobuf": "^3.15.0-rc.1",
+    "grpc-web": "^1.2.1",
     "husky": "^4.3.8",
     "lint-staged": "^10.5.3",
     "lodash": "^4.17.20",
@@ -41,7 +44,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build:proto": "protoc --js_out=import_style=commonjs:. --grpc-web_out=import_style=commonjs+dts,mode=grpcwebtext:. ./src/api/metis.proto"
   },
   "eslintConfig": {
     "extends": [

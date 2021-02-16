@@ -2,6 +2,12 @@
 
 Neural Network Design Tool
 
+## Building Metis
+
+For generating proto messages and the service client stub classes with protoc and the protoc-gen-grpc-web.
+
+How to install protoc-gen-grpc-web: https://github.com/grpc/grpc-web#code-generator-plugin
+
 ## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

@@ -9,6 +9,9 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import AddIcon from '@material-ui/icons/Add';
+
+import { CreateDiagramRequest } from 'api/metis_pb';
+import { MetisPromiseClient } from 'api/metis_grpc_web_pb';
 import { useProject } from '../../index';
 import { BlockType } from '../../store/types';
 
@@ -84,6 +87,15 @@ export default function SideBar() {
     });
   }, [updateProject]);
 
+  const callTestRPC = useCallback(() => {
+    const client = new MetisPromiseClient('http://localhost:8080');
+    const req = new CreateDiagramRequest();
+    req.setDiagramName("HelloWorld");
+    client.createDiagram(req).then((res) => {
+      console.log(res.getDiagram().getName())
+    });
+  }, []);
+
   return (
     <Drawer
       className={classes.drawer}
@@ -106,6 +118,11 @@ export default function SideBar() {
             </ListItemIcon>
           </ListItem>
           <ListItem button onClick={() => handleAddBlockClick(BlockType.Conv2d)}>
+            <ListItemIcon>
+              <AddIcon className={classes.button} />
+            </ListItemIcon>
+          </ListItem>
+          <ListItem button onClick={() => callTestRPC()}>
             <ListItemIcon>
               <AddIcon className={classes.button} />
             </ListItemIcon>
