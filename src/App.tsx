@@ -1,43 +1,17 @@
-import React, { useState } from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-import NavBar from 'components/NavBar';
-import SideBar from 'components/SideBar';
-import FileTreeBar from './components/FileTreeBar';
-import DiagramView from 'components/DiagramView';
-import CodeView from 'components/CodeView';
-import StatusBar from 'components/StatusBar';
-import PropertyBar from 'components/PropertyBar';
+import ProjectIntroPage from 'pages/ProjectIntroPage';
+import ProjectPage from 'pages/ProjectPage';
 
 import 'App.scss';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    root: {
-      display: 'flex',
-    },
-    content: {
-      position: 'relative',
-      flexGrow: 1,
-    },
-  }),
-);
-
 function App() {
-  const classes = useStyles();
-  const [viewMode, setViewMode] = useState('diagram');
-
   return (
-    <div className={classes.root}>
-      <NavBar />
-      <SideBar />
-      <FileTreeBar />
-      <main className={classes.content}>
-        {viewMode === 'diagram' ? <DiagramView /> : <CodeView />}
-        <StatusBar viewMode={viewMode} setViewMode={setViewMode} />
-      </main>
-      <PropertyBar />
-    </div>
+    <Router>
+      <Route path="/" exact component={ProjectIntroPage} />
+      <Route path="/:projectID" exact component={ProjectPage} />
+    </Router>
   );
 }
 

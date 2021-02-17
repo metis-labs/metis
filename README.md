@@ -2,11 +2,22 @@
 
 Neural Network Design Tool
 
+## Testing Metis
+
+Testing metis with Envoy and MongoDB.
+Start MongoDB and Envoy proxy in a terminal session.
+
+```
+docker-compose -f docker/docker-compose.yml up --build -d
+```
+
 ## Building Metis
 
 For generating proto messages and the service client stub classes with protoc and the protoc-gen-grpc-web.
 
 How to install protoc-gen-grpc-web: https://github.com/grpc/grpc-web#code-generator-plugin
+
+> Primary "source of truth" location of protobuf message is in [metis-server](https://oss.navercorp.com/metis/metis-server/tree/master/api). We manage the messages in the repository.
 
 ## Getting Started with Create React App
 

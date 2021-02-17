@@ -3,6 +3,7 @@ package api;
 
 service Metis {
     rpc CreateModel (CreateModelRequest) returns (CreateModelResponse);
+    rpc ListProjects (ListProjectsRequest) returns (ListProjectsResponse);
 }
 
 message CreateModelRequest {
@@ -13,7 +14,65 @@ message CreateModelResponse {
     Model model = 1;
 }
 
-message Model {
-    uint32 id = 1;
+message ListProjectsRequest {
+
+}
+
+message ListProjectsResponse {
+    repeated Project projects = 1;
+}
+
+message Project {
+    string id = 1;
     string name = 2;
+    map<string, Model> models = 3;
+    string selectedBlockID = 4;
+}
+
+enum DiagramType {
+    MAIN = 0;
+    MODULE = 1;
+}
+
+message Position {
+    int32 x = 1;
+    int32 y = 2;
+}
+
+message DiagramInfo {
+    Position offset = 1;
+    float zoom = 2;
+}
+
+message Block {
+    string id = 1;
+    string name = 2;
+    string type = 3;
+    Position position = 4;
+    int32 repeats = 5;
+    map<string, string> parameters = 6;
+}
+
+message Link {
+    string id = 1;
+    string from = 2;
+    string to = 3;
+}
+
+message Dependency {
+    string id = 1;
+    string name = 2;
+    string alias = 3;
+    string package = 4;
+}
+
+message Model {
+    string id = 1;
+    string name = 2;
+    DiagramType type = 3;
+    DiagramInfo diagramInfo = 4;
+    map<string, Dependency> dependencies = 5;
+    map<string, Block> blocks = 6;
+    map<string, Link> links = 7;
+    string selected_block_id = 8;
 }

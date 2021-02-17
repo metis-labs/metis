@@ -10,8 +10,6 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import AddIcon from '@material-ui/icons/Add';
 
-import { CreateModelRequest } from 'api/metis_pb';
-import { MetisPromiseClient } from 'api/metis_grpc_web_pb';
 import { useProject } from '../../index';
 import { BlockType } from '../../store/types';
 
@@ -39,63 +37,56 @@ const useStyles = makeStyles(() =>
 export default function SideBar() {
   const classes = useStyles();
   const [, updateProject] = useProject();
-  const handleAddBlockClick = useCallback((type: BlockType) => {
-    updateProject((project) => {
-      const model = project.models[project.selectedModelID];
-      const blockLength = Object.keys(model.blocks).length;
-      const position = { x: 100 + 10 * blockLength, y: 100 + 10 * blockLength };
-      const id = uuidv4();
-      switch(type) {
-        case BlockType.In:
-          model.blocks[id] = {
-            id,
-            name: `test_in_${blockLength + 1}`,
-            type: BlockType.In,
-            position,
-          };
-          break;
-        case BlockType.Out:
-          model.blocks[id] = {
-            id,
-            name: `test_out_${blockLength + 1}`,
-            type: BlockType.Out,
-            position,
-          };
-          break;
-        default:
-          model.blocks[id] = {
-            id,
-            name: `test_${blockLength + 1}`,
-            type: BlockType.Conv2d,
-            position,
-            repeats: 1,
-            parameters: {
-              inChannels: ' ',
-              outChannels: ' ',
-              kernelSize: ' ',
-              stride: 1,
-              padding: 0,
-              paddingMode: 'zeros', // categorical
-              dilation: 1,
-              groups: 1,
-              bias: false, // boolean
-            },
-          };
-      }
+  const handleAddBlockClick = useCallback(
+    (type: BlockType) => {
+      updateProject((project) => {
+        const model = project.models[project.selectedModelID];
+        const blockLength = Object.keys(model.blocks).length;
+        const position = { x: 100 + 10 * blockLength, y: 100 + 10 * blockLength };
+        const id = uuidv4();
+        switch (type) {
+          case BlockType.In:
+            model.blocks[id] = {
+              id,
+              name: `test_in_${blockLength + 1}`,
+              type: BlockType.In,
+              position,
+            };
+            break;
+          case BlockType.Out:
+            model.blocks[id] = {
+              id,
+              name: `test_out_${blockLength + 1}`,
+              type: BlockType.Out,
+              position,
+            };
+            break;
+          default:
+            model.blocks[id] = {
+              id,
+              name: `test_${blockLength + 1}`,
+              type: BlockType.Conv2d,
+              position,
+              repeats: 1,
+              parameters: {
+                inChannels: ' ',
+                outChannels: ' ',
+                kernelSize: ' ',
+                stride: 1,
+                padding: 0,
+                paddingMode: 'zeros', // categorical
+                dilation: 1,
+                groups: 1,
+                bias: false, // boolean
+              },
+            };
+        }
 
-      return project;
-    });
-  }, [updateProject]);
-
-  const callTestRPC = useCallback(() => {
-    const client = new MetisPromiseClient('http://localhost:8080');
-    const req = new CreateModelRequest();
-    req.setModelName("HelloWorld");
-    client.createModel(req).then((res) => {
-      console.log('hit');
-      console.log(res.getModel().getName())
-    });
-  }, []);
+        return project;
+      });
+    },
+    [updateProject],
+  );
 
   return (
     <Drawer
@@ -119,11 +110,6 @@ export default function SideBar() {
             </ListItemIcon>
           </ListItem>
           <ListItem button onClick={() => handleAddBlockClick(BlockType.Conv2d)}>
-            <ListItemIcon>
-              <AddIcon className={classes.button} />
-            </ListItemIcon>
-          </ListItem>
-          <ListItem button onClick={() => callTestRPC()}>
             <ListItemIcon>
               <AddIcon className={classes.button} />
             </ListItemIcon>

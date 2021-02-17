@@ -64,7 +64,7 @@ export type Project = {
   id: string;
   name: string;
   models: { [modelID: string]: Model };
-  selectedModelID: string;
+  selectedModelID?: string;
 };
 
 export const EmptyModel = {
