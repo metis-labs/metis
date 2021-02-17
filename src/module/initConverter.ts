@@ -1,4 +1,4 @@
-import { Block, BlockType, DiagramInfo, EmptyNetworkFragment } from '../store/types';
+import { Block, BlockType, Model, EmptyModel } from '../store/types';
 import metadata from './pytorch-metadata.json';
 
 export class InitConverter {
@@ -12,7 +12,7 @@ export class InitConverter {
   private options: string;
 
   constructor() {
-    this.blocks = EmptyNetworkFragment.blocks;
+    this.blocks = EmptyModel.blocks;
     this.bodyBlockList = [];
     this.inputBlockList = [];
     this.outputBlockList = [];
@@ -34,15 +34,15 @@ export class InitConverter {
     }
   }
 
-  updateInitFront(diagramInfo: DiagramInfo): void {
+  updateInitFront(model: Model): void {
     this.resultInit = `\n\n`;
-    this.resultInit += `class ${diagramInfo.name}(torch.nn.Module):\n`;
+    this.resultInit += `class ${model.name}(torch.nn.Module):\n`;
     this.resultInit += this.indentSize;
     this.resultInit += `def __init__(self):\n`;
     for (let i = 0; i < this.indentDepth + 1; i++) {
       this.resultInit += this.indentSize;
     }
-    this.resultInit += `super(${diagramInfo.name}, self).__init__()\n`;
+    this.resultInit += `super(${model.name}, self).__init__()\n`;
   }
 
   updateInitBody(blocks: { [id: string]: Block }): void {

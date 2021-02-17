@@ -13,7 +13,7 @@ import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
 import { TransitionProps } from '@material-ui/core/transitions';
 import Collapse from '@material-ui/core/Collapse';
 
-import { NetworkFragment } from 'store/types';
+import { Model } from 'store/types';
 
 export const StyledTreeItem = withStyles((theme: Theme) =>
   createStyles({
@@ -68,9 +68,9 @@ function TransitionComponent(props: TransitionProps) {
   );
 }
 
-export default function FileTreeItem(props: { fragment: NetworkFragment }) {
+export default function FileTreeItem(props: { model: Model }) {
   const classes = useStyles();
-  const { fragment } = props;
+  const { model } = props;
   const [open, setOpen] = useState(false);
   const [show, setShow] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
@@ -126,9 +126,9 @@ export default function FileTreeItem(props: { fragment: NetworkFragment }) {
   return (
     <div className={classes.treeItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <StyledTreeItem
-        key={fragment.diagramInfo.id}
-        nodeId={fragment.diagramInfo.id}
-        label={fragment.diagramInfo.name}
+        key={model.id}
+        nodeId={model.id}
+        label={model.name}
       />
       <IconButton
         ref={anchorRef}

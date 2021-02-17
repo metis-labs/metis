@@ -32,15 +32,15 @@ export default function DiagramView() {
     (event: any) => {
       if (lastFunction === 'selectionChanged' && lastBlockID) {
         updateProject((project) => {
-          const fragment = project.fragments[project.selectedFragmentId];
-          fragment.selectedBlockID = lastBlockID;
+          const model = project.models[project.selectedModelID];
+          model.selectedBlockID = lastBlockID;
           return project;
         });
       } else if (lastFunction === 'positionChanged' && lastBlockID) {
         updateProject((project) => {
-          const fragment = project.fragments[project.selectedFragmentId];
-          fragment.blocks[lastBlockID].position = lastPosition;
-          fragment.selectedBlockID = lastBlockID;
+          const model = project.models[project.selectedModelID];
+          model.blocks[lastBlockID].position = lastPosition;
+          model.selectedBlockID = lastBlockID;
           return project;
         });
       }
@@ -49,8 +49,8 @@ export default function DiagramView() {
   );
 
   useEffect(() => {
-    const fragment = project.fragments[project.selectedFragmentId];
-    engine.update(fragment);
+    const model = project.models[project.selectedModelID];
+    engine.update(model);
     const deregister = engine.registerListener((event: any, entity: any) => {
       setLastFunction(event.function);
       if (entity instanceof MetisNodeModel) {
@@ -59,15 +59,15 @@ export default function DiagramView() {
           setLastPosition(event.entity.position);
         } else if (event.function === 'entityRemoved') {
           updateProject((project) => {
-            const fragment = project.fragments[project.selectedFragmentId];
-            delete fragment.blocks[entity.getBlockID()];
+            const model = project.models[project.selectedModelID];
+            delete model.blocks[entity.getBlockID()];
             return project;
           });
         }
       } else if (entity instanceof MetisLinkModel) {
         if (event.function === 'targetPortChanged') {
           updateProject((project) => {
-            const fragment = project.fragments[project.selectedFragmentId];
+            const model = project.models[project.selectedModelID];
             let from, to;
             if (event.entity.sourcePort.getName() === 'in') {
               from = event.entity.targetPort.parent;
@@ -79,7 +79,7 @@ export default function DiagramView() {
               return project;
             }
 
-            fragment.links[entity.getID()] = {
+            model.links[entity.getID()] = {
               id: entity.getID(),
               from: from.getBlockID() as string,
               to: to.getBlockID() as string,
@@ -88,16 +88,16 @@ export default function DiagramView() {
           });
         } else if (event.function === 'entityRemoved') {
           updateProject((project) => {
-            const fragment = project.fragments[project.selectedFragmentId];
-            delete fragment.links[entity.getLinkID()];
+            const model = project.models[project.selectedModelID];
+            delete model.links[entity.getLinkID()];
             return project;
           });
         }
       } else if (entity instanceof DiagramModel) {
         if (event.function === 'offsetUpdated') {
           updateProject((project) => {
-            const fragment = project.fragments[project.selectedFragmentId];
-            fragment.diagramInfo.offset = {
+            const model = project.models[project.selectedModelID];
+            model.diagramInfo.offset = {
               x: entity.getOffsetX(),
               y: entity.getOffsetY(),
             };
@@ -105,8 +105,8 @@ export default function DiagramView() {
           });
         } else if (event.function === 'zoomUpdated') {
           updateProject((project) => {
-            const fragment = project.fragments[project.selectedFragmentId];
-            fragment.diagramInfo.zoom = event.zoom;
+            const model = project.models[project.selectedModelID];
+            model.diagramInfo.zoom = event.zoom;
             return project;
           });
         }

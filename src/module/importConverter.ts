@@ -1,4 +1,4 @@
-import { Dependency, EmptyNetworkFragment } from '../store/types';
+import { Dependency, EmptyModel } from '../store/types';
 
 export class ImportConverter {
   private dependencies: { [id: string]: Dependency };
@@ -6,7 +6,7 @@ export class ImportConverter {
   private result: string;
 
   constructor() {
-    this.dependencies = EmptyNetworkFragment.dependencies;
+    this.dependencies = EmptyModel.dependencies;
     this.resultImportList = [];
     this.result = '';
   }

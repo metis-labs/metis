@@ -1,4 +1,4 @@
-import { Block, BlockType, EmptyNetworkFragment, Link } from '../store/types';
+import { Block, BlockType, EmptyModel, Link } from '../store/types';
 export class ForwardConverter {
   private blocks: { [id: string]: Block };
   private bodyBlockList: string[];
@@ -11,7 +11,7 @@ export class ForwardConverter {
   private readonly linkMapByFrom: { [fromId: string]: Link };
 
   constructor() {
-    this.blocks = EmptyNetworkFragment.blocks;
+    this.blocks = EmptyModel.blocks;
     this.bodyBlockList = [];
     this.inputBlockList = [];
     this.outputBlockList = [];

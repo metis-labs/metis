@@ -2,13 +2,13 @@ import createEngine, { DiagramEngine, DiagramModel } from '@projectstorm/react-d
 
 import { MetisNodeModel } from 'components/DiagramView/MetisNodeModel';
 import { MetisNodeFactory } from 'components/DiagramView/MetisNodeFactory';
-import { NetworkFragment, EmptyNetworkFragment } from 'store/types';
+import { Model, EmptyModel } from 'store/types';
 import { MetisLinkFactory } from './MetisLinkFactory';
 import { MetisLinkModel } from './MetisLinkModel';
 
 export class Engine {
   private engine: DiagramEngine;
-  private previousFragment: NetworkFragment;
+  private previousModel: Model;
 
   constructor() {
     this.engine = createEngine();
@@ -16,11 +16,11 @@ export class Engine {
     this.engine.getNodeFactories().registerFactory(new MetisNodeFactory());
     this.engine.getLinkFactories().registerFactory(new MetisLinkFactory());
     this.engine.setModel(new DiagramModel());
-    this.previousFragment = EmptyNetworkFragment;
+    this.previousModel = EmptyModel;
   }
 
-  update(fragment: NetworkFragment) {
-    if (fragment.blocks === this.previousFragment.blocks && fragment.links === this.previousFragment.links) {
+  update(model: Model) {
+    if (model.blocks === this.previousModel.blocks && model.links === this.previousModel.links) {
       return;
     }
 
@@ -28,14 +28,14 @@ export class Engine {
     const nodes = [];
     const nodeInfoMap: { [key: string]: MetisNodeModel } = {};
 
-    if (fragment.diagramInfo.offset) {
-      diagramModel.setOffset(fragment.diagramInfo.offset.x, fragment.diagramInfo.offset.y);
+    if (model.diagramInfo.offset) {
+      diagramModel.setOffset(model.diagramInfo.offset.x, model.diagramInfo.offset.y);
     }
-    if (fragment.diagramInfo.zoom) {
-      diagramModel.setZoomLevel(fragment.diagramInfo.zoom);
+    if (model.diagramInfo.zoom) {
+      diagramModel.setZoomLevel(model.diagramInfo.zoom);
     }
 
-    for (const [, block] of Object.entries(fragment.blocks)) {
+    for (const [, block] of Object.entries(model.blocks)) {
       const node = new MetisNodeModel({
         blockType: block.type,
         name: block.name,
@@ -50,7 +50,7 @@ export class Engine {
 
     const links: Array<MetisLinkModel> = [];
 
-    for (const [, link] of Object.entries(fragment.links)) {
+    for (const [, link] of Object.entries(model.links)) {
       if (!nodeInfoMap[link.from] || !nodeInfoMap[link.to]) {
         continue;
       }
@@ -64,7 +64,7 @@ export class Engine {
 
     diagramModel.addAll(...nodes, ...links);
     this.engine.setModel(diagramModel);
-    this.previousFragment = fragment;
+    this.previousModel = model;
   }
 
   public getEngine(): DiagramEngine {

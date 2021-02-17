@@ -69,80 +69,80 @@ proto.api.MetisPromiseClient =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.api.CreateDiagramRequest,
- *   !proto.api.CreateDiagramResponse>}
+ *   !proto.api.CreateModelRequest,
+ *   !proto.api.CreateModelResponse>}
  */
-const methodDescriptor_Metis_CreateDiagram = new grpc.web.MethodDescriptor(
-  '/api.Metis/CreateDiagram',
+const methodDescriptor_Metis_CreateModel = new grpc.web.MethodDescriptor(
+  '/api.Metis/CreateModel',
   grpc.web.MethodType.UNARY,
-  proto.api.CreateDiagramRequest,
-  proto.api.CreateDiagramResponse,
+  proto.api.CreateModelRequest,
+  proto.api.CreateModelResponse,
   /**
-   * @param {!proto.api.CreateDiagramRequest} request
+   * @param {!proto.api.CreateModelRequest} request
    * @return {!Uint8Array}
    */
   function(request) {
     return request.serializeBinary();
   },
-  proto.api.CreateDiagramResponse.deserializeBinary
+  proto.api.CreateModelResponse.deserializeBinary
 );
 
 
 /**
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
- *   !proto.api.CreateDiagramRequest,
- *   !proto.api.CreateDiagramResponse>}
+ *   !proto.api.CreateModelRequest,
+ *   !proto.api.CreateModelResponse>}
  */
-const methodInfo_Metis_CreateDiagram = new grpc.web.AbstractClientBase.MethodInfo(
-  proto.api.CreateDiagramResponse,
+const methodInfo_Metis_CreateModel = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.api.CreateModelResponse,
   /**
-   * @param {!proto.api.CreateDiagramRequest} request
+   * @param {!proto.api.CreateModelRequest} request
    * @return {!Uint8Array}
    */
   function(request) {
     return request.serializeBinary();
   },
-  proto.api.CreateDiagramResponse.deserializeBinary
+  proto.api.CreateModelResponse.deserializeBinary
 );
 
 
 /**
- * @param {!proto.api.CreateDiagramRequest} request The
+ * @param {!proto.api.CreateModelRequest} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.Error, ?proto.api.CreateDiagramResponse)}
+ * @param {function(?grpc.web.Error, ?proto.api.CreateModelResponse)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.api.CreateDiagramResponse>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.api.CreateModelResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.api.MetisClient.prototype.createDiagram =
+proto.api.MetisClient.prototype.createModel =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/api.Metis/CreateDiagram',
+      '/api.Metis/CreateModel',
       request,
       metadata || {},
-      methodDescriptor_Metis_CreateDiagram,
+      methodDescriptor_Metis_CreateModel,
       callback);
 };
 
 
 /**
- * @param {!proto.api.CreateDiagramRequest} request The
+ * @param {!proto.api.CreateModelRequest} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.api.CreateDiagramResponse>}
+ * @return {!Promise<!proto.api.CreateModelResponse>}
  *     A native promise that resolves to the response
  */
-proto.api.MetisPromiseClient.prototype.createDiagram =
+proto.api.MetisPromiseClient.prototype.createModel =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/api.Metis/CreateDiagram',
+      '/api.Metis/CreateModel',
       request,
       metadata || {},
-      methodDescriptor_Metis_CreateDiagram);
+      methodDescriptor_Metis_CreateModel);
 };
 
 

@@ -2,18 +2,18 @@ syntax = "proto3";
 package api;
 
 service Metis {
-    rpc CreateDiagram (CreateDiagramRequest) returns (CreateDiagramResponse);
+    rpc CreateModel (CreateModelRequest) returns (CreateModelResponse);
 }
 
-message CreateDiagramRequest {
-    string diagram_name = 1;
+message CreateModelRequest {
+    string model_name = 1;
 }
 
-message CreateDiagramResponse {
-    Diagram diagram = 1;
+message CreateModelResponse {
+    Model model = 1;
 }
 
-message Diagram {
+message Model {
     uint32 id = 1;
     string name = 2;
 }

@@ -75,8 +75,8 @@ export default function FileTreeBar() {
   const handleNodeSelect = useCallback(
     (event: ChangeEvent, nodeId: any) => {
       updateProject((project) => {
-        if (project.fragments[nodeId]) {
-          project.selectedFragmentId = nodeId;
+        if (project.models[nodeId]) {
+          project.selectedModelID = nodeId;
         }
         return project;
       });
@@ -90,7 +90,7 @@ export default function FileTreeBar() {
       <Divider />
       <TreeView
         className={classes.root}
-        selected={[project.selectedFragmentId]}
+        selected={[project.selectedModelID]}
         defaultExpanded={[project.id]}
         defaultCollapseIcon={<MinusSquare />}
         defaultExpandIcon={<PlusSquare />}
@@ -98,8 +98,8 @@ export default function FileTreeBar() {
         onNodeSelect={handleNodeSelect}
       >
         <StyledTreeItem nodeId={project.id} label={project.name}>
-          {Object.values(project.fragments).map((fragment) => (
-            <FileTreeItem key={fragment.diagramInfo.id} fragment={fragment} />
+          {Object.values(project.models).map((model) => (
+            <FileTreeItem key={model.id} model={model} />
           ))}
         </StyledTreeItem>
       </TreeView>

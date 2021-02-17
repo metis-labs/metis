@@ -45,14 +45,14 @@ export type Dependency = {
 };
 
 export type DiagramInfo = {
-  id: string;
-  name: string;
-  type: DiagramType;
   offset?: Position;
   zoom?: number;
 };
 
-export type NetworkFragment = {
+export type Model = {
+  id: string;
+  name: string;
+  type: DiagramType;
   diagramInfo: DiagramInfo;
   dependencies: { [id: string]: Dependency };
   blocks: { [id: string]: Block };
@@ -63,16 +63,15 @@ export type NetworkFragment = {
 export type Project = {
   id: string;
   name: string;
-  fragments: { [fragmentId: string]: NetworkFragment };
-  selectedFragmentId: string;
+  models: { [modelID: string]: Model };
+  selectedModelID: string;
 };
 
-export const EmptyNetworkFragment = {
-  diagramInfo: {
-    id: '',
-    name: '',
-    type: DiagramType.Main,
-  },
+export const EmptyModel = {
+  id: '',
+  name: '',
+  type: DiagramType.Main,
+  diagramInfo: {},
   dependencies: {},
   blocks: {},
   links: {},

@@ -1,10 +1,4 @@
-import { Block, BlockType, Dependency, DiagramInfo, DiagramType, Link, NetworkFragment, Project } from './types';
-
-const diagramInfo: DiagramInfo = {
-  id: 'vgg_16',
-  name: 'vgg_16',
-  type: DiagramType.Main,
-};
+import { Block, BlockType, Dependency, DiagramType, Link, Model, Project } from './types';
 
 const dependencies: { [id: string]: Dependency } = {
   torch: {
@@ -246,32 +240,34 @@ const resnetLinks: { [id: string]: Link } = {
   },
 };
 
-const vggFragment = {
-  diagramInfo,
+const vggModel = {
+  id: 'vgg_16',
+  name: 'vgg_16',
+  type: DiagramType.Main,
+  diagramInfo: {},
   dependencies,
   blocks,
   links,
-} as NetworkFragment;
+} as Model;
 
-const resnetFragment = {
-  diagramInfo: {
-    id: 'resnet',
-    name: 'resnet',
-    type: DiagramType.Module,
-  },
+const resnetModel = {
+  id: 'resnet',
+  name: 'resnet',
+  type: DiagramType.Module,
+  diagramInfo: {},
   dependencies,
   blocks: resnetBlocks,
   links: resnetLinks,
-} as NetworkFragment;
+} as Model;
 
 const testProject: Project = {
   id: 'visionProject',
   name: 'visionProject',
-  fragments: {
-    vgg_16: vggFragment,
-    resnet: resnetFragment,
+  models: {
+    vgg_16: vggModel,
+    resnet: resnetModel,
   },
-  selectedFragmentId: 'vgg_16',
+  selectedModelID: 'vgg_16',
 };
 
 export default testProject;

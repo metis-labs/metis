@@ -1,44 +1,44 @@
 import * as jspb from "google-protobuf"
 
-export class CreateDiagramRequest extends jspb.Message {
-  getDiagramName(): string;
-  setDiagramName(value: string): void;
+export class CreateModelRequest extends jspb.Message {
+  getModelName(): string;
+  setModelName(value: string): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): CreateDiagramRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: CreateDiagramRequest): CreateDiagramRequest.AsObject;
-  static serializeBinaryToWriter(message: CreateDiagramRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): CreateDiagramRequest;
-  static deserializeBinaryFromReader(message: CreateDiagramRequest, reader: jspb.BinaryReader): CreateDiagramRequest;
+  toObject(includeInstance?: boolean): CreateModelRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: CreateModelRequest): CreateModelRequest.AsObject;
+  static serializeBinaryToWriter(message: CreateModelRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CreateModelRequest;
+  static deserializeBinaryFromReader(message: CreateModelRequest, reader: jspb.BinaryReader): CreateModelRequest;
 }
 
-export namespace CreateDiagramRequest {
+export namespace CreateModelRequest {
   export type AsObject = {
-    diagramName: string,
+    modelName: string,
   }
 }
 
-export class CreateDiagramResponse extends jspb.Message {
-  getDiagram(): Diagram | undefined;
-  setDiagram(value?: Diagram): void;
-  hasDiagram(): boolean;
-  clearDiagram(): void;
+export class CreateModelResponse extends jspb.Message {
+  getModel(): Model | undefined;
+  setModel(value?: Model): void;
+  hasModel(): boolean;
+  clearModel(): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): CreateDiagramResponse.AsObject;
-  static toObject(includeInstance: boolean, msg: CreateDiagramResponse): CreateDiagramResponse.AsObject;
-  static serializeBinaryToWriter(message: CreateDiagramResponse, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): CreateDiagramResponse;
-  static deserializeBinaryFromReader(message: CreateDiagramResponse, reader: jspb.BinaryReader): CreateDiagramResponse;
+  toObject(includeInstance?: boolean): CreateModelResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: CreateModelResponse): CreateModelResponse.AsObject;
+  static serializeBinaryToWriter(message: CreateModelResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CreateModelResponse;
+  static deserializeBinaryFromReader(message: CreateModelResponse, reader: jspb.BinaryReader): CreateModelResponse;
 }
 
-export namespace CreateDiagramResponse {
+export namespace CreateModelResponse {
   export type AsObject = {
-    diagram?: Diagram.AsObject,
+    model?: Model.AsObject,
   }
 }
 
-export class Diagram extends jspb.Message {
+export class Model extends jspb.Message {
   getId(): number;
   setId(value: number): void;
 
@@ -46,14 +46,14 @@ export class Diagram extends jspb.Message {
   setName(value: string): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Diagram.AsObject;
-  static toObject(includeInstance: boolean, msg: Diagram): Diagram.AsObject;
-  static serializeBinaryToWriter(message: Diagram, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Diagram;
-  static deserializeBinaryFromReader(message: Diagram, reader: jspb.BinaryReader): Diagram;
+  toObject(includeInstance?: boolean): Model.AsObject;
+  static toObject(includeInstance: boolean, msg: Model): Model.AsObject;
+  static serializeBinaryToWriter(message: Model, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Model;
+  static deserializeBinaryFromReader(message: Model, reader: jspb.BinaryReader): Model;
 }
 
-export namespace Diagram {
+export namespace Model {
   export type AsObject = {
     id: number,
     name: string,

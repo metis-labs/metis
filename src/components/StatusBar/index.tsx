@@ -35,7 +35,7 @@ export default function StatusBar(props: { viewMode: string; setViewMode: Functi
 
   return (
     <div className={classes.root}>
-      <Typography variant="h5">{project.fragments[project.selectedFragmentId].diagramInfo.name}</Typography>
+      <Typography variant="h5">{project.models[project.selectedModelID].name}</Typography>
       <IconButton onClick={handleClick}>
         {viewMode === 'diagram' ? <CodeIcon /> : <AccountTreeIcon />}
       </IconButton>

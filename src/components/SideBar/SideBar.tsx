@@ -10,7 +10,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import AddIcon from '@material-ui/icons/Add';
 
-import { CreateDiagramRequest } from 'api/metis_pb';
+import { CreateModelRequest } from 'api/metis_pb';
 import { MetisPromiseClient } from 'api/metis_grpc_web_pb';
 import { useProject } from '../../index';
 import { BlockType } from '../../store/types';
@@ -41,13 +41,13 @@ export default function SideBar() {
   const [, updateProject] = useProject();
   const handleAddBlockClick = useCallback((type: BlockType) => {
     updateProject((project) => {
-      const fragment = project.fragments[project.selectedFragmentId];
-      const blockLength = Object.keys(fragment.blocks).length;
+      const model = project.models[project.selectedModelID];
+      const blockLength = Object.keys(model.blocks).length;
       const position = { x: 100 + 10 * blockLength, y: 100 + 10 * blockLength };
       const id = uuidv4();
       switch(type) {
         case BlockType.In:
-          fragment.blocks[id] = {
+          model.blocks[id] = {
             id,
             name: `test_in_${blockLength + 1}`,
             type: BlockType.In,
@@ -55,7 +55,7 @@ export default function SideBar() {
           };
           break;
         case BlockType.Out:
-          fragment.blocks[id] = {
+          model.blocks[id] = {
             id,
             name: `test_out_${blockLength + 1}`,
             type: BlockType.Out,
@@ -63,7 +63,7 @@ export default function SideBar() {
           };
           break;
         default:
-          fragment.blocks[id] = {
+          model.blocks[id] = {
             id,
             name: `test_${blockLength + 1}`,
             type: BlockType.Conv2d,
@@ -89,10 +89,11 @@ export default function SideBar() {
 
   const callTestRPC = useCallback(() => {
     const client = new MetisPromiseClient('http://localhost:8080');
-    const req = new CreateDiagramRequest();
-    req.setDiagramName("HelloWorld");
-    client.createDiagram(req).then((res) => {
-      console.log(res.getDiagram().getName())
+    const req = new CreateModelRequest();
+    req.setModelName("HelloWorld");
+    client.createModel(req).then((res) => {
+      console.log('hit');
+      console.log(res.getModel().getName())
     });
   }, []);
 

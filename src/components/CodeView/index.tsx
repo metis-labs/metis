@@ -24,7 +24,7 @@ export default function CodeView() {
   const [codeString, setCodeString] = useState('');
 
   useEffect(() => {
-    converter.update(project.fragments[project.selectedFragmentId]);
+    converter.update(project.models[project.selectedModelID]);
     setCodeString(converter.getResult());
   }, [converter, project]);
 

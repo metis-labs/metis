@@ -47,24 +47,24 @@ export default function PropertyBar() {
 
   const onTypeChange = useCallback((event: ChangeEvent<{ value: unknown }>) => {
     updateProject((project) => {
-      const fragment = project.fragments[project.selectedFragmentId];
-      fragment.blocks[fragment.selectedBlockID].type = event.target.value as BlockType;
+      const model = project.models[project.selectedModelID];
+      model.blocks[model.selectedBlockID].type = event.target.value as BlockType;
       return project;
     });
   }, [updateProject]);
 
   const handlePropertyChange = useCallback((event: ChangeEvent<{ value: unknown}>, key: string) => {
     updateProject((project) => {
-      const fragment = project.fragments[project.selectedFragmentId];
-      fragment.blocks[fragment.selectedBlockID][key] = valueTransition(event.target.value as string);
+      const model = project.models[project.selectedModelID];
+      model.blocks[model.selectedBlockID][key] = valueTransition(event.target.value as string);
       return project;
     });
   }, [updateProject]);
 
   const handleParameterChange = useCallback((event: ChangeEvent<{value: unknown}>, key: string) => {
     updateProject((project) => {
-      const fragment = project.fragments[project.selectedFragmentId];
-      fragment.blocks[fragment.selectedBlockID].parameters[key] = valueTransition(event.target.value as string);
+      const model = project.models[project.selectedModelID];
+      model.blocks[model.selectedBlockID].parameters[key] = valueTransition(event.target.value as string);
       return project;
     });
   }, [updateProject]);
@@ -85,12 +85,12 @@ export default function PropertyBar() {
     }
   }
 
-  const fragment = project.fragments[project.selectedFragmentId];
-  if (!fragment.selectedBlockID || !fragment.blocks[fragment.selectedBlockID]) {
+  const model = project.models[project.selectedModelID];
+  if (!model.selectedBlockID || !model.blocks[model.selectedBlockID]) {
     return null;
   }
 
-  const selectedBlock = fragment.blocks[fragment.selectedBlockID];
+  const selectedBlock = model.blocks[model.selectedBlockID];
   return (
     <Drawer className={classes.drawer} variant="permanent" classes={{ paper: classes.drawerPaper }} anchor="right">
       <Toolbar />

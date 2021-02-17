@@ -7,7 +7,7 @@ import reportWebVitals from 'reportWebVitals';
 import App from 'App';
 import theme from 'theme';
 import { createStore } from 'store/store';
-import testProject from 'store/testFragment';
+import testProject from 'store/testProject';
 
 import 'index.css';
 

@@ -1,22 +1,22 @@
-import { EmptyNetworkFragment, NetworkFragment } from '../store/types';
+import { EmptyModel, Model } from '../store/types';
 import { ImportConverter } from './importConverter';
 import { InitConverter } from './initConverter';
 import { ForwardConverter } from './forwardConverter';
 
 export class Converter {
-  private previousFragment: NetworkFragment;
+  private previousModel: Model;
   private codeString: string;
 
   constructor() {
-    this.previousFragment = EmptyNetworkFragment;
+    this.previousModel = EmptyModel;
     this.codeString = '';
   }
 
-  update(fragment: NetworkFragment): void {
+  update(model: Model): void {
     if (
-      fragment.dependencies === this.previousFragment.dependencies &&
-      fragment.blocks === this.previousFragment.blocks &&
-      fragment.links === this.previousFragment.links
+      model.dependencies === this.previousModel.dependencies &&
+      model.blocks === this.previousModel.blocks &&
+      model.links === this.previousModel.links
     ) {
       return;
     }
@@ -24,21 +24,21 @@ export class Converter {
     this.codeString = '';
 
     const importTemplate = new ImportConverter();
-    importTemplate.update(fragment.dependencies);
+    importTemplate.update(model.dependencies);
 
     const initTemplate = new InitConverter();
-    initTemplate.updateInitFront(fragment.diagramInfo);
-    initTemplate.updateInitBody(fragment.blocks);
+    initTemplate.updateInitFront(model);
+    initTemplate.updateInitBody(model.blocks);
 
     const forwardTemplate = new ForwardConverter();
-    forwardTemplate.updateForwardFront(fragment.links, fragment.blocks);
-    forwardTemplate.updateForwardBody(fragment.blocks);
+    forwardTemplate.updateForwardFront(model.links, model.blocks);
+    forwardTemplate.updateForwardBody(model.blocks);
 
     this.codeString += importTemplate.getResult();
     this.codeString += initTemplate.getResult();
     this.codeString += forwardTemplate.getResult();
 
-    this.previousFragment = fragment;
+    this.previousModel = model;
   }
 
   getResult(): string {
