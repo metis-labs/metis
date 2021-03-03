@@ -20,6 +20,12 @@ static_resources:
             - name: local_service
               domains: ["*"]
               routes:
+              - match: { prefix: "/yorkie/" }
+                route:
+                  prefix_rewrite: "/"
+                  cluster: yorkie_service
+                  # https://github.com/grpc/grpc-web/issues/361
+                  max_grpc_timeout: 0s
               - match: { prefix: "/" }
                 route:
                   cluster: metis_service
@@ -44,3 +50,10 @@ static_resources:
     lb_policy: round_robin
     # win/mac hosts: Use address: host.docker.internal instead of address: localhost in the line below
     hosts: [{ socket_address: { address: host.docker.internal, port_value: 10118 }}]
+  - name: yorkie_service
+    connect_timeout: 0.25s
+    type: logical_dns
+    http2_protocol_options: {}
+    lb_policy: round_robin
+    # win/mac hosts: Use address: host.docker.internal instead of address: localhost in the line below
+    hosts: [{ socket_address: { address: yorkie, port_value: 11101 }}]

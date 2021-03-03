@@ -12,9 +12,20 @@ services:
       - '8080:8080'
       - '9901:9901'
     command: ['/etc/envoy/envoy.yaml']
-# TODO(youngteac.hong): We need to create Metis here
-#    depends_on:
-#      - metis
+    depends_on:
+      - yorkie
+  yorkie:
+    volumes:
+    - ./yorkie.json:/app/yorkie.json
+    image: 'yorkieteam/yorkie:latest'
+    container_name: 'yorkie'
+    command: ['/app/bin/yorkie', 'agent', '-c', '/app/yorkie.json']
+    restart: always
+    ports:
+      - '11101:11101'
+    depends_on:
+      - mongo
+  # TODO(youngteac.hong): We need to create Metis service here.
   mongo:
     image: 'mongo:latest'
     container_name: 'mongo'
