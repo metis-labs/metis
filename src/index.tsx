@@ -7,19 +7,18 @@ import reportWebVitals from 'reportWebVitals';
 import App from 'App';
 import theme from 'theme';
 import { createStore } from 'store/store';
-import testProject from 'store/testProject';
 
 import 'index.css';
 
-const ProjectStore = createStore(testProject);
-export const useProject = ProjectStore.useProject;
+const AppStateStore = createStore({});
+export const useAppState = AppStateStore.useAppState;
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>
     <CssBaseline />
-    <ProjectStore.Provider>
+    <AppStateStore.Provider>
       <App />
-    </ProjectStore.Provider>
+    </AppStateStore.Provider>
   </ThemeProvider>,
   document.getElementById('root'),
 );

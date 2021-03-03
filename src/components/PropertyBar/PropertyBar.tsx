@@ -10,7 +10,7 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { useProject } from '../../index';
+import { useAppState } from '../../index';
 import { BlockType, PreservedBlockTypes, PropertyValue } from 'store/types';
 
 const drawerWidth = 240;
@@ -43,31 +43,35 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function PropertyBar() {
   const classes = useStyles();
-  const [project, updateProject] = useProject();
+  const [appState, updateAppState] = useAppState();
+  const project = appState.selectedProject!;
 
   const onTypeChange = useCallback((event: ChangeEvent<{ value: unknown }>) => {
-    updateProject((project) => {
+    updateAppState((appState) => {
+      const project = appState.selectedProject!;
       const model = project.models[project.selectedModelID];
       model.blocks[model.selectedBlockID].type = event.target.value as BlockType;
-      return project;
+      return appState;
     });
-  }, [updateProject]);
+  }, [updateAppState]);
 
   const handlePropertyChange = useCallback((event: ChangeEvent<{ value: unknown}>, key: string) => {
-    updateProject((project) => {
+    updateAppState((appState) => {
+      const project = appState.selectedProject!;
       const model = project.models[project.selectedModelID];
       model.blocks[model.selectedBlockID][key] = valueTransition(event.target.value as string);
-      return project;
+      return appState;
     });
-  }, [updateProject]);
+  }, [updateAppState]);
 
   const handleParameterChange = useCallback((event: ChangeEvent<{value: unknown}>, key: string) => {
-    updateProject((project) => {
+    updateAppState((appState) => {
+      const project = appState.selectedProject!;
       const model = project.models[project.selectedModelID];
       model.blocks[model.selectedBlockID].parameters[key] = valueTransition(event.target.value as string);
-      return project;
+      return appState;
     });
-  }, [updateProject]);
+  }, [updateAppState]);
 
   const handleKeyDown = useCallback((event: any) => {
     event.nativeEvent.stopImmediatePropagation();
@@ -85,7 +89,7 @@ export default function PropertyBar() {
     }
   }
 
-  const model = project.models[project.selectedModelID];
+  const model = appState.selectedProject.models[project.selectedModelID];
   if (!model.selectedBlockID || !model.blocks[model.selectedBlockID]) {
     return null;
   }

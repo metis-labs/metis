@@ -4,7 +4,7 @@ import { CanvasWidget } from '@projectstorm/react-canvas-core';
 
 import { Engine } from 'components/DiagramView/Engine';
 import { Position } from 'store/types';
-import { useProject } from '../../index';
+import { useAppState} from '../../index';
 import { MetisNodeModel } from './MetisNodeModel';
 import { MetisLinkModel } from './MetisLinkModel';
 import { DiagramModel } from '@projectstorm/react-diagrams';
@@ -22,7 +22,7 @@ const useStyles = makeStyles(() =>
 export default function DiagramView() {
   const classes = useStyles();
 
-  const [project, updateProject] = useProject();
+  const [appState, updateAppState] = useAppState();
   const [engine] = useState(new Engine());
   const [lastFunction, setLastFunction] = useState<string>();
   const [lastBlockID, setLastBlockID] = useState<string>();
@@ -31,24 +31,27 @@ export default function DiagramView() {
   const handleMouseUp = useCallback(
     (event: any) => {
       if (lastFunction === 'selectionChanged' && lastBlockID) {
-        updateProject((project) => {
+        updateAppState((appState) => {
+          const project = appState.selectedProject!;
           const model = project.models[project.selectedModelID];
           model.selectedBlockID = lastBlockID;
-          return project;
+          return appState;
         });
       } else if (lastFunction === 'positionChanged' && lastBlockID) {
-        updateProject((project) => {
+        updateAppState((appState) => {
+          const project = appState.selectedProject!;
           const model = project.models[project.selectedModelID];
           model.blocks[lastBlockID].position = lastPosition;
           model.selectedBlockID = lastBlockID;
-          return project;
+          return appState;
         });
       }
     },
-    [lastFunction, lastBlockID, lastPosition, updateProject],
+    [lastFunction, lastBlockID, lastPosition, updateAppState],
   );
 
   useEffect(() => {
+    const project = appState.selectedProject!;
     const model = project.models[project.selectedModelID];
     engine.update(model);
     const deregister = engine.registerListener((event: any, entity: any) => {
@@ -58,15 +61,17 @@ export default function DiagramView() {
         if (event.function === 'positionChanged') {
           setLastPosition(event.entity.position);
         } else if (event.function === 'entityRemoved') {
-          updateProject((project) => {
+          updateAppState((appState) => {
+            const project = appState.selectedProject!;
             const model = project.models[project.selectedModelID];
             delete model.blocks[entity.getBlockID()];
-            return project;
+            return appState;
           });
         }
       } else if (entity instanceof MetisLinkModel) {
         if (event.function === 'targetPortChanged') {
-          updateProject((project) => {
+          updateAppState((appState) => {
+            const project = appState.selectedProject!;
             const model = project.models[project.selectedModelID];
             let from, to;
             if (event.entity.sourcePort.getName() === 'in') {
@@ -76,7 +81,7 @@ export default function DiagramView() {
               from = event.entity.sourcePort.parent;
               to = event.entity.targetPort.parent;
             } else {
-              return project;
+              return appState;
             }
 
             model.links[entity.getID()] = {
@@ -84,36 +89,39 @@ export default function DiagramView() {
               from: from.getBlockID() as string,
               to: to.getBlockID() as string,
             };
-            return project;
+            return appState;
           });
         } else if (event.function === 'entityRemoved') {
-          updateProject((project) => {
+          updateAppState((appState) => {
+            const project = appState.selectedProject!;
             const model = project.models[project.selectedModelID];
             delete model.links[entity.getLinkID()];
-            return project;
+            return appState;
           });
         }
       } else if (entity instanceof DiagramModel) {
         if (event.function === 'offsetUpdated') {
-          updateProject((project) => {
+          updateAppState((appState) => {
+            const project = appState.selectedProject!;
             const model = project.models[project.selectedModelID];
             model.diagramInfo.offset = {
               x: entity.getOffsetX(),
               y: entity.getOffsetY(),
             };
-            return project;
+            return appState;
           });
         } else if (event.function === 'zoomUpdated') {
-          updateProject((project) => {
+          updateAppState((appState) => {
+            const project = appState.selectedProject!;
             const model = project.models[project.selectedModelID];
             model.diagramInfo.zoom = event.zoom;
-            return project;
+            return appState;
           });
         }
       }
     });
     return () => deregister();
-  }, [engine, project, updateProject, setLastFunction, setLastBlockID, setLastPosition]);
+  }, [engine, appState, updateAppState, setLastFunction, setLastBlockID, setLastPosition]);
 
   return (
     <div onMouseUp={handleMouseUp}>

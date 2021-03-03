@@ -10,7 +10,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import AddIcon from '@material-ui/icons/Add';
 
-import { useProject } from '../../index';
+import { useAppState } from '../../index';
 import { BlockType } from '../../store/types';
 
 const drawerWidth = 60;
@@ -36,10 +36,11 @@ const useStyles = makeStyles(() =>
 
 export default function SideBar() {
   const classes = useStyles();
-  const [, updateProject] = useProject();
+  const [, updateAppState] = useAppState();
   const handleAddBlockClick = useCallback(
     (type: BlockType) => {
-      updateProject((project) => {
+      updateAppState((appState) => {
+        const project = appState.selectedProject!;
         const model = project.models[project.selectedModelID];
         const blockLength = Object.keys(model.blocks).length;
         const position = { x: 100 + 10 * blockLength, y: 100 + 10 * blockLength };
@@ -82,10 +83,10 @@ export default function SideBar() {
             };
         }
 
-        return project;
+        return appState;
       });
     },
-    [updateProject],
+    [updateAppState],
   );
 
   return (

@@ -7,7 +7,7 @@ import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 import TreeView from '@material-ui/lab/TreeView';
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 
-import { useProject } from '../../index';
+import { useAppState } from '../../index';
 
 function MinusSquare(props: SvgIconProps) {
   return (
@@ -70,18 +70,20 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function FileTreeBar() {
   const classes = useStyles();
-  const [project, updateProject] = useProject();
+  const [appState, updateAppState] = useAppState();
+  const project = appState.selectedProject!;
 
   const handleNodeSelect = useCallback(
     (event: ChangeEvent, nodeId: any) => {
-      updateProject((project) => {
+      updateAppState((appState) => {
+        const project = appState.selectedProject!;
         if (project.models[nodeId]) {
           project.selectedModelID = nodeId;
         }
-        return project;
+        return appState;
       });
     },
-    [updateProject],
+    [updateAppState],
   );
 
   return (

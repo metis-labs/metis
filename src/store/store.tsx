@@ -1,14 +1,14 @@
 import produce, { Draft } from 'immer';
 import { createContext, Dispatch, ReducerAction, useContext, useReducer } from 'react';
-import { Project } from './types';
+import { AppState } from './types';
 
-type ProjectReducer = (state: Project, producer: (draft: Draft<Project>) => Project) => Project;
+type AppStateReducer = (state: AppState, producer: (draft: Draft<AppState>) => AppState) => AppState;
 
-export function createStore(initialState: Project) {
-  const StateContext = createContext<Project>(initialState);
+export function createStore(initialState: AppState) {
+  const StateContext = createContext<AppState>(initialState);
   const UpdateContext = createContext(null);
 
-  const reducer: ProjectReducer = (state, producer) => {
+  const reducer: AppStateReducer = (state, producer) => {
     return produce(state, producer);
   };
 
@@ -21,9 +21,9 @@ export function createStore(initialState: Project) {
     );
   }
 
-  function useProject(): [Project, Dispatch<ReducerAction<ProjectReducer>>] {
+  function useAppState(): [AppState, Dispatch<ReducerAction<AppStateReducer>>] {
     return [useContext(StateContext), useContext(UpdateContext)];
   }
 
-  return { Provider: StoreProvider, useProject };
+  return { Provider: StoreProvider, useAppState };
 }

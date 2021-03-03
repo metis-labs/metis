@@ -67,6 +67,10 @@ export type Project = {
   selectedModelID?: string;
 };
 
+export type AppState = {
+  selectedProject?: Project
+}
+
 export const EmptyModel = {
   id: '',
   name: '',
