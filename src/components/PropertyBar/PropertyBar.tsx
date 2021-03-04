@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useCallback} from 'react';
+import React, { ChangeEvent, useCallback } from 'react';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -44,34 +44,43 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function PropertyBar() {
   const classes = useStyles();
   const [appState, updateAppState] = useAppState();
-  const project = appState.selectedProject!;
+  const project = appState.remote.getRootObject().project;
 
-  const onTypeChange = useCallback((event: ChangeEvent<{ value: unknown }>) => {
-    updateAppState((appState) => {
-      const project = appState.selectedProject!;
-      const model = project.models[project.selectedModelID];
-      model.blocks[model.selectedBlockID].type = event.target.value as BlockType;
-      return appState;
-    });
-  }, [updateAppState]);
+  const onTypeChange = useCallback(
+    (event: ChangeEvent<{ value: unknown }>) => {
+      updateAppState((appState) => {
+        const project = appState.remote.getRootObject().project;
+        const model = project.models[project.selectedModelID];
+        model.blocks[model.selectedBlockID].type = event.target.value as BlockType;
+        return appState;
+      });
+    },
+    [updateAppState],
+  );
 
-  const handlePropertyChange = useCallback((event: ChangeEvent<{ value: unknown}>, key: string) => {
-    updateAppState((appState) => {
-      const project = appState.selectedProject!;
-      const model = project.models[project.selectedModelID];
-      model.blocks[model.selectedBlockID][key] = valueTransition(event.target.value as string);
-      return appState;
-    });
-  }, [updateAppState]);
+  const handlePropertyChange = useCallback(
+    (event: ChangeEvent<{ value: unknown }>, key: string) => {
+      updateAppState((appState) => {
+        const project = appState.remote.getRootObject().project;
+        const model = project.models[project.selectedModelID];
+        model.blocks[model.selectedBlockID][key] = valueTransition(event.target.value as string);
+        return appState;
+      });
+    },
+    [updateAppState],
+  );
 
-  const handleParameterChange = useCallback((event: ChangeEvent<{value: unknown}>, key: string) => {
-    updateAppState((appState) => {
-      const project = appState.selectedProject!;
-      const model = project.models[project.selectedModelID];
-      model.blocks[model.selectedBlockID].parameters[key] = valueTransition(event.target.value as string);
-      return appState;
-    });
-  }, [updateAppState]);
+  const handleParameterChange = useCallback(
+    (event: ChangeEvent<{ value: unknown }>, key: string) => {
+      updateAppState((appState) => {
+        const project = appState.remote.getRootObject().project;
+        const model = project.models[project.selectedModelID];
+        model.blocks[model.selectedBlockID].parameters[key] = valueTransition(event.target.value as string);
+        return appState;
+      });
+    },
+    [updateAppState],
+  );
 
   const handleKeyDown = useCallback((event: any) => {
     event.nativeEvent.stopImmediatePropagation();
@@ -87,9 +96,9 @@ export default function PropertyBar() {
     } else {
       return value;
     }
-  }
+  };
 
-  const model = appState.selectedProject.models[project.selectedModelID];
+  const model = project.models[project.selectedModelID];
   if (!model.selectedBlockID || !model.blocks[model.selectedBlockID]) {
     return null;
   }
@@ -116,42 +125,43 @@ export default function PropertyBar() {
               </MenuItem>
             ))}
           </Select>
-          {selectedBlock.name !== undefined &&
-          <TextField
-            label="Instance name"
-            value={selectedBlock.name}
-            onChange={(event) => handlePropertyChange(event, "name")}
-            onKeyDown={handleKeyDown}
-          />
-          }
-          {selectedBlock.repeats !== undefined &&
+          {selectedBlock.name !== undefined && (
+            <TextField
+              label="Instance name"
+              value={selectedBlock.name}
+              onChange={(event) => handlePropertyChange(event, 'name')}
+              onKeyDown={handleKeyDown}
+            />
+          )}
+          {selectedBlock.repeats !== undefined && (
             <TextField
               label="Repeats"
               value={selectedBlock.repeats}
-              onChange={(event) => handlePropertyChange(event, "repeats")}
+              onChange={(event) => handlePropertyChange(event, 'repeats')}
               onKeyDown={handleKeyDown}
             />
-          }
+          )}
         </FormControl>
       </div>
-      {selectedBlock.parameters && <>
-        <Divider className={classes.divider}/>
-        <div className={classes.section}>
-          <Typography variant="h6">Parameters</Typography>
-          <FormControl className={classes.formControl}>
-            {Object.entries(selectedBlock.parameters).map(([key, value]) => (
-              <TextField
-                key={key}
-                label={key}
-                value={value}
-                onChange={(event) => handleParameterChange(event, key)}
-                onKeyDown={handleKeyDown}
-              />
-            ))}
-          </FormControl>
-        </div>
+      {selectedBlock.parameters && (
+        <>
+          <Divider className={classes.divider} />
+          <div className={classes.section}>
+            <Typography variant="h6">Parameters</Typography>
+            <FormControl className={classes.formControl}>
+              {Object.entries(selectedBlock.parameters).map(([key, value]) => (
+                <TextField
+                  key={key}
+                  label={key}
+                  value={value}
+                  onChange={(event) => handleParameterChange(event, key)}
+                  onKeyDown={handleKeyDown}
+                />
+              ))}
+            </FormControl>
+          </div>
         </>
-      }
+      )}
     </Drawer>
   );
 }

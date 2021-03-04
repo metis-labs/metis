@@ -40,7 +40,7 @@ export default function SideBar() {
   const handleAddBlockClick = useCallback(
     (type: BlockType) => {
       updateAppState((appState) => {
-        const project = appState.selectedProject!;
+        const project = appState.remote.getRootObject().project;
         const model = project.models[project.selectedModelID];
         const blockLength = Object.keys(model.blocks).length;
         const position = { x: 100 + 10 * blockLength, y: 100 + 10 * blockLength };

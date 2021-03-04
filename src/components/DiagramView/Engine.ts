@@ -21,10 +21,6 @@ export class Engine {
 
   update(model: Model) {
     // TODO(youngteac.hong): If we got performance issues, we need to compare more strictly.
-    if (model.blocks === this.previousModel.blocks && model.links === this.previousModel.links) {
-      return;
-    }
-
     const diagramModel = new DiagramModel();
     const nodes = [];
     const nodeInfoMap: { [key: string]: MetisNodeModel } = {};

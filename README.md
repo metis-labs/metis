@@ -4,8 +4,8 @@ Neural Network Design Tool
 
 ## Testing Metis
 
-Testing metis with Envoy and MongoDB.
-Start MongoDB and Envoy proxy in a terminal session.
+Testing Metis with Envoy, Yorkie and MongoDB.
+Start MongoDB, Yorkie and Envoy proxy in a terminal session.
 
 ```
 docker-compose -f docker/docker-compose.yml up --build -d

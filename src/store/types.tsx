@@ -67,9 +67,12 @@ export type Project = {
   selectedModelID?: string;
 };
 
+export type LocalState = {};
+
 export type AppState = {
-  selectedProject?: Project
-}
+  local: LocalState;
+  remote?: any; // TODO: compatibility issue with immer and Yorkie
+};
 
 export const EmptyModel = {
   id: '',

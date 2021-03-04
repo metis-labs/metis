@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import CodeIcon from '@material-ui/icons/Code';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
-import Typography from '@material-ui/core/Typography'
+import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 import { useAppState } from '../../index';
@@ -19,7 +19,7 @@ const useStyles = makeStyles(() =>
       padding: '10px',
       display: 'flex',
       justifyContent: 'space-between',
-      alignItems: 'center'
+      alignItems: 'center',
     },
   }),
 );
@@ -27,8 +27,8 @@ const useStyles = makeStyles(() =>
 export default function StatusBar(props: { viewMode: string; setViewMode: Function }) {
   const { viewMode, setViewMode } = props;
   const classes = useStyles();
-  const [appState, ] = useAppState();
-  const project = appState.selectedProject!;
+  const [appState] = useAppState();
+  const project = appState.remote.getRootObject().project;
 
   const handleClick = useCallback(() => {
     setViewMode(viewMode === 'diagram' ? 'code' : 'diagram');
@@ -37,9 +37,7 @@ export default function StatusBar(props: { viewMode: string; setViewMode: Functi
   return (
     <div className={classes.root}>
       <Typography variant="h5">{project.models[project.selectedModelID].name}</Typography>
-      <IconButton onClick={handleClick}>
-        {viewMode === 'diagram' ? <CodeIcon /> : <AccountTreeIcon />}
-      </IconButton>
+      <IconButton onClick={handleClick}>{viewMode === 'diagram' ? <CodeIcon /> : <AccountTreeIcon />}</IconButton>
     </div>
   );
 }

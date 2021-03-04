@@ -4,7 +4,7 @@ import { CanvasWidget } from '@projectstorm/react-canvas-core';
 
 import { Engine } from 'components/DiagramView/Engine';
 import { Position } from 'store/types';
-import { useAppState} from '../../index';
+import { useAppState } from '../../index';
 import { MetisNodeModel } from './MetisNodeModel';
 import { MetisLinkModel } from './MetisLinkModel';
 import { DiagramModel } from '@projectstorm/react-diagrams';
@@ -32,14 +32,14 @@ export default function DiagramView() {
     (event: any) => {
       if (lastFunction === 'selectionChanged' && lastBlockID) {
         updateAppState((appState) => {
-          const project = appState.selectedProject!;
+          const project = appState.remote.getRootObject().project;
           const model = project.models[project.selectedModelID];
           model.selectedBlockID = lastBlockID;
           return appState;
         });
       } else if (lastFunction === 'positionChanged' && lastBlockID) {
         updateAppState((appState) => {
-          const project = appState.selectedProject!;
+          const project = appState.remote.getRootObject().project;
           const model = project.models[project.selectedModelID];
           model.blocks[lastBlockID].position = lastPosition;
           model.selectedBlockID = lastBlockID;
@@ -51,7 +51,7 @@ export default function DiagramView() {
   );
 
   useEffect(() => {
-    const project = appState.selectedProject!;
+    const project = appState.remote.getRootObject().project;
     const model = project.models[project.selectedModelID];
     engine.update(model);
     const deregister = engine.registerListener((event: any, entity: any) => {
@@ -62,7 +62,7 @@ export default function DiagramView() {
           setLastPosition(event.entity.position);
         } else if (event.function === 'entityRemoved') {
           updateAppState((appState) => {
-            const project = appState.selectedProject!;
+            const project = appState.remote.getRootObject().project;
             const model = project.models[project.selectedModelID];
             delete model.blocks[entity.getBlockID()];
             return appState;
@@ -71,7 +71,7 @@ export default function DiagramView() {
       } else if (entity instanceof MetisLinkModel) {
         if (event.function === 'targetPortChanged') {
           updateAppState((appState) => {
-            const project = appState.selectedProject!;
+            const project = appState.remote.getRootObject().project!;
             const model = project.models[project.selectedModelID];
             let from, to;
             if (event.entity.sourcePort.getName() === 'in') {
@@ -93,7 +93,7 @@ export default function DiagramView() {
           });
         } else if (event.function === 'entityRemoved') {
           updateAppState((appState) => {
-            const project = appState.selectedProject!;
+            const project = appState.remote.getRootObject().project;
             const model = project.models[project.selectedModelID];
             delete model.links[entity.getLinkID()];
             return appState;
@@ -102,7 +102,7 @@ export default function DiagramView() {
       } else if (entity instanceof DiagramModel) {
         if (event.function === 'offsetUpdated') {
           updateAppState((appState) => {
-            const project = appState.selectedProject!;
+            const project = appState.remote.getRootObject().project;
             const model = project.models[project.selectedModelID];
             model.diagramInfo.offset = {
               x: entity.getOffsetX(),
@@ -112,7 +112,7 @@ export default function DiagramView() {
           });
         } else if (event.function === 'zoomUpdated') {
           updateAppState((appState) => {
-            const project = appState.selectedProject!;
+            const project = appState.remote.getRootObject().project;
             const model = project.models[project.selectedModelID];
             model.diagramInfo.zoom = event.zoom;
             return appState;

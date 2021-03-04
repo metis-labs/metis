@@ -10,7 +10,7 @@ import { createStore } from 'store/store';
 
 import 'index.css';
 
-const AppStateStore = createStore({});
+const AppStateStore = createStore({ local: {} });
 export const useAppState = AppStateStore.useAppState;
 
 ReactDOM.render(

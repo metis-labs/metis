@@ -7,7 +7,8 @@ import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 import TreeView from '@material-ui/lab/TreeView';
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 
-import { useAppState } from '../../index';
+import { Model } from 'store/types';
+import { useAppState } from 'index';
 
 function MinusSquare(props: SvgIconProps) {
   return (
@@ -71,12 +72,12 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function FileTreeBar() {
   const classes = useStyles();
   const [appState, updateAppState] = useAppState();
-  const project = appState.selectedProject!;
+  const project = appState.remote.getRootObject().project!;
 
   const handleNodeSelect = useCallback(
     (event: ChangeEvent, nodeId: any) => {
       updateAppState((appState) => {
-        const project = appState.selectedProject!;
+        const project = appState.remote.getRootObject().project;
         if (project.models[nodeId]) {
           project.selectedModelID = nodeId;
         }
@@ -85,6 +86,9 @@ export default function FileTreeBar() {
     },
     [updateAppState],
   );
+
+  // TODO(youngteac.hong): handle Object.keys, Object.values
+  const models = JSON.parse(project.models.toJSON()) as { [key: string]: Model };
 
   return (
     <Drawer className={classes.drawer} variant="permanent" classes={{ paper: classes.drawerPaper }}>
@@ -100,9 +104,9 @@ export default function FileTreeBar() {
         onNodeSelect={handleNodeSelect}
       >
         <StyledTreeItem nodeId={project.id} label={project.name}>
-          {Object.values(project.models).map((model) => (
-            <FileTreeItem key={model.id} model={model} />
-          ))}
+          {Object.values(models).map((model) => {
+            return <FileTreeItem key={model.id} model={model} />;
+          })}
         </StyledTreeItem>
       </TreeView>
     </Drawer>

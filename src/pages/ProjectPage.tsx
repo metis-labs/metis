@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import yorkie from 'yorkie-js-sdk';
 
 import NavBar from 'components/NavBar';
@@ -11,13 +12,15 @@ import CodeView from 'components/CodeView';
 import StatusBar from 'components/StatusBar';
 import PropertyBar from 'components/PropertyBar';
 import { useAppState } from 'index';
-import { Project } from 'store/types';
 import testProject from 'store/testProject';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       display: 'flex',
+      height: '100vh',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     content: {
       position: 'relative',
@@ -26,9 +29,13 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-export default function ProjectPage(props: RouteComponentProps<{projectID: string}>) {
+export default function ProjectPage(props: RouteComponentProps<{ projectID: string }>) {
   const classes = useStyles();
-  const { match: { params: { projectID } } } = props;
+  const {
+    match: {
+      params: { projectID },
+    },
+  } = props;
   const [appState, updateAppState] = useAppState();
   const [viewMode, setViewMode] = useState('diagram');
 
@@ -44,18 +51,19 @@ export default function ProjectPage(props: RouteComponentProps<{projectID: strin
         }
       });
 
-      // TODO(youngteac.hong): We need to reflect the status of the remote location.
       updateAppState((appState) => {
-        const root = doc.getRootObject();
-        appState.selectedProject = JSON.parse(root.project.toJSON()) as Project;
+        appState.remote = doc;
         return appState;
       });
     })();
   }, [updateAppState, projectID]);
 
-  if (!appState.selectedProject) {
-    // TODO(youngteac.hong): Display loading progress.
-    return <div>loading</div>;
+  if (!appState.remote?.getRootObject().project) {
+    return (
+      <div className={classes.root}>
+        <CircularProgress />
+      </div>
+    );
   }
 
   return (
