@@ -47,6 +47,7 @@ export type Dependency = {
 export type DiagramInfo = {
   offset: Position;
   zoom: number;
+  selectedBlockID?: string;
 };
 
 export type Model = {
@@ -65,13 +66,12 @@ export type Project = {
 };
 
 export type LocalState = {
-  diagramInfo: DiagramInfo;
+  diagramInfos: { [modelID: string]: DiagramInfo };
   selectedModelID?: string;
-  selectedBlockID?: string;
 };
 
 export type AppState = {
-  counter: number; // TODO: repainting with mutable.
+  repaintCounter: number; // TODO: repainting with mutable.
   local: LocalState;
   remote?: any; // TODO: compatibility issue with immer and Yorkie
 };

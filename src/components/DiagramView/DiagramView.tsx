@@ -28,12 +28,13 @@ export default function DiagramView() {
   const [lastBlockID, setLastBlockID] = useState<string>();
   const [lastPosition, setLastPosition] = useState<Position>();
   const selectedModelID = appState.local.selectedModelID;
+  const repaintCounter = appState.repaintCounter;
 
   const handleMouseUp = useCallback(
     (event: any) => {
       if (lastFunction === 'selectionChanged' && lastBlockID) {
         updateAppState((appState) => {
-          appState.local.selectedBlockID = lastBlockID;
+          appState.local.diagramInfos[selectedModelID].selectedBlockID = lastBlockID;
           return appState;
         });
       } else if (lastFunction === 'positionChanged' && lastBlockID) {
@@ -43,7 +44,7 @@ export default function DiagramView() {
         });
 
         updateAppState((appState) => {
-          appState.local.selectedBlockID = lastBlockID;
+          appState.local.diagramInfos[selectedModelID].selectedBlockID = lastBlockID;
           return appState;
         });
       }
@@ -53,7 +54,7 @@ export default function DiagramView() {
 
   useEffect(() => {
     const project = appState.remote.getRootObject().project;
-    const diagramInfo = appState.local.diagramInfo;
+    const diagramInfo = appState.local.diagramInfos[selectedModelID];
     const model = project.models[selectedModelID];
     engine.update(model, diagramInfo);
     const deregister = engine.registerListener((event: any, entity: any) => {
@@ -98,7 +99,7 @@ export default function DiagramView() {
       } else if (entity instanceof DiagramModel) {
         if (event.function === 'offsetUpdated') {
           updateAppState((appState) => {
-            appState.local.diagramInfo.offset = {
+            appState.local.diagramInfos[selectedModelID].offset = {
               x: entity.getOffsetX(),
               y: entity.getOffsetY(),
             };
@@ -106,14 +107,24 @@ export default function DiagramView() {
           });
         } else if (event.function === 'zoomUpdated') {
           updateAppState((appState) => {
-            appState.local.diagramInfo.zoom = event.zoom;
+            appState.local.diagramInfos[selectedModelID].zoom = event.zoom;
             return appState;
           });
         }
       }
     });
     return () => deregister();
-  }, [engine, appState, updateAppState, setLastFunction, setLastBlockID, setLastPosition, selectedModelID]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    engine,
+    appState.remote,
+    repaintCounter,
+    selectedModelID,
+    updateAppState,
+    setLastFunction,
+    setLastBlockID,
+    setLastPosition
+  ]);
 
   return (
     <div onMouseUp={handleMouseUp}>

@@ -51,17 +51,23 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         }
       });
 
-      const ids = Object.keys(doc.getRootObject().project.models);
+      const modelIDs = Object.keys(doc.getRootObject().project.models);
       updateAppState((appState) => {
         appState.remote = doc;
-        appState.local.selectedModelID = ids[0];
+        appState.local.selectedModelID = modelIDs[0];
+        for (const modelID of modelIDs) {
+          appState.local.diagramInfos[modelID] = {
+            offset: { x: 0, y: 0 },
+            zoom: 0,
+          };
+        }
         return appState;
       });
 
       doc.subscribe((a) => {
         updateAppState((appState) => {
           appState.remote = doc;
-          appState.counter += 1;
+          appState.repaintCounter += 1;
           return appState;
         });
       });

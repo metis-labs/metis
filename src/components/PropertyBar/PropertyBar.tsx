@@ -43,45 +43,42 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function PropertyBar() {
   const classes = useStyles();
-  const [appState, updateAppState] = useAppState();
+  const [appState,] = useAppState();
   const project = appState.remote.getRootObject().project;
   const selectedModelID = appState.local.selectedModelID;
-  const selectedBlockID = appState.local.selectedBlockID;
+  const selectedBlockID = appState.local.diagramInfos[selectedModelID].selectedBlockID;
 
   const onTypeChange = useCallback(
     (event: ChangeEvent<{ value: unknown }>) => {
-      updateAppState((appState) => {
-        const project = appState.remote.getRootObject().project;
+      appState.remote.update(root => {
+        const project = root.project;
         const model = project.models[selectedModelID];
         model.blocks[selectedBlockID].type = event.target.value as BlockType;
-        return appState;
       });
     },
-    [updateAppState, selectedBlockID, selectedModelID],
+    [appState.remote, selectedBlockID, selectedModelID],
   );
 
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<{ value: unknown }>, key: string) => {
-      updateAppState((appState) => {
-        const project = appState.remote.getRootObject().project;
+      appState.remote.update(root => {
+        const project = root.project;
         const model = project.models[selectedModelID];
         model.blocks[selectedBlockID][key] = valueTransition(event.target.value as string);
-        return appState;
       });
     },
-    [updateAppState, selectedBlockID, selectedModelID],
+    [appState.remote, selectedBlockID, selectedModelID],
   );
 
   const handleParameterChange = useCallback(
     (event: ChangeEvent<{ value: unknown }>, key: string) => {
-      updateAppState((appState) => {
-        const project = appState.remote.getRootObject().project;
+      appState.remote.update(root => {
+        const project = root.project;
         const model = project.models[selectedModelID];
         model.blocks[selectedBlockID].parameters[key] = valueTransition(event.target.value as string);
-        return appState;
-      });
+      })
     },
-    [updateAppState, selectedBlockID, selectedModelID],
+    [appState.remote, selectedBlockID, selectedModelID],
   );
 
   const handleKeyDown = useCallback((event: any) => {
@@ -93,6 +90,8 @@ export default function PropertyBar() {
       return true;
     } else if (value === 'False' || value === 'false') {
       return false;
+    } else if (value === '') {
+      return value;
     } else if (!isNaN(+value)) {
       return +value;
     } else {
