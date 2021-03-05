@@ -73,13 +73,14 @@ export default function FileTreeBar() {
   const classes = useStyles();
   const [appState, updateAppState] = useAppState();
   const project = appState.remote.getRootObject().project!;
+  const selectedModelID = appState.local.selectedModelID;
 
   const handleNodeSelect = useCallback(
     (event: ChangeEvent, nodeId: any) => {
       updateAppState((appState) => {
         const project = appState.remote.getRootObject().project;
         if (project.models[nodeId]) {
-          project.selectedModelID = nodeId;
+          appState.local.selectedModelID = nodeId;
         }
         return appState;
       });
@@ -87,7 +88,7 @@ export default function FileTreeBar() {
     [updateAppState],
   );
 
-  // TODO(youngteac.hong): handle Object.keys, Object.values
+  // TODO(youngteac.hong): Replace below with type parameter.
   const models = JSON.parse(project.models.toJSON()) as { [key: string]: Model };
 
   return (
@@ -96,7 +97,7 @@ export default function FileTreeBar() {
       <Divider />
       <TreeView
         className={classes.root}
-        selected={[project.selectedModelID]}
+        selected={[selectedModelID]}
         defaultExpanded={[project.id]}
         defaultCollapseIcon={<MinusSquare />}
         defaultExpandIcon={<PlusSquare />}

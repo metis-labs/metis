@@ -2,7 +2,7 @@ import createEngine, { DiagramEngine, DiagramModel } from '@projectstorm/react-d
 
 import { MetisNodeModel } from 'components/DiagramView/MetisNodeModel';
 import { MetisNodeFactory } from 'components/DiagramView/MetisNodeFactory';
-import { Model, EmptyModel } from 'store/types';
+import { Model, EmptyModel, DiagramInfo } from 'store/types';
 import { MetisLinkFactory } from './MetisLinkFactory';
 import { MetisLinkModel } from './MetisLinkModel';
 
@@ -19,17 +19,17 @@ export class Engine {
     this.previousModel = EmptyModel;
   }
 
-  update(model: Model) {
+  update(model: Model, diagramInfo: DiagramInfo) {
     // TODO(youngteac.hong): If we got performance issues, we need to compare more strictly.
     const diagramModel = new DiagramModel();
     const nodes = [];
     const nodeInfoMap: { [key: string]: MetisNodeModel } = {};
 
-    if (model.diagramInfo.offset) {
-      diagramModel.setOffset(model.diagramInfo.offset.x, model.diagramInfo.offset.y);
+    if (diagramInfo.offset) {
+      diagramModel.setOffset(diagramInfo.offset.x, diagramInfo.offset.y);
     }
-    if (model.diagramInfo.zoom) {
-      diagramModel.setZoomLevel(model.diagramInfo.zoom);
+    if (diagramInfo.zoom) {
+      diagramModel.setZoomLevel(diagramInfo.zoom);
     }
 
     for (const [, block] of Object.entries(model.blocks)) {

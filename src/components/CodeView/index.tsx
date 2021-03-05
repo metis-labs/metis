@@ -23,11 +23,12 @@ export default function CodeView() {
   const [converter] = useState(new Converter());
   const [codeString, setCodeString] = useState('');
   const project = appState.remote.getRootObject().project!;
+  const selectedModelID = appState.local.selectedModelID;
 
   useEffect(() => {
-    converter.update(project.models[project.selectedModelID]);
+    converter.update(project.models[selectedModelID]);
     setCodeString(converter.getResult());
-  }, [converter, project]);
+  }, [converter, project, selectedModelID]);
 
   return (
     <div className={classes.root}>

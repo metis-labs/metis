@@ -45,31 +45,33 @@ export type Dependency = {
 };
 
 export type DiagramInfo = {
-  offset?: Position;
-  zoom?: number;
+  offset: Position;
+  zoom: number;
 };
 
 export type Model = {
   id: string;
   name: string;
   type: DiagramType;
-  diagramInfo: DiagramInfo;
   dependencies: { [id: string]: Dependency };
   blocks: { [id: string]: Block };
   links: { [id: string]: Link };
-  selectedBlockID?: string;
 };
 
 export type Project = {
   id: string;
   name: string;
   models: { [modelID: string]: Model };
-  selectedModelID?: string;
 };
 
-export type LocalState = {};
+export type LocalState = {
+  diagramInfo: DiagramInfo;
+  selectedModelID?: string;
+  selectedBlockID?: string;
+};
 
 export type AppState = {
+  counter: number; // TODO: repainting with mutable.
   local: LocalState;
   remote?: any; // TODO: compatibility issue with immer and Yorkie
 };

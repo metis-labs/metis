@@ -27,33 +27,35 @@ export default function DiagramView() {
   const [lastFunction, setLastFunction] = useState<string>();
   const [lastBlockID, setLastBlockID] = useState<string>();
   const [lastPosition, setLastPosition] = useState<Position>();
+  const selectedModelID = appState.local.selectedModelID;
 
   const handleMouseUp = useCallback(
     (event: any) => {
       if (lastFunction === 'selectionChanged' && lastBlockID) {
         updateAppState((appState) => {
-          const project = appState.remote.getRootObject().project;
-          const model = project.models[project.selectedModelID];
-          model.selectedBlockID = lastBlockID;
+          appState.local.selectedBlockID = lastBlockID;
           return appState;
         });
       } else if (lastFunction === 'positionChanged' && lastBlockID) {
-        updateAppState((appState) => {
-          const project = appState.remote.getRootObject().project;
-          const model = project.models[project.selectedModelID];
+        appState.remote.update((root) => {
+          const model = root.project.models[selectedModelID];
           model.blocks[lastBlockID].position = lastPosition;
-          model.selectedBlockID = lastBlockID;
+        });
+
+        updateAppState((appState) => {
+          appState.local.selectedBlockID = lastBlockID;
           return appState;
         });
       }
     },
-    [lastFunction, lastBlockID, lastPosition, updateAppState],
+    [lastFunction, lastBlockID, lastPosition, updateAppState, selectedModelID, appState.remote],
   );
 
   useEffect(() => {
     const project = appState.remote.getRootObject().project;
-    const model = project.models[project.selectedModelID];
-    engine.update(model);
+    const diagramInfo = appState.local.diagramInfo;
+    const model = project.models[selectedModelID];
+    engine.update(model, diagramInfo);
     const deregister = engine.registerListener((event: any, entity: any) => {
       setLastFunction(event.function);
       if (entity instanceof MetisNodeModel) {
@@ -61,18 +63,15 @@ export default function DiagramView() {
         if (event.function === 'positionChanged') {
           setLastPosition(event.entity.position);
         } else if (event.function === 'entityRemoved') {
-          updateAppState((appState) => {
-            const project = appState.remote.getRootObject().project;
-            const model = project.models[project.selectedModelID];
+          appState.remote.update((root) => {
+            const model = root.project.models[selectedModelID];
             delete model.blocks[entity.getBlockID()];
-            return appState;
           });
         }
       } else if (entity instanceof MetisLinkModel) {
         if (event.function === 'targetPortChanged') {
-          updateAppState((appState) => {
-            const project = appState.remote.getRootObject().project!;
-            const model = project.models[project.selectedModelID];
+          appState.remote.update((root) => {
+            const model = root.project.models[selectedModelID];
             let from, to;
             if (event.entity.sourcePort.getName() === 'in') {
               from = event.entity.targetPort.parent;
@@ -81,7 +80,7 @@ export default function DiagramView() {
               from = event.entity.sourcePort.parent;
               to = event.entity.targetPort.parent;
             } else {
-              return appState;
+              return;
             }
 
             model.links[entity.getID()] = {
@@ -89,22 +88,17 @@ export default function DiagramView() {
               from: from.getBlockID() as string,
               to: to.getBlockID() as string,
             };
-            return appState;
           });
         } else if (event.function === 'entityRemoved') {
-          updateAppState((appState) => {
-            const project = appState.remote.getRootObject().project;
-            const model = project.models[project.selectedModelID];
+          appState.remote.update((root) => {
+            const model = root.project.models[selectedModelID];
             delete model.links[entity.getLinkID()];
-            return appState;
           });
         }
       } else if (entity instanceof DiagramModel) {
         if (event.function === 'offsetUpdated') {
           updateAppState((appState) => {
-            const project = appState.remote.getRootObject().project;
-            const model = project.models[project.selectedModelID];
-            model.diagramInfo.offset = {
+            appState.local.diagramInfo.offset = {
               x: entity.getOffsetX(),
               y: entity.getOffsetY(),
             };
@@ -112,16 +106,14 @@ export default function DiagramView() {
           });
         } else if (event.function === 'zoomUpdated') {
           updateAppState((appState) => {
-            const project = appState.remote.getRootObject().project;
-            const model = project.models[project.selectedModelID];
-            model.diagramInfo.zoom = event.zoom;
+            appState.local.diagramInfo.zoom = event.zoom;
             return appState;
           });
         }
       }
     });
     return () => deregister();
-  }, [engine, appState, updateAppState, setLastFunction, setLastBlockID, setLastPosition]);
+  }, [engine, appState, updateAppState, setLastFunction, setLastBlockID, setLastPosition, selectedModelID]);
 
   return (
     <div onMouseUp={handleMouseUp}>

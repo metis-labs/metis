@@ -36,12 +36,12 @@ const useStyles = makeStyles(() =>
 
 export default function SideBar() {
   const classes = useStyles();
-  const [, updateAppState] = useAppState();
+  const [appState,] = useAppState();
+  const selectedModelID = appState.local.selectedModelID;
   const handleAddBlockClick = useCallback(
     (type: BlockType) => {
-      updateAppState((appState) => {
-        const project = appState.remote.getRootObject().project;
-        const model = project.models[project.selectedModelID];
+      appState.remote.update((root) => {
+        const model = root.project.models[selectedModelID];
         const blockLength = Object.keys(model.blocks).length;
         const position = { x: 100 + 10 * blockLength, y: 100 + 10 * blockLength };
         const id = uuidv4();
@@ -82,11 +82,9 @@ export default function SideBar() {
               },
             };
         }
-
-        return appState;
       });
     },
-    [updateAppState],
+    [appState.remote, selectedModelID],
   );
 
   return (

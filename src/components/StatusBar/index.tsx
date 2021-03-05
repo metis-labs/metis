@@ -29,6 +29,7 @@ export default function StatusBar(props: { viewMode: string; setViewMode: Functi
   const classes = useStyles();
   const [appState] = useAppState();
   const project = appState.remote.getRootObject().project;
+  const selectedModelID = appState.local.selectedModelID;
 
   const handleClick = useCallback(() => {
     setViewMode(viewMode === 'diagram' ? 'code' : 'diagram');
@@ -36,7 +37,7 @@ export default function StatusBar(props: { viewMode: string; setViewMode: Functi
 
   return (
     <div className={classes.root}>
-      <Typography variant="h5">{project.models[project.selectedModelID].name}</Typography>
+      <Typography variant="h5">{project.models[selectedModelID].name}</Typography>
       <IconButton onClick={handleClick}>{viewMode === 'diagram' ? <CodeIcon /> : <AccountTreeIcon />}</IconButton>
     </div>
   );

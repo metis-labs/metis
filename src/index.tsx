@@ -10,7 +10,16 @@ import { createStore } from 'store/store';
 
 import 'index.css';
 
-const AppStateStore = createStore({ local: {} });
+// TODO(youngteac.hong): we need to store below state to local storage.
+const AppStateStore = createStore({
+  counter: 0,
+  local: {
+    diagramInfo: {
+      offset: {x: 0, y: 0},
+      zoom: 0
+    }
+  },
+});
 export const useAppState = AppStateStore.useAppState;
 
 ReactDOM.render(

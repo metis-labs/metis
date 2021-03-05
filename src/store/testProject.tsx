@@ -267,7 +267,6 @@ const testProject: Project = {
     vgg_16: vggModel,
     resnet: resnetModel,
   },
-  selectedModelID: 'vgg_16',
 };
 
 export default testProject;
