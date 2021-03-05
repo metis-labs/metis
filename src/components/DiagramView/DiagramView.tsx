@@ -93,7 +93,11 @@ export default function DiagramView() {
         } else if (event.function === 'entityRemoved') {
           appState.remote.update((root) => {
             const model = root.project.models[selectedModelID];
-            delete model.links[entity.getLinkID()];
+            // NOTE: If users don't complete the link, it won't store in remote.
+            // So we only delete the link if it exists in remote.
+            if (model.links[entity.getLinkID()]) {
+              delete model.links[entity.getLinkID()];
+            }
           });
         }
       } else if (entity instanceof DiagramModel) {

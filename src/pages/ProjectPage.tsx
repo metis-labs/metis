@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import yorkie from 'yorkie-js-sdk';
 import anonymous from 'anonymous-animals-gen';
 import randomColor from 'randomcolor';
+
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import NavBar from 'components/NavBar';
 import SideBar from 'components/SideBar';
@@ -13,8 +14,8 @@ import DiagramView from 'components/DiagramView';
 import CodeView from 'components/CodeView';
 import StatusBar from 'components/StatusBar';
 import PropertyBar from 'components/PropertyBar';
-import { useAppState } from 'index';
 import testProject from 'store/testProject';
+import { useAppState } from 'index';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -74,6 +75,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       const modelIDs = Object.keys(doc.getRootObject().project.models);
       updateAppState((appState) => {
         appState.remote = doc;
+        appState.local.myYorkieClientID = client.getID();
         appState.local.selectedModelID = modelIDs[0];
         for (const modelID of modelIDs) {
           appState.local.diagramInfos[modelID] = {
@@ -86,7 +88,6 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
 
       doc.subscribe(() => {
         updateAppState((appState) => {
-          appState.remote = doc;
           appState.repaintCounter += 1;
           return appState;
         });

@@ -8,6 +8,7 @@ import { useAppState } from 'index';
 
 export default function PeerGroup() {
   const [appState, ] = useAppState();
+  const myID = appState.local.myYorkieClientID;
 
   return (
     <AvatarGroup max={4}>
@@ -17,7 +18,10 @@ export default function PeerGroup() {
             <Avatar
               key={peerID}
               alt="Peer Image"
-              style={{ backgroundColor: peer.color }}
+              style={{
+                backgroundColor: peer.color,
+                border: peerID === myID ? '2px solid black' : ''
+              }}
               src={anonymous.getImage(peer.image)}
             />
           </Tooltip>
