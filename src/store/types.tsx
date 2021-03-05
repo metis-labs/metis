@@ -70,9 +70,16 @@ export type LocalState = {
   selectedModelID?: string;
 };
 
+export type PeerInfo = {
+  color: string;
+  image: string;
+  username: string;
+}
+
 export type AppState = {
   repaintCounter: number; // TODO: repainting with mutable.
   local: LocalState;
+  peers: { [peerID: string]: PeerInfo };
   remote?: any; // TODO: compatibility issue with immer and Yorkie
 };
 

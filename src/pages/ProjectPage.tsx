@@ -3,6 +3,8 @@ import { RouteComponentProps } from 'react-router';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import yorkie from 'yorkie-js-sdk';
+import anonymous from 'anonymous-animals-gen';
+import randomColor from 'randomcolor';
 
 import NavBar from 'components/NavBar';
 import SideBar from 'components/SideBar';
@@ -40,8 +42,26 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
   const [viewMode, setViewMode] = useState('diagram');
 
   useEffect(() => {
+    let client, unsubscribe;
     (async () => {
-      const client = yorkie.createClient(`${process.env.REACT_APP_YORKIE_RPC_ADDR}`);
+      const { name, animal } = anonymous.generate();
+      client = yorkie.createClient(`${process.env.REACT_APP_YORKIE_RPC_ADDR}`, {
+        metadata: {
+          username: name,
+          image: animal,
+          color: randomColor(),
+        }
+      });
+      unsubscribe = client.subscribe((event) => {
+        if (event.name === 'peers-changed') {
+          const documentKey = doc.getKey().toIDString();
+          const changedPeers = event.value[documentKey];
+          updateAppState((appState) => {
+            appState.peers = changedPeers;
+            return appState;
+          });
+        }
+      });
       await client.activate();
       const doc = yorkie.createDocument('projects', projectID);
       await client.attach(doc);
@@ -64,7 +84,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         return appState;
       });
 
-      doc.subscribe((a) => {
+      doc.subscribe(() => {
         updateAppState((appState) => {
           appState.remote = doc;
           appState.repaintCounter += 1;
@@ -72,6 +92,15 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         });
       });
     })();
+
+    return async () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+      if (client) {
+        await client.deactivate();
+      }
+    };
   }, [updateAppState, projectID]);
 
   if (!appState.remote?.getRootObject().project) {
