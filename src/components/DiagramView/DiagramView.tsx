@@ -1,16 +1,35 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import NearMeIcon from '@material-ui/icons/NearMe';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
+import { DiagramModel } from '@projectstorm/react-diagrams';
 
 import { Engine } from 'components/DiagramView/Engine';
 import { Position } from 'store/types';
 import { useAppState } from '../../index';
 import { MetisNodeModel } from './MetisNodeModel';
 import { MetisLinkModel } from './MetisLinkModel';
-import { DiagramModel } from '@projectstorm/react-diagrams';
 
 const useStyles = makeStyles(() =>
   createStyles({
+    root: {
+      position: 'relative',
+    },
+    cursor: {
+      position: 'absolute',
+      display: 'flex',
+    },
+    cursorIcon: {
+      transform: 'matrix(-1, 0, 0, 1, 0, 0)',
+    },
+    peerName: {
+      position: 'relative',
+      top: '10px',
+      left: '-5px',
+      color: 'white',
+      padding: '2px 10px',
+      borderRadius: '10px',
+    },
     canvas: {
       marginTop: '64px',
       height: 'calc(100vh - 64px)',
@@ -22,6 +41,7 @@ const useStyles = makeStyles(() =>
 export default function DiagramView() {
   const classes = useStyles();
 
+  const rootElement = useRef(null);
   const [appState, updateAppState] = useAppState();
   const [engine] = useState(new Engine());
   const [lastFunction, setLastFunction] = useState<string>();
@@ -51,6 +71,22 @@ export default function DiagramView() {
     },
     [lastFunction, lastBlockID, lastPosition, updateAppState, selectedModelID, appState.remote],
   );
+
+  const diagramInfo = appState.local.diagramInfos[selectedModelID];
+  const clientID = appState.local.myYorkieClientID
+  const rect = rootElement.current?.getBoundingClientRect();
+  const handleMouseMove = useCallback((event: React.MouseEvent) => {
+    if (!rect) {
+      return;
+    }
+
+    appState.remote.update((root) => {
+      root.peers[clientID].cursor = {
+        x: (event.nativeEvent.clientX - rect.x - diagramInfo.offset.x) / (diagramInfo.zoom / 100),
+        y: (event.nativeEvent.clientY - rect.y - diagramInfo.offset.y) / (diagramInfo.zoom / 100)
+      };
+    });
+  }, [clientID, appState.remote, rect, diagramInfo]);
 
   useEffect(() => {
     const project = appState.remote.getRootObject().project;
@@ -130,9 +166,43 @@ export default function DiagramView() {
     setLastPosition
   ]);
 
+  const remotePeers = appState.remote.getRootObject().peers;
+  const myClientID = appState.local.myYorkieClientID;
+
+  const peers = [];
+  for (const [peerID, peer] of Object.entries(appState.peers)) {
+    if (myClientID === peerID ||
+      !remotePeers[peerID] ||
+      !remotePeers[peerID].cursor ||
+      remotePeers[peerID].selectedModelID !== selectedModelID) {
+      continue;
+    }
+    peers.push({
+      id: peerID,
+      username: peer.username,
+      color: peer.color,
+      cursor: remotePeers[peerID].cursor
+    });
+  }
+
   return (
-    <div onMouseUp={handleMouseUp}>
+    <div ref={rootElement} className={classes.root} onMouseUp={handleMouseUp} onMouseMove={handleMouseMove}>
       <CanvasWidget className={classes.canvas} engine={engine.getEngine()} />
+      {
+        peers.map((peer) => {
+          const pos = {
+            x: peer.cursor.x * (diagramInfo.zoom / 100) + diagramInfo.offset.x,
+            y: peer.cursor.y * (diagramInfo.zoom / 100) + diagramInfo.offset.y
+          }
+          // console.log('peer', { x: peer.cursor.x, y: peer.cursor.y })
+          return (
+            <div key={peer.id} className={classes.cursor} style={{ left: pos.x, top: pos.y }}>
+              <NearMeIcon className={classes.cursorIcon} style={{ color: peer.color }} />
+              <div className={classes.peerName} style={{backgroundColor: peer.color}}>{peer.username}</div>
+            </div>
+          );
+        })
+      }
     </div>
   );
 }

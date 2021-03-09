@@ -109,7 +109,6 @@ export default function FileTreeBar() {
     }
     peersMapByModelID[selectedModelID].push(peer);
   }
-  console.log(peersMapByModelID);
 
   return (
     <Drawer className={classes.drawer} variant="permanent" classes={{ paper: classes.drawerPaper }}>

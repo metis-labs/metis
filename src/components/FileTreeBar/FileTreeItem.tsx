@@ -138,7 +138,7 @@ export default function FileTreeItem(props: { model: Model; peers: Array<PeerInf
     <div className={classes.treeItemContainer} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <div className={classes.treeItem}>
         <StyledTreeItem key={model.id} nodeId={model.id} label={model.name} />
-        {peers && peers.map((peer) => <div style={{ backgroundColor: peer.color }} className={classes.peerRep}></div>)}
+        {peers && peers.map((peer) => <div key={peer.username} style={{ backgroundColor: peer.color }} className={classes.peerRep}></div>)}
       </div>
       <IconButton
         ref={anchorRef}

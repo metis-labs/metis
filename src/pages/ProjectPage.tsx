@@ -91,7 +91,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         for (const modelID of modelIDs) {
           appState.local.diagramInfos[modelID] = {
             offset: { x: 0, y: 0 },
-            zoom: 0,
+            zoom: 100,
           };
         }
         return appState;
