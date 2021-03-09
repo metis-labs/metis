@@ -73,6 +73,8 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         if (!root.peers) {
           root.peers = {};
         }
+        // TODO(youngteac.hong): Until Yorkie supports metadata-update, we use remote temporarily.
+        // client.updateMetadata('selectedModelID', modelIDs[0]);
         if (!root.peers[client.getID()]) {
           const modelIDs = Object.keys(root.project.models);
           root.peers[client.getID()] = {
@@ -96,7 +98,6 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       });
 
       doc.subscribe(() => {
-        console.log(doc.toJSON());
         updateAppState((appState) => {
           appState.repaintCounter += 1;
           return appState;

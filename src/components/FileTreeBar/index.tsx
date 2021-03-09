@@ -7,7 +7,7 @@ import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 import TreeView from '@material-ui/lab/TreeView';
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 
-import { Model } from 'store/types';
+import { Model, PeerInfo } from 'store/types';
 import { useAppState } from 'index';
 
 function MinusSquare(props: SvgIconProps) {
@@ -96,6 +96,21 @@ export default function FileTreeBar() {
   // TODO(youngteac.hong): Replace below with type parameter.
   const models = JSON.parse(project.models.toJSON()) as { [key: string]: Model };
 
+  const peersMapByModelID: { [modelID: string]: Array<PeerInfo> } = {};
+  for (const [peerID, peer] of Object.entries(appState.peers)) {
+    const peerInRemote = appState.remote.getRootObject().peers[peerID];
+    if (!peerInRemote) {
+      continue;
+    }
+
+    const selectedModelID = peerInRemote.selectedModelID;
+    if (!peersMapByModelID[selectedModelID]) {
+      peersMapByModelID[selectedModelID] = [];
+    }
+    peersMapByModelID[selectedModelID].push(peer);
+  }
+  console.log(peersMapByModelID);
+
   return (
     <Drawer className={classes.drawer} variant="permanent" classes={{ paper: classes.drawerPaper }}>
       <Toolbar />
@@ -110,9 +125,9 @@ export default function FileTreeBar() {
         onNodeSelect={handleNodeSelect}
       >
         <StyledTreeItem nodeId={project.id} label={project.name}>
-          {Object.values(models).map((model) => {
-            return <FileTreeItem key={model.id} model={model} />;
-          })}
+          {Object.values(models).map((model) => (
+            <FileTreeItem key={model.id} model={model} peers={peersMapByModelID[model.id]} />
+          ))}
         </StyledTreeItem>
       </TreeView>
     </Drawer>

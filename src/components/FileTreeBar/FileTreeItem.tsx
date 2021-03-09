@@ -14,6 +14,7 @@ import { TransitionProps } from '@material-ui/core/transitions';
 import Collapse from '@material-ui/core/Collapse';
 
 import { Model } from 'store/types';
+import { PeerInfo } from '../../store/types';
 
 export const StyledTreeItem = withStyles((theme: Theme) =>
   createStyles({
@@ -32,20 +33,30 @@ export const StyledTreeItem = withStyles((theme: Theme) =>
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    treeItemStyle: {
+    treeItemContainer: {
       display: 'flex',
       justifyContent: 'space-between',
-      alignItems: 'center',
+      alignContent: 'center',
     },
-    moreIcon: {
+    treeItem: {
+      display: 'flex',
+    },
+    peerRep: {
+      marginLeft: '1px',
+      width: '8px',
+      height: '8px',
+      backgroundColor: 'red',
+      borderRadius: '4px',
+    },
+    moreIconButton: {
       display: 'none',
     },
-    moreIconShow: {
+    moreIconButtonShow: {
       height: '24px',
       width: '24px',
       display: 'flex',
     },
-    moreItemStyle: {
+    moreIcon: {
       fontSize: 'medium',
     },
     menuItem: {
@@ -68,9 +79,9 @@ function TransitionComponent(props: TransitionProps) {
   );
 }
 
-export default function FileTreeItem(props: { model: Model }) {
+export default function FileTreeItem(props: { model: Model; peers: Array<PeerInfo> }) {
   const classes = useStyles();
-  const { model } = props;
+  const { model, peers } = props;
   const [open, setOpen] = useState(false);
   const [show, setShow] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
@@ -124,20 +135,19 @@ export default function FileTreeItem(props: { model: Model }) {
   );
 
   return (
-    <div className={classes.treeItemStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-      <StyledTreeItem
-        key={model.id}
-        nodeId={model.id}
-        label={model.name}
-      />
+    <div className={classes.treeItemContainer} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      <div className={classes.treeItem}>
+        <StyledTreeItem key={model.id} nodeId={model.id} label={model.name} />
+        {peers && peers.map((peer) => <div style={{ backgroundColor: peer.color }} className={classes.peerRep}></div>)}
+      </div>
       <IconButton
         ref={anchorRef}
         aria-controls={open ? 'menu-list-grow' : undefined}
         aria-haspopup="true"
         onClick={handleToggle}
-        className={show ? classes.moreIconShow : classes.moreIcon}
+        className={show ? classes.moreIconButtonShow : classes.moreIconButton}
       >
-        <MoreVertIcon className={classes.moreItemStyle} />
+        <MoreVertIcon className={classes.moreIcon} />
       </IconButton>
       <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
         {({ TransitionProps, placement }) => (
