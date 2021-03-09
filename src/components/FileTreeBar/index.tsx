@@ -74,18 +74,23 @@ export default function FileTreeBar() {
   const [appState, updateAppState] = useAppState();
   const project = appState.remote.getRootObject().project!;
   const selectedModelID = appState.local.selectedModelID;
+  const clientID = appState.local.myYorkieClientID;
 
   const handleNodeSelect = useCallback(
-    (event: ChangeEvent, nodeId: any) => {
+    (event: ChangeEvent, modelID: any) => {
       updateAppState((appState) => {
         const project = appState.remote.getRootObject().project;
-        if (project.models[nodeId]) {
-          appState.local.selectedModelID = nodeId;
+        if (project.models[modelID]) {
+          appState.local.selectedModelID = modelID;
         }
         return appState;
       });
+
+      appState.remote.update((root) => {
+        root.peers[clientID].selectedModelID = modelID;
+      });
     },
-    [updateAppState],
+    [appState.remote, updateAppState, clientID],
   );
 
   // TODO(youngteac.hong): Replace below with type parameter.

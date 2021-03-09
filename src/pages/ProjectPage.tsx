@@ -51,7 +51,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
           username: name,
           image: animal,
           color: randomColor(),
-        }
+        },
       });
       unsubscribe = client.subscribe((event) => {
         if (event.name === 'peers-changed') {
@@ -70,6 +70,15 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         if (!root.project) {
           root.project = testProject;
         }
+        if (!root.peers) {
+          root.peers = {};
+        }
+        if (!root.peers[client.getID()]) {
+          const modelIDs = Object.keys(root.project.models);
+          root.peers[client.getID()] = {
+            selectedModelID: modelIDs[0],
+          };
+        }
       });
 
       const modelIDs = Object.keys(doc.getRootObject().project.models);
@@ -87,6 +96,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       });
 
       doc.subscribe(() => {
+        console.log(doc.toJSON());
         updateAppState((appState) => {
           appState.repaintCounter += 1;
           return appState;

@@ -75,7 +75,9 @@ export type PeerInfo = {
   color: string;
   image: string;
   username: string;
-}
+  selectedModelID?: string;
+  cursor: Position;
+};
 
 export type AppState = {
   local: LocalState;
