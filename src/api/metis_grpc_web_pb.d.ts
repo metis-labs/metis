@@ -1,41 +1,62 @@
 import * as grpcWeb from 'grpc-web';
 
-import * as src_api_metis_pb from '../../src/api/metis_pb';
+import * as google_protobuf_timestamp_pb from 'google-protobuf/google/protobuf/timestamp_pb';
+
+import {
+  CreateModelRequest,
+  CreateModelResponse,
+  CreateProjectRequest,
+  CreateProjectResponse,
+  ListProjectsRequest,
+  ListProjectsResponse} from './metis_pb';
 
 export class MetisClient {
-  constructor(
-    hostname: string,
-    credentials?: null | { [index: string]: string },
-    options?: null | { [index: string]: any },
-  );
+  constructor (hostname: string,
+               credentials?: null | { [index: string]: string; },
+               options?: null | { [index: string]: string; });
 
   createModel(
-    request: src_api_metis_pb.CreateModelRequest,
+    request: CreateModelRequest,
     metadata: grpcWeb.Metadata | undefined,
-    callback: (err: grpcWeb.Error, response: src_api_metis_pb.CreateModelResponse) => void,
-  ): grpcWeb.ClientReadableStream<src_api_metis_pb.CreateModelResponse>;
+    callback: (err: grpcWeb.Error,
+               response: CreateModelResponse) => void
+  ): grpcWeb.ClientReadableStream<CreateModelResponse>;
+
+  createProject(
+    request: CreateProjectRequest,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: CreateProjectResponse) => void
+  ): grpcWeb.ClientReadableStream<CreateProjectResponse>;
 
   listProjects(
-    request: src_api_metis_pb.ListProjectsRequest,
+    request: ListProjectsRequest,
     metadata: grpcWeb.Metadata | undefined,
-    callback: (err: grpcWeb.Error, response: src_api_metis_pb.ListProjectsResponse) => void,
-  ): grpcWeb.ClientReadableStream<src_api_metis_pb.ListProjectsResponse>;
+    callback: (err: grpcWeb.Error,
+               response: ListProjectsResponse) => void
+  ): grpcWeb.ClientReadableStream<ListProjectsResponse>;
+
 }
 
 export class MetisPromiseClient {
-  constructor(
-    hostname: string,
-    credentials?: null | { [index: string]: string },
-    options?: null | { [index: string]: any },
-  );
+  constructor (hostname: string,
+               credentials?: null | { [index: string]: string; },
+               options?: null | { [index: string]: string; });
 
   createModel(
-    request: src_api_metis_pb.CreateModelRequest,
-    metadata?: grpcWeb.Metadata,
-  ): Promise<src_api_metis_pb.CreateModelResponse>;
+    request: CreateModelRequest,
+    metadata?: grpcWeb.Metadata
+  ): Promise<CreateModelResponse>;
+
+  createProject(
+    request: CreateProjectRequest,
+    metadata?: grpcWeb.Metadata
+  ): Promise<CreateProjectResponse>;
 
   listProjects(
-    request: src_api_metis_pb.ListProjectsRequest,
-    metadata?: grpcWeb.Metadata,
-  ): Promise<src_api_metis_pb.ListProjectsResponse>;
+    request: ListProjectsRequest,
+    metadata?: grpcWeb.Metadata
+  ): Promise<ListProjectsResponse>;
+
 }
+

@@ -1,8 +1,11 @@
 syntax = "proto3";
 package api;
 
+import "google/protobuf/timestamp.proto";
+
 service Metis {
     rpc CreateModel (CreateModelRequest) returns (CreateModelResponse);
+    rpc CreateProject (CreateProjectRequest) returns (CreateProjectResponse);
     rpc ListProjects (ListProjectsRequest) returns (ListProjectsResponse);
 }
 
@@ -12,6 +15,14 @@ message CreateModelRequest {
 
 message CreateModelResponse {
     Model model = 1;
+}
+
+message CreateProjectRequest {
+    string project_name = 1;
+}
+
+message CreateProjectResponse {
+    Project project = 1;
 }
 
 message ListProjectsRequest {
@@ -26,7 +37,8 @@ message Project {
     string id = 1;
     string name = 2;
     map<string, Model> models = 3;
-    string selectedBlockID = 4;
+    string selected_block_id = 4;
+    google.protobuf.Timestamp created_at = 5;
 }
 
 enum DiagramType {
@@ -70,7 +82,7 @@ message Model {
     string id = 1;
     string name = 2;
     DiagramType type = 3;
-    DiagramInfo diagramInfo = 4;
+    DiagramInfo diagram_info = 4;
     map<string, Dependency> dependencies = 5;
     map<string, Block> blocks = 6;
     map<string, Link> links = 7;
