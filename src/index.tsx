@@ -13,6 +13,7 @@ import 'index.css';
 // TODO(youngteac.hong): we need to store below state to local storage.
 const AppStateStore = createStore({
   repaintCounter: 0,
+  peersRepaintCounter: 0,
   local: { diagramInfos: {} },
   peers: {},
 });

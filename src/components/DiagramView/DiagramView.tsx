@@ -73,20 +73,23 @@ export default function DiagramView() {
   );
 
   const diagramInfo = appState.local.diagramInfos[selectedModelID];
-  const clientID = appState.local.myYorkieClientID
+  const clientID = appState.local.myYorkieClientID;
   const rect = rootElement.current?.getBoundingClientRect();
-  const handleMouseMove = useCallback((event: React.MouseEvent) => {
-    if (!rect) {
-      return;
-    }
+  const handleMouseMove = useCallback(
+    (event: React.MouseEvent) => {
+      if (!rect) {
+        return;
+      }
 
-    appState.remote.update((root) => {
-      root.peers[clientID].cursor = {
-        x: (event.nativeEvent.clientX - rect.x - diagramInfo.offset.x) / (diagramInfo.zoom / 100),
-        y: (event.nativeEvent.clientY - rect.y - diagramInfo.offset.y) / (diagramInfo.zoom / 100)
-      };
-    });
-  }, [clientID, appState.remote, rect, diagramInfo]);
+      appState.peersRemote.update((root) => {
+        root.peers[clientID].cursor = {
+          x: (event.nativeEvent.clientX - rect.x - diagramInfo.offset.x) / (diagramInfo.zoom / 100),
+          y: (event.nativeEvent.clientY - rect.y - diagramInfo.offset.y) / (diagramInfo.zoom / 100),
+        };
+      });
+    },
+    [clientID, appState.peersRemote, rect, diagramInfo],
+  );
 
   useEffect(() => {
     const project = appState.remote.getRootObject().project;
@@ -163,46 +166,48 @@ export default function DiagramView() {
     updateAppState,
     setLastFunction,
     setLastBlockID,
-    setLastPosition
+    setLastPosition,
   ]);
 
-  const remotePeers = appState.remote.getRootObject().peers;
+  const remotePeers = appState.peersRemote.getRootObject().peers;
   const myClientID = appState.local.myYorkieClientID;
 
   const peers = [];
   for (const [peerID, peer] of Object.entries(appState.peers)) {
-    if (myClientID === peerID ||
+    if (
+      myClientID === peerID ||
       !remotePeers[peerID] ||
       !remotePeers[peerID].cursor ||
-      remotePeers[peerID].selectedModelID !== selectedModelID) {
+      remotePeers[peerID].selectedModelID !== selectedModelID
+    ) {
       continue;
     }
     peers.push({
       id: peerID,
       username: peer.username,
       color: peer.color,
-      cursor: remotePeers[peerID].cursor
+      cursor: remotePeers[peerID].cursor,
     });
   }
 
   return (
     <div ref={rootElement} className={classes.root} onMouseUp={handleMouseUp} onMouseMove={handleMouseMove}>
       <CanvasWidget className={classes.canvas} engine={engine.getEngine()} />
-      {
-        peers.map((peer) => {
-          const pos = {
-            x: peer.cursor.x * (diagramInfo.zoom / 100) + diagramInfo.offset.x,
-            y: peer.cursor.y * (diagramInfo.zoom / 100) + diagramInfo.offset.y
-          }
-          // console.log('peer', { x: peer.cursor.x, y: peer.cursor.y })
-          return (
-            <div key={peer.id} className={classes.cursor} style={{ left: pos.x, top: pos.y }}>
-              <NearMeIcon className={classes.cursorIcon} style={{ color: peer.color }} />
-              <div className={classes.peerName} style={{backgroundColor: peer.color}}>{peer.username}</div>
+      {peers.map((peer) => {
+        const pos = {
+          x: peer.cursor.x * (diagramInfo.zoom / 100) + diagramInfo.offset.x,
+          y: peer.cursor.y * (diagramInfo.zoom / 100) + diagramInfo.offset.y,
+        };
+        // console.log('peer', { x: peer.cursor.x, y: peer.cursor.y })
+        return (
+          <div key={peer.id} className={classes.cursor} style={{ left: pos.x, top: pos.y }}>
+            <NearMeIcon className={classes.cursorIcon} style={{ color: peer.color }} />
+            <div className={classes.peerName} style={{ backgroundColor: peer.color }}>
+              {peer.username}
             </div>
-          );
-        })
-      }
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -43,7 +43,8 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
   const [viewMode, setViewMode] = useState('diagram');
 
   useEffect(() => {
-    let client, unsubscribe;
+    let client;
+    const unsubscribes: Array<Function> = [];
     (async () => {
       const { name, animal } = anonymous.generate();
       client = yorkie.createClient(`${process.env.REACT_APP_YORKIE_RPC_ADDR}`, {
@@ -53,39 +54,53 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
           color: randomColor(),
         },
       });
-      unsubscribe = client.subscribe((event) => {
-        if (event.name === 'peers-changed') {
-          const documentKey = doc.getKey().toIDString();
-          const changedPeers = event.value[documentKey];
-          updateAppState((appState) => {
-            appState.peers = changedPeers;
-            return appState;
-          });
-        }
-      });
-      await client.activate();
+
       const doc = yorkie.createDocument('projects', projectID);
+      const peersDoc = yorkie.createDocument('peers', projectID);
+
+      unsubscribes.push(
+        client.subscribe((event) => {
+          if (event.name === 'peers-changed') {
+            const documentKey = peersDoc.getKey().toIDString();
+            const changedPeers = event.value[documentKey];
+            if (!changedPeers) {
+              return;
+            }
+
+            updateAppState((appState) => {
+              appState.peers = changedPeers;
+              return appState;
+            });
+          }
+        }),
+      );
+      await client.activate();
       await client.attach(doc);
+      await client.attach(peersDoc);
+
       doc.update((root) => {
         if (!root.project) {
           root.project = testProject;
         }
+      });
+
+      const modelIDs = Object.keys(doc.getRootObject().project.models);
+      // TODO(youngteac.hong): Until Yorkie supports metadata-update, we use remote temporarily.
+      // client.updateMetadata('selectedModelID', modelIDs[0]);
+      peersDoc.update((root) => {
         if (!root.peers) {
           root.peers = {};
         }
-        // TODO(youngteac.hong): Until Yorkie supports metadata-update, we use remote temporarily.
-        // client.updateMetadata('selectedModelID', modelIDs[0]);
         if (!root.peers[client.getID()]) {
-          const modelIDs = Object.keys(root.project.models);
           root.peers[client.getID()] = {
             selectedModelID: modelIDs[0],
           };
         }
       });
 
-      const modelIDs = Object.keys(doc.getRootObject().project.models);
       updateAppState((appState) => {
         appState.remote = doc;
+        appState.peersRemote = peersDoc;
         appState.local.myYorkieClientID = client.getID();
         appState.local.selectedModelID = modelIDs[0];
         for (const modelID of modelIDs) {
@@ -97,16 +112,27 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         return appState;
       });
 
-      doc.subscribe(() => {
-        updateAppState((appState) => {
-          appState.repaintCounter += 1;
-          return appState;
-        });
-      });
+      unsubscribes.push(
+        doc.subscribe(() => {
+          updateAppState((appState) => {
+            appState.repaintCounter += 1;
+            return appState;
+          });
+        }),
+      );
+
+      unsubscribes.push(
+        peersDoc.subscribe(() => {
+          updateAppState((appState) => {
+            appState.peersRepaintCounter += 1;
+            return appState;
+          });
+        }),
+      );
     })();
 
     return async () => {
-      if (unsubscribe) {
+      for (const unsubscribe of unsubscribes) {
         unsubscribe();
       }
       if (client) {
