@@ -13937,9 +13937,9 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-"yorkie-js-sdk@https://github.com/yorkie-team/yorkie-js-sdk#main":
+"yorkie-js-sdk@https://github.com/yorkie-team/yorkie-js-sdk#json-path-event":
   version "0.1.2"
-  resolved "https://github.com/yorkie-team/yorkie-js-sdk#0cb3ec338dd07ebcadf7f0d3e9798225c0cc2b17"
+  resolved "https://github.com/yorkie-team/yorkie-js-sdk#4c651a818edade390434cdebcd69deb374887410"
   dependencies:
     "@types/google-protobuf" "^3.7.4"
     "@types/long" "^4.0.1"

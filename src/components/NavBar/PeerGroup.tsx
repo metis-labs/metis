@@ -7,26 +7,24 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { useAppState } from 'index';
 
 export default function PeerGroup() {
-  const [appState, ] = useAppState();
+  const [appState] = useAppState();
   const myID = appState.local.myYorkieClientID;
 
   return (
     <AvatarGroup max={4}>
-      {
-        Object.entries(appState.peers).map(([peerID, peer]) =>
-          <Tooltip key={peerID} title={peer.username} data-id={peerID} arrow>
-            <Avatar
-              key={peerID}
-              alt="Peer Image"
-              style={{
-                backgroundColor: peer.color,
-                border: peerID === myID ? '2px solid black' : ''
-              }}
-              src={anonymous.getImage(peer.image)}
-            />
-          </Tooltip>
-        )
-      }
+      {Object.entries(appState.peers).map(([peerID, peer]) => (
+        <Tooltip key={peerID} title={peer.username} data-id={peerID} arrow>
+          <Avatar
+            key={peerID}
+            alt="Peer Image"
+            style={{
+              backgroundColor: peer.color,
+              border: peerID === myID ? '2px solid black' : '',
+            }}
+            src={anonymous.getImage(peer.image)}
+          />
+        </Tooltip>
+      ))}
     </AvatarGroup>
   );
 }

@@ -72,14 +72,14 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function FileTreeBar() {
   const classes = useStyles();
   const [appState, updateAppState] = useAppState();
-  const project = appState.remote.getRootObject().project!;
+  const project = appState.remote.getRoot().project!;
   const selectedModelID = appState.local.selectedModelID;
   const clientID = appState.local.myYorkieClientID;
 
   const handleNodeSelect = useCallback(
     (event: ChangeEvent, modelID: any) => {
       updateAppState((appState) => {
-        const project = appState.remote.getRootObject().project;
+        const project = appState.remote.getRoot().project;
         if (project.models[modelID]) {
           appState.local.selectedModelID = modelID;
         }
@@ -98,7 +98,7 @@ export default function FileTreeBar() {
 
   const peersMapByModelID: { [modelID: string]: Array<PeerInfo> } = {};
   for (const [peerID, peer] of Object.entries(appState.peers)) {
-    const peerInRemote = appState.peersRemote.getRootObject().peers[peerID];
+    const peerInRemote = appState.peersRemote.getRoot().peers[peerID];
     if (!peerInRemote) {
       continue;
     }

@@ -22,7 +22,7 @@ export default function CodeView() {
   const [appState] = useAppState();
   const [converter] = useState(new Converter());
   const [codeString, setCodeString] = useState('');
-  const project = appState.remote.getRootObject().project!;
+  const project = appState.remote.getRoot().project!;
   const selectedModelID = appState.local.selectedModelID;
 
   useEffect(() => {

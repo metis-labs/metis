@@ -92,7 +92,7 @@ export default function DiagramView() {
   );
 
   useEffect(() => {
-    const project = appState.remote.getRootObject().project;
+    const project = appState.remote.getRoot().project;
     const diagramInfo = appState.local.diagramInfos[selectedModelID];
     const model = project.models[selectedModelID];
     engine.update(model, diagramInfo);
@@ -169,7 +169,7 @@ export default function DiagramView() {
     setLastPosition,
   ]);
 
-  const remotePeers = appState.peersRemote.getRootObject().peers;
+  const remotePeers = appState.peersRemote.getRoot().peers;
   const myClientID = appState.local.myYorkieClientID;
 
   const peers = [];

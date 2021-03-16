@@ -60,7 +60,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
 
       unsubscribes.push(
         client.subscribe((event) => {
-          if (event.name === 'peers-changed') {
+          if (event.type === 'peers-changed') {
             const documentKey = peersDoc.getKey().toIDString();
             const changedPeers = event.value[documentKey];
             if (!changedPeers) {
@@ -84,7 +84,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         }
       });
 
-      const modelIDs = Object.keys(doc.getRootObject().project.models);
+      const modelIDs = Object.keys(doc.getRoot().project.models);
       // TODO(youngteac.hong): Until Yorkie supports metadata-update, we use remote temporarily.
       // client.updateMetadata('selectedModelID', modelIDs[0]);
       peersDoc.update((root) => {
@@ -113,20 +113,26 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       });
 
       unsubscribes.push(
-        doc.subscribe(() => {
-          updateAppState((appState) => {
-            appState.repaintCounter += 1;
-            return appState;
-          });
+        doc.subscribe((event) => {
+          if (event.type === 'local-change' || event.type === 'remote-change') {
+            console.log(event);
+            updateAppState((appState) => {
+              appState.repaintCounter += 1;
+              return appState;
+            });
+          }
         }),
       );
 
       unsubscribes.push(
-        peersDoc.subscribe(() => {
-          updateAppState((appState) => {
-            appState.peersRepaintCounter += 1;
-            return appState;
-          });
+        peersDoc.subscribe((event) => {
+          if (event.type === 'local-change' || event.type === 'remote-change') {
+            console.log(event);
+            updateAppState((appState) => {
+              appState.peersRepaintCounter += 1;
+              return appState;
+            });
+          }
         }),
       );
     })();
@@ -141,7 +147,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
     };
   }, [updateAppState, projectID]);
 
-  if (!appState.remote?.getRootObject().project) {
+  if (!appState.remote?.getRoot().project) {
     return (
       <div className={classes.root}>
         <CircularProgress />

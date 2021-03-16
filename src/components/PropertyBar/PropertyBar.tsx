@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function PropertyBar() {
   const classes = useStyles();
   const [appState,] = useAppState();
-  const project = appState.remote.getRootObject().project;
+  const project = appState.remote.getRoot().project;
   const selectedModelID = appState.local.selectedModelID;
   const selectedBlockID = appState.local.diagramInfos[selectedModelID].selectedBlockID;
 

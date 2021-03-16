@@ -11,10 +11,7 @@ import Container from '@material-ui/core/Container';
 import AddIcon from '@material-ui/icons/Add';
 
 import { Project } from 'store/types';
-import {
-  ListProjectsRequest,
-  CreateProjectRequest,
-} from 'api/metis_pb';
+import { ListProjectsRequest, CreateProjectRequest } from 'api/metis_pb';
 import { MetisPromiseClient } from 'api/metis_grpc_web_pb';
 import { fromProjects } from '../api/converter';
 
@@ -62,7 +59,7 @@ export default function ProjectIntroPage() {
   const classes = useStyles();
   const history = useHistory();
   const [projects, setProjects] = useState<Array<Project>>([]);
-  const [client,] = useState<MetisPromiseClient>(new MetisPromiseClient('http://localhost:8080'));
+  const [client] = useState<MetisPromiseClient>(new MetisPromiseClient('http://localhost:8080'));
 
   useEffect(() => {
     client.listProjects(new ListProjectsRequest()).then((res) => {
@@ -76,20 +73,24 @@ export default function ProjectIntroPage() {
     client.createProject(req).then((res) => {
       history.push(`/${res.getProject().getId()}`);
     });
-  }, [client])
+  }, [client, history]);
 
   return (
     <Container className={classes.root} maxWidth="xl">
-      <Typography className={classes.sectionTitle} variant="h4" component="h4">Create project</Typography>
+      <Typography className={classes.sectionTitle} variant="h4" component="h4">
+        Create project
+      </Typography>
       <Grid container spacing={2}>
         <Grid item>
           <Card className={classes.createProjectCard}>
             <CardActionArea className={classes.createCard} onClick={handleNewProject}>
               <CardContent>
-               <div>
-                 <AddIcon fontSize="large" />
-               </div>
-               <Typography variant="h6" component="h6">New Project</Typography>
+                <div>
+                  <AddIcon fontSize="large" />
+                </div>
+                <Typography variant="h6" component="h6">
+                  New Project
+                </Typography>
               </CardContent>
             </CardActionArea>
           </Card>
@@ -100,19 +101,16 @@ export default function ProjectIntroPage() {
           </Card>
         </Grid>
       </Grid>
-      <Typography className={classes.sectionTitle} variant="h4" component="h4">Recent project</Typography>
+      <Typography className={classes.sectionTitle} variant="h4" component="h4">
+        Recent project
+      </Typography>
       <Grid container spacing={2}>
         {projects.map((project) => (
           <Grid key={project.id} item>
             <Card className={classes.projectCard}>
-              <CardMedia
-                className={classes.media}
-                image="/static/images/cards/contemplative-reptile.jpg"
-              />
+              <CardMedia className={classes.media} image="/static/images/cards/contemplative-reptile.jpg" />
               <CardContent>
-                <Link to={`/${project.id}`}>
-                  {project.name}
-                </Link>
+                <Link to={`/${project.id}`}>{project.name}</Link>
               </CardContent>
             </Card>
           </Grid>

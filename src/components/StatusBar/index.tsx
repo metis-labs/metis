@@ -28,7 +28,7 @@ export default function StatusBar(props: { viewMode: string; setViewMode: Functi
   const { viewMode, setViewMode } = props;
   const classes = useStyles();
   const [appState] = useAppState();
-  const project = appState.remote.getRootObject().project;
+  const project = appState.remote.getRoot().project;
   const selectedModelID = appState.local.selectedModelID;
 
   const handleClick = useCallback(() => {
