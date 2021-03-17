@@ -73,7 +73,7 @@ export default function DiagramView() {
   );
 
   const diagramInfo = appState.local.diagramInfos[selectedModelID];
-  const clientID = appState.local.myYorkieClientID;
+  const clientID = appState.local.myClientID;
   const rect = rootElement.current?.getBoundingClientRect();
   const handleMouseMove = useCallback(
     (event: React.MouseEvent) => {
@@ -81,14 +81,14 @@ export default function DiagramView() {
         return;
       }
 
-      appState.peersRemote.update((root) => {
+      appState.remote.update((root) => {
         root.peers[clientID].cursor = {
           x: (event.nativeEvent.clientX - rect.x - diagramInfo.offset.x) / (diagramInfo.zoom / 100),
           y: (event.nativeEvent.clientY - rect.y - diagramInfo.offset.y) / (diagramInfo.zoom / 100),
         };
       });
     },
-    [clientID, appState.peersRemote, rect, diagramInfo],
+    [clientID, appState.remote, rect, diagramInfo],
   );
 
   useEffect(() => {
@@ -169,8 +169,8 @@ export default function DiagramView() {
     setLastPosition,
   ]);
 
-  const remotePeers = appState.peersRemote.getRoot().peers;
-  const myClientID = appState.local.myYorkieClientID;
+  const remotePeers = appState.remote.getRoot().peers;
+  const myClientID = appState.local.myClientID;
 
   const peers = [];
   for (const [peerID, peer] of Object.entries(appState.peers)) {

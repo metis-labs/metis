@@ -16,10 +16,10 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(2),
     },
     title: {
-      color: 'black',
       flexGrow: 1,
       '& > a': {
-        color: 'black',
+        color: theme.palette.primary.main,
+        fontWeight: 'bold',
         textDecoration: 'none',
       },
     },

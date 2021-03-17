@@ -8,7 +8,7 @@ import { useAppState } from 'index';
 
 export default function PeerGroup() {
   const [appState] = useAppState();
-  const myID = appState.local.myYorkieClientID;
+  const myID = appState.local.myClientID;
 
   return (
     <AvatarGroup max={4}>

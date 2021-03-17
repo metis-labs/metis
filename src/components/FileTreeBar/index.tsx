@@ -74,7 +74,7 @@ export default function FileTreeBar() {
   const [appState, updateAppState] = useAppState();
   const project = appState.remote.getRoot().project!;
   const selectedModelID = appState.local.selectedModelID;
-  const clientID = appState.local.myYorkieClientID;
+  const clientID = appState.local.myClientID;
 
   const handleNodeSelect = useCallback(
     (event: ChangeEvent, modelID: any) => {
@@ -86,11 +86,11 @@ export default function FileTreeBar() {
         return appState;
       });
 
-      appState.peersRemote.update((root) => {
+      appState.remote.update((root) => {
         root.peers[clientID].selectedModelID = modelID;
       });
     },
-    [appState.peersRemote, updateAppState, clientID],
+    [appState.remote, updateAppState, clientID],
   );
 
   // TODO(youngteac.hong): Replace below with type parameter.
@@ -98,7 +98,7 @@ export default function FileTreeBar() {
 
   const peersMapByModelID: { [modelID: string]: Array<PeerInfo> } = {};
   for (const [peerID, peer] of Object.entries(appState.peers)) {
-    const peerInRemote = appState.peersRemote.getRoot().peers[peerID];
+    const peerInRemote = appState.remote.getRoot().peers[peerID];
     if (!peerInRemote) {
       continue;
     }
