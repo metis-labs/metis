@@ -1,6 +1,6 @@
 # Metis
 
-Neural Network Design Tool
+Visually build, test, and deploy machine learning models.
 
 ## Testing Metis
 
