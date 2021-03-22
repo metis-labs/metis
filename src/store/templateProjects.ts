@@ -260,13 +260,23 @@ const resnetModel = {
   links: resnetLinks,
 } as Model;
 
-const testProject: Project = {
-  id: 'visionProject',
-  name: 'visionProject',
+export const vggProject: Project = {
+  id: 'vggProject',
+  name: 'vggProject',
   models: {
     vgg_16: vggModel,
+  },
+};
+
+export const resnetProject: Project = {
+  id: 'resnetProject',
+  name: 'resnetProject',
+  models: {
     resnet: resnetModel,
   },
 };
 
-export default testProject;
+export const templateProjects: { [id: string]: Project } = {
+  vggProject,
+  resnetProject,
+};

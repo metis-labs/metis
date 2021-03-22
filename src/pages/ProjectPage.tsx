@@ -14,7 +14,8 @@ import DiagramView from 'components/DiagramView';
 import CodeView from 'components/CodeView';
 import StatusBar from 'components/StatusBar';
 import PropertyBar from 'components/PropertyBar';
-import testProject from 'store/testProject';
+import { initialProject } from 'store/initialProject';
+import { templateProjects } from 'store/templateProjects';
 import { useAppState } from 'index';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -76,8 +77,17 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       await client.attach(doc);
 
       doc.update((root) => {
+        const params = new URLSearchParams(props.location.search);
+        const templateID = params.get('template_id');
         if (!root.project) {
-          root.project = testProject;
+          // TODO: Occur the error when introducing the template_id from URL query parsing.
+          // Material-UI: A component is changing the default expanded state of an uncontrolled
+          // TreeView after being initialized. To suppress this warning opt to use a controlled TreeView.
+          if (templateID) {
+            root.project = templateProjects[templateID];
+          } else {
+            root.project = initialProject;
+          }
         }
         if (!root.peers) {
           root.peers = {};
@@ -150,7 +160,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         await client.deactivate();
       }
     };
-  }, [updateAppState, projectID]);
+  }, [updateAppState, projectID, props.location.search]);
 
   if (!appState.remote?.getRoot().project) {
     return (

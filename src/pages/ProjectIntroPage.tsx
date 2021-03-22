@@ -11,6 +11,7 @@ import Container from '@material-ui/core/Container';
 import AddIcon from '@material-ui/icons/Add';
 
 import { Project } from 'store/types';
+import { templateProjects } from 'store/templateProjects';
 import { ListProjectsRequest, CreateProjectRequest } from 'api/metis_pb';
 import { MetisPromiseClient } from 'api/metis_grpc_web_pb';
 import { fromProjects } from '../api/converter';
@@ -67,13 +68,16 @@ export default function ProjectIntroPage() {
     });
   }, [client]);
 
-  const handleNewProject = useCallback(() => {
-    const req = new CreateProjectRequest();
-    req.setProjectName('Untitled');
-    client.createProject(req).then((res) => {
-      history.push(`/${res.getProject().getId()}`);
-    });
-  }, [client, history]);
+  const handleNewProject = useCallback(
+    (templateID?: string) => {
+      const req = new CreateProjectRequest();
+      req.setProjectName('Untitled');
+      client.createProject(req).then((res) => {
+        history.push(`/${res.getProject().getId()}?template_id=${templateID}`);
+      });
+    },
+    [client, history],
+  );
 
   return (
     <Container className={classes.root} maxWidth="xl">
@@ -83,7 +87,7 @@ export default function ProjectIntroPage() {
       <Grid container spacing={2}>
         <Grid item>
           <Card className={classes.createProjectCard}>
-            <CardActionArea className={classes.createCard} onClick={handleNewProject}>
+            <CardActionArea className={classes.createCard} onClick={() => handleNewProject()}>
               <CardContent>
                 <div>
                   <AddIcon fontSize="large" />
@@ -95,9 +99,20 @@ export default function ProjectIntroPage() {
             </CardActionArea>
           </Card>
         </Grid>
+        {Object.values(templateProjects).map((template) => (
+          <Grid key={template.id} item>
+            <Card className={classes.card}>
+              <CardActionArea className={classes.createCard} onClick={() => handleNewProject(template.id)}>
+                <CardContent className={classes.showAllCard}>{template.name}</CardContent>
+              </CardActionArea>
+            </Card>
+          </Grid>
+        ))}
         <Grid item>
           <Card className={classes.card}>
-            <CardContent className={classes.showAllCard}>Show all</CardContent>
+            <CardActionArea className={classes.createCard}>
+              <CardContent className={classes.showAllCard}>Show all</CardContent>
+            </CardActionArea>
           </Card>
         </Grid>
       </Grid>
