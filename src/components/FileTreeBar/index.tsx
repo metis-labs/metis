@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useCallback } from 'react';
+import React, { ChangeEvent, useState, useEffect, useCallback } from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
 import Divider from '@material-ui/core/Divider';
@@ -75,6 +75,15 @@ export default function FileTreeBar() {
   const project = appState.remote.getRoot().project!;
   const selectedModelID = appState.local.selectedModelID;
   const clientID = appState.local.myClientID;
+  const [expanded, setExpanded] = useState<string[]>([]);
+
+  useEffect(() => {
+    setExpanded([project.id]);
+  }, [project.id]);
+
+  const handleToggle = useCallback((event: ChangeEvent, nodeIds: string[]) => {
+    setExpanded(nodeIds);
+  }, []);
 
   const handleNodeSelect = useCallback(
     (event: ChangeEvent, modelID: any) => {
@@ -116,10 +125,11 @@ export default function FileTreeBar() {
       <TreeView
         className={classes.root}
         selected={[selectedModelID]}
-        defaultExpanded={[project.id]}
+        expanded={expanded}
         defaultCollapseIcon={<MinusSquare />}
         defaultExpandIcon={<PlusSquare />}
         defaultEndIcon={<CloseSquare />}
+        onNodeToggle={handleToggle}
         onNodeSelect={handleNodeSelect}
       >
         <StyledTreeItem nodeId={project.id} label={project.name}>

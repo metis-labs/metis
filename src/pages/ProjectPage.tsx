@@ -80,9 +80,6 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         const params = new URLSearchParams(props.location.search);
         const templateID = params.get('template_id');
         if (!root.project) {
-          // TODO: Occur the error when introducing the template_id from URL query parsing.
-          // Material-UI: A component is changing the default expanded state of an uncontrolled
-          // TreeView after being initialized. To suppress this warning opt to use a controlled TreeView.
           if (templateID) {
             root.project = templateProjects[templateID];
           } else {
