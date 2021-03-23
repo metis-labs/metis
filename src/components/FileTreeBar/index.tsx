@@ -94,8 +94,7 @@ export default function FileTreeBar() {
   );
 
   // TODO(youngteac.hong): Replace below with type parameter.
-  const models = JSON.parse(project.models.toJSON()) as { [key: string]: Model };
-
+  const models = project.models as { [key: string]: Model };
   const peersMapByModelID: { [modelID: string]: Array<PeerInfo> } = {};
   for (const [peerID, peer] of Object.entries(appState.peers)) {
     const peerInRemote = appState.remote.getRoot().peers[peerID];
