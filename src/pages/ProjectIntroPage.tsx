@@ -1,10 +1,9 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
-import CardMedia from '@material-ui/core/CardMedia';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import Container from '@material-ui/core/Container';
@@ -14,7 +13,8 @@ import { Project } from 'store/types';
 import { templateProjects } from 'store/templateProjects';
 import { ListProjectsRequest, CreateProjectRequest } from 'api/metis_pb';
 import { MetisPromiseClient } from 'api/metis_grpc_web_pb';
-import { fromProjects } from '../api/converter';
+import { fromProjects } from 'api/converter';
+import ProjectItem from 'components/ProjectList/ProjectItem';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,26 +29,22 @@ const useStyles = makeStyles((theme: Theme) =>
       height: 290,
       width: 215,
     },
+    createCard: {
+      textAlign: 'center',
+      height: '100%',
+    },
     createProjectCard: {
       height: 290,
       width: 215,
       color: 'white',
       backgroundColor: theme.palette.primary.main,
     },
-    createCard: {
-      textAlign: 'center',
-      height: '100%',
-    },
     showAllCard: {
       textAlign: 'center',
     },
-    projectCard: {
-      width: 290,
-      height: 370,
-    },
-    media: {
-      backgroundColor: '#ebebeb',
-      height: 260,
+    cardTitle: {
+      width: 200,
+      textOverflow: 'ellipsis',
     },
     control: {
       padding: theme.spacing(2),
@@ -117,17 +113,12 @@ export default function ProjectIntroPage() {
         </Grid>
       </Grid>
       <Typography className={classes.sectionTitle} variant="h4" component="h4">
-        Recent project
+        All projects
       </Typography>
       <Grid container spacing={2}>
         {projects.map((project) => (
           <Grid key={project.id} item>
-            <Card className={classes.projectCard}>
-              <CardMedia className={classes.media} image="/static/images/cards/contemplative-reptile.jpg" />
-              <CardContent>
-                <Link to={`/${project.id}`}>{project.name}</Link>
-              </CardContent>
-            </Card>
+            <ProjectItem project={project} />
           </Grid>
         ))}
       </Grid>
