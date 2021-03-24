@@ -65,8 +65,14 @@ export type Project = {
   models: { [modelID: string]: Model };
 };
 
+export type ProjectInfo = {
+  id: string;
+  name: string;
+};
+
 export type LocalState = {
   diagramInfos: { [modelID: string]: DiagramInfo };
+  projectInfos: { [projectID: string]: ProjectInfo };
   myClientID?: string;
   selectedModelID?: string;
 };

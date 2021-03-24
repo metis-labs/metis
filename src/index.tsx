@@ -14,7 +14,10 @@ import 'index.css';
 const AppStateStore = createStore({
   repaintCounter: 0,
   peersRepaintCounter: 0,
-  local: { diagramInfos: {} },
+  local: {
+    diagramInfos: {},
+    projectInfos: {},
+  },
   peers: {},
 });
 export const useAppState = AppStateStore.useAppState;

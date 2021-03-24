@@ -1,18 +1,17 @@
-import { Project } from 'store/types';
+import { ProjectInfo } from 'store/types';
 import { Project as PbProject } from './metis_pb';
 
-export function fromProjects(pbProjects: Array<PbProject>): Array<Project> {
-  const projects = [];
+export function fromProjects(pbProjects: Array<PbProject>): { [projectID: string]: ProjectInfo } {
+  const projects = {};
   for (const pbProject of pbProjects) {
-    projects.push(fromProject(pbProject));
+    projects[pbProject.getId()] = fromProject(pbProject);
   }
   return projects;
 }
 
-export function fromProject(pbProject: PbProject): Project {
+export function fromProject(pbProject: PbProject): ProjectInfo {
   return {
     id: pbProject.getId(),
     name: pbProject.getName(),
-    models: {},
-  } as Project;
+  } as ProjectInfo;
 }

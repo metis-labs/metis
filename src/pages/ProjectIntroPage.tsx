@@ -9,12 +9,13 @@ import CardContent from '@material-ui/core/CardContent';
 import Container from '@material-ui/core/Container';
 import AddIcon from '@material-ui/icons/Add';
 
-import { Project } from 'store/types';
-import { templateProjects } from 'store/templateProjects';
+import ProjectItem from 'components/ProjectList/ProjectItem';
+
 import { ListProjectsRequest, CreateProjectRequest } from 'api/metis_pb';
 import { MetisPromiseClient } from 'api/metis_grpc_web_pb';
 import { fromProjects } from 'api/converter';
-import ProjectItem from 'components/ProjectList/ProjectItem';
+import { templateProjects } from 'store/templateProjects';
+import { useAppState } from 'index';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -55,14 +56,17 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function ProjectIntroPage() {
   const classes = useStyles();
   const history = useHistory();
-  const [projects, setProjects] = useState<Array<Project>>([]);
+  const [appState, updateAppState] = useAppState();
   const [client] = useState<MetisPromiseClient>(new MetisPromiseClient('http://localhost:8080'));
 
   useEffect(() => {
     client.listProjects(new ListProjectsRequest()).then((res) => {
-      setProjects(fromProjects(res.getProjectsList()));
+      updateAppState((appState) => {
+        appState.local.projectInfos = fromProjects(res.getProjectsList());
+        return appState;
+      });
     });
-  }, [client]);
+  }, [updateAppState, client]);
 
   const handleNewProject = useCallback(
     (templateID?: string) => {
@@ -117,7 +121,7 @@ export default function ProjectIntroPage() {
         All projects
       </Typography>
       <Grid container spacing={2}>
-        {projects.map((project) => (
+        {Object.values(appState.local.projectInfos).map((project) => (
           <Grid key={project.id} item>
             <ProjectItem project={project} />
           </Grid>

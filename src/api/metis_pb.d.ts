@@ -1,10 +1,8 @@
-import * as jspb from "google-protobuf"
-
-import * as google_protobuf_timestamp_pb from 'google-protobuf/google/protobuf/timestamp_pb';
+import * as jspb from 'google-protobuf';
 
 export class CreateModelRequest extends jspb.Message {
   getModelName(): string;
-  setModelName(value: string): void;
+  setModelName(value: string): CreateModelRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateModelRequest.AsObject;
@@ -16,15 +14,15 @@ export class CreateModelRequest extends jspb.Message {
 
 export namespace CreateModelRequest {
   export type AsObject = {
-    modelName: string,
-  }
+    modelName: string;
+  };
 }
 
 export class CreateModelResponse extends jspb.Message {
   getModel(): Model | undefined;
-  setModel(value?: Model): void;
+  setModel(value?: Model): CreateModelResponse;
   hasModel(): boolean;
-  clearModel(): void;
+  clearModel(): CreateModelResponse;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateModelResponse.AsObject;
@@ -36,13 +34,16 @@ export class CreateModelResponse extends jspb.Message {
 
 export namespace CreateModelResponse {
   export type AsObject = {
-    model?: Model.AsObject,
-  }
+    model?: Model.AsObject;
+  };
 }
 
 export class CreateProjectRequest extends jspb.Message {
   getProjectName(): string;
-  setProjectName(value: string): void;
+  setProjectName(value: string): CreateProjectRequest;
+
+  getTemplateId(): string;
+  setTemplateId(value: string): CreateProjectRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateProjectRequest.AsObject;
@@ -54,15 +55,16 @@ export class CreateProjectRequest extends jspb.Message {
 
 export namespace CreateProjectRequest {
   export type AsObject = {
-    projectName: string,
-  }
+    projectName: string;
+    templateId: string;
+  };
 }
 
 export class CreateProjectResponse extends jspb.Message {
   getProject(): Project | undefined;
-  setProject(value?: Project): void;
+  setProject(value?: Project): CreateProjectResponse;
   hasProject(): boolean;
-  clearProject(): void;
+  clearProject(): CreateProjectResponse;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateProjectResponse.AsObject;
@@ -74,8 +76,39 @@ export class CreateProjectResponse extends jspb.Message {
 
 export namespace CreateProjectResponse {
   export type AsObject = {
-    project?: Project.AsObject,
-  }
+    project?: Project.AsObject;
+  };
+}
+
+export class DeleteProjectRequest extends jspb.Message {
+  getProjectId(): string;
+  setProjectId(value: string): DeleteProjectRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DeleteProjectRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: DeleteProjectRequest): DeleteProjectRequest.AsObject;
+  static serializeBinaryToWriter(message: DeleteProjectRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DeleteProjectRequest;
+  static deserializeBinaryFromReader(message: DeleteProjectRequest, reader: jspb.BinaryReader): DeleteProjectRequest;
+}
+
+export namespace DeleteProjectRequest {
+  export type AsObject = {
+    projectId: string;
+  };
+}
+
+export class DeleteProjectResponse extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): DeleteProjectResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: DeleteProjectResponse): DeleteProjectResponse.AsObject;
+  static serializeBinaryToWriter(message: DeleteProjectResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): DeleteProjectResponse;
+  static deserializeBinaryFromReader(message: DeleteProjectResponse, reader: jspb.BinaryReader): DeleteProjectResponse;
+}
+
+export namespace DeleteProjectResponse {
+  export type AsObject = {};
 }
 
 export class ListProjectsRequest extends jspb.Message {
@@ -88,14 +121,13 @@ export class ListProjectsRequest extends jspb.Message {
 }
 
 export namespace ListProjectsRequest {
-  export type AsObject = {
-  }
+  export type AsObject = {};
 }
 
 export class ListProjectsResponse extends jspb.Message {
   getProjectsList(): Array<Project>;
-  setProjectsList(value: Array<Project>): void;
-  clearProjectsList(): void;
+  setProjectsList(value: Array<Project>): ListProjectsResponse;
+  clearProjectsList(): ListProjectsResponse;
   addProjects(value?: Project, index?: number): Project;
 
   serializeBinary(): Uint8Array;
@@ -108,27 +140,22 @@ export class ListProjectsResponse extends jspb.Message {
 
 export namespace ListProjectsResponse {
   export type AsObject = {
-    projectsList: Array<Project.AsObject>,
-  }
+    projectsList: Array<Project.AsObject>;
+  };
 }
 
 export class Project extends jspb.Message {
   getId(): string;
-  setId(value: string): void;
+  setId(value: string): Project;
 
   getName(): string;
-  setName(value: string): void;
+  setName(value: string): Project;
 
   getModelsMap(): jspb.Map<string, Model>;
-  clearModelsMap(): void;
+  clearModelsMap(): Project;
 
   getSelectedBlockId(): string;
-  setSelectedBlockId(value: string): void;
-
-  getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
-  setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): void;
-  hasCreatedAt(): boolean;
-  clearCreatedAt(): void;
+  setSelectedBlockId(value: string): Project;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Project.AsObject;
@@ -140,20 +167,19 @@ export class Project extends jspb.Message {
 
 export namespace Project {
   export type AsObject = {
-    id: string,
-    name: string,
-    modelsMap: Array<[string, Model.AsObject]>,
-    selectedBlockId: string,
-    createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-  }
+    id: string;
+    name: string;
+    modelsMap: Array<[string, Model.AsObject]>;
+    selectedBlockId: string;
+  };
 }
 
 export class Position extends jspb.Message {
   getX(): number;
-  setX(value: number): void;
+  setX(value: number): Position;
 
   getY(): number;
-  setY(value: number): void;
+  setY(value: number): Position;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Position.AsObject;
@@ -165,19 +191,19 @@ export class Position extends jspb.Message {
 
 export namespace Position {
   export type AsObject = {
-    x: number,
-    y: number,
-  }
+    x: number;
+    y: number;
+  };
 }
 
 export class DiagramInfo extends jspb.Message {
   getOffset(): Position | undefined;
-  setOffset(value?: Position): void;
+  setOffset(value?: Position): DiagramInfo;
   hasOffset(): boolean;
-  clearOffset(): void;
+  clearOffset(): DiagramInfo;
 
   getZoom(): number;
-  setZoom(value: number): void;
+  setZoom(value: number): DiagramInfo;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): DiagramInfo.AsObject;
@@ -189,31 +215,31 @@ export class DiagramInfo extends jspb.Message {
 
 export namespace DiagramInfo {
   export type AsObject = {
-    offset?: Position.AsObject,
-    zoom: number,
-  }
+    offset?: Position.AsObject;
+    zoom: number;
+  };
 }
 
 export class Block extends jspb.Message {
   getId(): string;
-  setId(value: string): void;
+  setId(value: string): Block;
 
   getName(): string;
-  setName(value: string): void;
+  setName(value: string): Block;
 
   getType(): string;
-  setType(value: string): void;
+  setType(value: string): Block;
 
   getPosition(): Position | undefined;
-  setPosition(value?: Position): void;
+  setPosition(value?: Position): Block;
   hasPosition(): boolean;
-  clearPosition(): void;
+  clearPosition(): Block;
 
   getRepeats(): number;
-  setRepeats(value: number): void;
+  setRepeats(value: number): Block;
 
   getParametersMap(): jspb.Map<string, string>;
-  clearParametersMap(): void;
+  clearParametersMap(): Block;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Block.AsObject;
@@ -225,24 +251,24 @@ export class Block extends jspb.Message {
 
 export namespace Block {
   export type AsObject = {
-    id: string,
-    name: string,
-    type: string,
-    position?: Position.AsObject,
-    repeats: number,
-    parametersMap: Array<[string, string]>,
-  }
+    id: string;
+    name: string;
+    type: string;
+    position?: Position.AsObject;
+    repeats: number;
+    parametersMap: Array<[string, string]>;
+  };
 }
 
 export class Link extends jspb.Message {
   getId(): string;
-  setId(value: string): void;
+  setId(value: string): Link;
 
   getFrom(): string;
-  setFrom(value: string): void;
+  setFrom(value: string): Link;
 
   getTo(): string;
-  setTo(value: string): void;
+  setTo(value: string): Link;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Link.AsObject;
@@ -254,24 +280,24 @@ export class Link extends jspb.Message {
 
 export namespace Link {
   export type AsObject = {
-    id: string,
-    from: string,
-    to: string,
-  }
+    id: string;
+    from: string;
+    to: string;
+  };
 }
 
 export class Dependency extends jspb.Message {
   getId(): string;
-  setId(value: string): void;
+  setId(value: string): Dependency;
 
   getName(): string;
-  setName(value: string): void;
+  setName(value: string): Dependency;
 
   getAlias(): string;
-  setAlias(value: string): void;
+  setAlias(value: string): Dependency;
 
   getPackage(): string;
-  setPackage(value: string): void;
+  setPackage(value: string): Dependency;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Dependency.AsObject;
@@ -283,39 +309,39 @@ export class Dependency extends jspb.Message {
 
 export namespace Dependency {
   export type AsObject = {
-    id: string,
-    name: string,
-    alias: string,
-    pb_package: string,
-  }
+    id: string;
+    name: string;
+    alias: string;
+    pb_package: string;
+  };
 }
 
 export class Model extends jspb.Message {
   getId(): string;
-  setId(value: string): void;
+  setId(value: string): Model;
 
   getName(): string;
-  setName(value: string): void;
+  setName(value: string): Model;
 
   getType(): DiagramType;
-  setType(value: DiagramType): void;
+  setType(value: DiagramType): Model;
 
   getDiagramInfo(): DiagramInfo | undefined;
-  setDiagramInfo(value?: DiagramInfo): void;
+  setDiagramInfo(value?: DiagramInfo): Model;
   hasDiagramInfo(): boolean;
-  clearDiagramInfo(): void;
+  clearDiagramInfo(): Model;
 
   getDependenciesMap(): jspb.Map<string, Dependency>;
-  clearDependenciesMap(): void;
+  clearDependenciesMap(): Model;
 
   getBlocksMap(): jspb.Map<string, Block>;
-  clearBlocksMap(): void;
+  clearBlocksMap(): Model;
 
   getLinksMap(): jspb.Map<string, Link>;
-  clearLinksMap(): void;
+  clearLinksMap(): Model;
 
   getSelectedBlockId(): string;
-  setSelectedBlockId(value: string): void;
+  setSelectedBlockId(value: string): Model;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Model.AsObject;
@@ -327,18 +353,18 @@ export class Model extends jspb.Message {
 
 export namespace Model {
   export type AsObject = {
-    id: string,
-    name: string,
-    type: DiagramType,
-    diagramInfo?: DiagramInfo.AsObject,
-    dependenciesMap: Array<[string, Dependency.AsObject]>,
-    blocksMap: Array<[string, Block.AsObject]>,
-    linksMap: Array<[string, Link.AsObject]>,
-    selectedBlockId: string,
-  }
+    id: string;
+    name: string;
+    type: DiagramType;
+    diagramInfo?: DiagramInfo.AsObject;
+    dependenciesMap: Array<[string, Dependency.AsObject]>;
+    blocksMap: Array<[string, Block.AsObject]>;
+    linksMap: Array<[string, Link.AsObject]>;
+    selectedBlockId: string;
+  };
 }
 
-export enum DiagramType { 
+export enum DiagramType {
   MAIN = 0,
   MODULE = 1,
 }
