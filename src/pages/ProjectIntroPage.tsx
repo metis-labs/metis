@@ -73,7 +73,8 @@ export default function ProjectIntroPage() {
       const req = new CreateProjectRequest();
       req.setProjectName('Untitled');
       client.createProject(req).then((res) => {
-        history.push(`/${res.getProject().getId()}?template_id=${templateID}`);
+        const querystring = templateID ? `?template_id=${templateID}` : '';
+        history.push(`/${res.getProject().getId()}${querystring}`);
       });
     },
     [client, history],
