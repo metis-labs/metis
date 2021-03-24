@@ -15,6 +15,8 @@ import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
+import RenameDialog from './RenameDialog';
+
 import { DeleteProjectRequest } from 'api/metis_pb';
 import { MetisPromiseClient } from 'api/metis_grpc_web_pb';
 import { ProjectInfo } from 'store/types';
@@ -55,17 +57,17 @@ type ProjectItemProps = {
   project: ProjectInfo;
 };
 
-export default function ProjectItem(props: ProjectItemProps) {
+export default function ProjectCard(props: ProjectItemProps) {
   const { project } = props;
   const classes = useStyles();
   const [, updateAppState] = useAppState();
   const anchorRef = useRef<HTMLButtonElement>(null);
   const [client] = useState<MetisPromiseClient>(new MetisPromiseClient('http://localhost:8080'));
   const [open, setOpen] = useState(false);
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const prevOpen = useRef(open);
 
   useEffect(() => {
-    console.log(anchorRef.current);
     if (prevOpen.current === true && open === false) {
       anchorRef.current!.focus();
     }
@@ -96,6 +98,15 @@ export default function ProjectItem(props: ProjectItemProps) {
     },
     [anchorRef, setOpen],
   );
+
+  const handleRenameButtonClick = useCallback((event: MouseEvent<EventTarget>) => {
+    setRenameDialogOpen(true);
+  }, [setRenameDialogOpen]);
+
+  const handleRenameDialogClose = useCallback((value: string) => {
+    console.log(value);
+    setRenameDialogOpen(false);
+  }, [setRenameDialogOpen]);
 
   const handleDeleteButtonClick = useCallback(
     (event: MouseEvent<EventTarget>) => {
@@ -140,6 +151,10 @@ export default function ProjectItem(props: ProjectItemProps) {
                   <Paper>
                     <ClickAwayListener onClickAway={handleClose}>
                       <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
+                        <MenuItem className={classes.menuItem} onClick={handleRenameButtonClick}>
+                          Rename
+                        </MenuItem>
+                        <RenameDialog name={project.name} open={renameDialogOpen} onClose={handleRenameDialogClose}></RenameDialog>
                         <MenuItem className={classes.menuItem} onClick={handleDeleteButtonClick}>
                           Delete
                         </MenuItem>

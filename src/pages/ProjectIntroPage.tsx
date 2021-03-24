@@ -9,7 +9,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Container from '@material-ui/core/Container';
 import AddIcon from '@material-ui/icons/Add';
 
-import ProjectItem from 'components/ProjectList/ProjectItem';
+import ProjectCard from 'components/ProjectCard';
 
 import { ListProjectsRequest, CreateProjectRequest } from 'api/metis_pb';
 import { MetisPromiseClient } from 'api/metis_grpc_web_pb';
@@ -83,7 +83,7 @@ export default function ProjectIntroPage() {
   return (
     <Container className={classes.root} maxWidth="xl">
       <Typography className={classes.sectionTitle} variant="h4" component="h4">
-        Create project
+        Create a project
       </Typography>
       <Grid container spacing={2}>
         <Grid item>
@@ -123,7 +123,7 @@ export default function ProjectIntroPage() {
       <Grid container spacing={2}>
         {Object.values(appState.local.projectInfos).map((project) => (
           <Grid key={project.id} item>
-            <ProjectItem project={project} />
+            <ProjectCard project={project} />
           </Grid>
         ))}
       </Grid>
