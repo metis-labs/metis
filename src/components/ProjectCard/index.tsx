@@ -17,7 +17,7 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 import RenameDialog from './RenameDialog';
 
-import { DeleteProjectRequest } from 'api/metis_pb';
+import { UpdateProjectRequest, DeleteProjectRequest } from 'api/metis_pb';
 import { MetisPromiseClient } from 'api/metis_grpc_web_pb';
 import { ProjectInfo } from 'store/types';
 import { useAppState } from 'index';
@@ -63,29 +63,29 @@ export default function ProjectCard(props: ProjectItemProps) {
   const [, updateAppState] = useAppState();
   const anchorRef = useRef<HTMLButtonElement>(null);
   const [client] = useState<MetisPromiseClient>(new MetisPromiseClient('http://localhost:8080'));
-  const [open, setOpen] = useState(false);
+  const [popperOpen, setPopperOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
-  const prevOpen = useRef(open);
+  const prevOpen = useRef(popperOpen);
 
   useEffect(() => {
-    if (prevOpen.current === true && open === false) {
+    if (prevOpen.current === true && popperOpen === false) {
       anchorRef.current!.focus();
     }
-    prevOpen.current = open;
-  }, [open]);
+    prevOpen.current = popperOpen;
+  }, [popperOpen]);
 
   const handleToggle = useCallback(() => {
-    setOpen((prevOpen) => !prevOpen);
-  }, [setOpen]);
+    setPopperOpen((prevOpen) => !prevOpen);
+  }, [setPopperOpen]);
 
   const handleListKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Tab') {
         event.preventDefault();
-        setOpen(false);
+        setPopperOpen(false);
       }
     },
-    [setOpen],
+    [setPopperOpen],
   );
 
   const handleClose = useCallback(
@@ -94,19 +94,31 @@ export default function ProjectCard(props: ProjectItemProps) {
         return;
       }
 
-      setOpen(false);
+      setPopperOpen(false);
     },
-    [anchorRef, setOpen],
+    [anchorRef, setPopperOpen],
   );
 
   const handleRenameButtonClick = useCallback((event: MouseEvent<EventTarget>) => {
     setRenameDialogOpen(true);
   }, [setRenameDialogOpen]);
 
-  const handleRenameDialogClose = useCallback((value: string) => {
-    console.log(value);
+  const handleRenameDialogClose = useCallback((projectName: string | undefined) => {
+    if (projectName) {
+      const req = new UpdateProjectRequest();
+      req.setProjectId(project.id);
+      req.setProjectName(projectName);
+      client.updateProject(req).then(() => {
+        updateAppState((appState) => {
+          appState.local.projectInfos[project.id].name = projectName;
+          return appState;
+        });
+      });
+    }
+
     setRenameDialogOpen(false);
-  }, [setRenameDialogOpen]);
+    setPopperOpen(false);
+  }, [setRenameDialogOpen, client, project.id, updateAppState]);
 
   const handleDeleteButtonClick = useCallback(
     (event: MouseEvent<EventTarget>) => {
@@ -135,14 +147,14 @@ export default function ProjectCard(props: ProjectItemProps) {
             <IconButton
               ref={anchorRef}
               aria-label="settings"
-              aria-controls={open ? 'menu-list-grow' : undefined}
+              aria-controls={popperOpen ? 'menu-list-grow' : undefined}
               aria-haspopup="true"
               onClick={handleToggle}
               key={project.id}
             >
               <MoreVertIcon className={classes.moreIcon} />
             </IconButton>
-            <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+            <Popper open={popperOpen} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
               {({ TransitionProps, placement }) => (
                 <Grow
                   {...TransitionProps}
@@ -150,7 +162,7 @@ export default function ProjectCard(props: ProjectItemProps) {
                 >
                   <Paper>
                     <ClickAwayListener onClickAway={handleClose}>
-                      <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
+                      <MenuList autoFocusItem={popperOpen} id="menu-list-grow" onKeyDown={handleListKeyDown}>
                         <MenuItem className={classes.menuItem} onClick={handleRenameButtonClick}>
                           Rename
                         </MenuItem>

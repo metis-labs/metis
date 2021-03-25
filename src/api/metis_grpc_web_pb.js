@@ -6,8 +6,7 @@
 
 // GENERATED CODE -- DO NOT EDIT!
 
-/* eslint-disable */
-// @ts-nocheck
+
 
 const grpc = {};
 grpc.web = require('grpc-web');
@@ -23,7 +22,8 @@ proto.api = require('./metis_pb.js');
  * @struct
  * @final
  */
-proto.api.MetisClient = function (hostname, credentials, options) {
+proto.api.MetisClient =
+    function(hostname, credentials, options) {
   if (!options) options = {};
   options['format'] = 'text';
 
@@ -36,7 +36,9 @@ proto.api.MetisClient = function (hostname, credentials, options) {
    * @private @const {string} The hostname
    */
   this.hostname_ = hostname;
+
 };
+
 
 /**
  * @param {string} hostname
@@ -46,7 +48,8 @@ proto.api.MetisClient = function (hostname, credentials, options) {
  * @struct
  * @final
  */
-proto.api.MetisPromiseClient = function (hostname, credentials, options) {
+proto.api.MetisPromiseClient =
+    function(hostname, credentials, options) {
   if (!options) options = {};
   options['format'] = 'text';
 
@@ -59,7 +62,9 @@ proto.api.MetisPromiseClient = function (hostname, credentials, options) {
    * @private @const {string} The hostname
    */
   this.hostname_ = hostname;
+
 };
+
 
 /**
  * @const
@@ -76,11 +81,12 @@ const methodDescriptor_Metis_CreateModel = new grpc.web.MethodDescriptor(
    * @param {!proto.api.CreateModelRequest} request
    * @return {!Uint8Array}
    */
-  function (request) {
+  function(request) {
     return request.serializeBinary();
   },
-  proto.api.CreateModelResponse.deserializeBinary,
+  proto.api.CreateModelResponse.deserializeBinary
 );
+
 
 /**
  * @const
@@ -94,11 +100,12 @@ const methodInfo_Metis_CreateModel = new grpc.web.AbstractClientBase.MethodInfo(
    * @param {!proto.api.CreateModelRequest} request
    * @return {!Uint8Array}
    */
-  function (request) {
+  function(request) {
     return request.serializeBinary();
   },
-  proto.api.CreateModelResponse.deserializeBinary,
+  proto.api.CreateModelResponse.deserializeBinary
 );
+
 
 /**
  * @param {!proto.api.CreateModelRequest} request The
@@ -110,15 +117,16 @@ const methodInfo_Metis_CreateModel = new grpc.web.AbstractClientBase.MethodInfo(
  * @return {!grpc.web.ClientReadableStream<!proto.api.CreateModelResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.api.MetisClient.prototype.createModel = function (request, metadata, callback) {
-  return this.client_.rpcCall(
-    this.hostname_ + '/api.Metis/CreateModel',
-    request,
-    metadata || {},
-    methodDescriptor_Metis_CreateModel,
-    callback,
-  );
+proto.api.MetisClient.prototype.createModel =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/api.Metis/CreateModel',
+      request,
+      metadata || {},
+      methodDescriptor_Metis_CreateModel,
+      callback);
 };
+
 
 /**
  * @param {!proto.api.CreateModelRequest} request The
@@ -126,16 +134,17 @@ proto.api.MetisClient.prototype.createModel = function (request, metadata, callb
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.api.CreateModelResponse>}
- *     Promise that resolves to the response
+ *     A native promise that resolves to the response
  */
-proto.api.MetisPromiseClient.prototype.createModel = function (request, metadata) {
-  return this.client_.unaryCall(
-    this.hostname_ + '/api.Metis/CreateModel',
-    request,
-    metadata || {},
-    methodDescriptor_Metis_CreateModel,
-  );
+proto.api.MetisPromiseClient.prototype.createModel =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/api.Metis/CreateModel',
+      request,
+      metadata || {},
+      methodDescriptor_Metis_CreateModel);
 };
+
 
 /**
  * @const
@@ -152,11 +161,12 @@ const methodDescriptor_Metis_CreateProject = new grpc.web.MethodDescriptor(
    * @param {!proto.api.CreateProjectRequest} request
    * @return {!Uint8Array}
    */
-  function (request) {
+  function(request) {
     return request.serializeBinary();
   },
-  proto.api.CreateProjectResponse.deserializeBinary,
+  proto.api.CreateProjectResponse.deserializeBinary
 );
+
 
 /**
  * @const
@@ -170,11 +180,12 @@ const methodInfo_Metis_CreateProject = new grpc.web.AbstractClientBase.MethodInf
    * @param {!proto.api.CreateProjectRequest} request
    * @return {!Uint8Array}
    */
-  function (request) {
+  function(request) {
     return request.serializeBinary();
   },
-  proto.api.CreateProjectResponse.deserializeBinary,
+  proto.api.CreateProjectResponse.deserializeBinary
 );
+
 
 /**
  * @param {!proto.api.CreateProjectRequest} request The
@@ -186,15 +197,16 @@ const methodInfo_Metis_CreateProject = new grpc.web.AbstractClientBase.MethodInf
  * @return {!grpc.web.ClientReadableStream<!proto.api.CreateProjectResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.api.MetisClient.prototype.createProject = function (request, metadata, callback) {
-  return this.client_.rpcCall(
-    this.hostname_ + '/api.Metis/CreateProject',
-    request,
-    metadata || {},
-    methodDescriptor_Metis_CreateProject,
-    callback,
-  );
+proto.api.MetisClient.prototype.createProject =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/api.Metis/CreateProject',
+      request,
+      metadata || {},
+      methodDescriptor_Metis_CreateProject,
+      callback);
 };
+
 
 /**
  * @param {!proto.api.CreateProjectRequest} request The
@@ -202,16 +214,17 @@ proto.api.MetisClient.prototype.createProject = function (request, metadata, cal
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.api.CreateProjectResponse>}
- *     Promise that resolves to the response
+ *     A native promise that resolves to the response
  */
-proto.api.MetisPromiseClient.prototype.createProject = function (request, metadata) {
-  return this.client_.unaryCall(
-    this.hostname_ + '/api.Metis/CreateProject',
-    request,
-    metadata || {},
-    methodDescriptor_Metis_CreateProject,
-  );
+proto.api.MetisPromiseClient.prototype.createProject =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/api.Metis/CreateProject',
+      request,
+      metadata || {},
+      methodDescriptor_Metis_CreateProject);
 };
+
 
 /**
  * @const
@@ -228,11 +241,12 @@ const methodDescriptor_Metis_ListProjects = new grpc.web.MethodDescriptor(
    * @param {!proto.api.ListProjectsRequest} request
    * @return {!Uint8Array}
    */
-  function (request) {
+  function(request) {
     return request.serializeBinary();
   },
-  proto.api.ListProjectsResponse.deserializeBinary,
+  proto.api.ListProjectsResponse.deserializeBinary
 );
+
 
 /**
  * @const
@@ -246,11 +260,12 @@ const methodInfo_Metis_ListProjects = new grpc.web.AbstractClientBase.MethodInfo
    * @param {!proto.api.ListProjectsRequest} request
    * @return {!Uint8Array}
    */
-  function (request) {
+  function(request) {
     return request.serializeBinary();
   },
-  proto.api.ListProjectsResponse.deserializeBinary,
+  proto.api.ListProjectsResponse.deserializeBinary
 );
+
 
 /**
  * @param {!proto.api.ListProjectsRequest} request The
@@ -262,15 +277,16 @@ const methodInfo_Metis_ListProjects = new grpc.web.AbstractClientBase.MethodInfo
  * @return {!grpc.web.ClientReadableStream<!proto.api.ListProjectsResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.api.MetisClient.prototype.listProjects = function (request, metadata, callback) {
-  return this.client_.rpcCall(
-    this.hostname_ + '/api.Metis/ListProjects',
-    request,
-    metadata || {},
-    methodDescriptor_Metis_ListProjects,
-    callback,
-  );
+proto.api.MetisClient.prototype.listProjects =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/api.Metis/ListProjects',
+      request,
+      metadata || {},
+      methodDescriptor_Metis_ListProjects,
+      callback);
 };
+
 
 /**
  * @param {!proto.api.ListProjectsRequest} request The
@@ -278,16 +294,97 @@ proto.api.MetisClient.prototype.listProjects = function (request, metadata, call
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.api.ListProjectsResponse>}
- *     Promise that resolves to the response
+ *     A native promise that resolves to the response
  */
-proto.api.MetisPromiseClient.prototype.listProjects = function (request, metadata) {
-  return this.client_.unaryCall(
-    this.hostname_ + '/api.Metis/ListProjects',
-    request,
-    metadata || {},
-    methodDescriptor_Metis_ListProjects,
-  );
+proto.api.MetisPromiseClient.prototype.listProjects =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/api.Metis/ListProjects',
+      request,
+      metadata || {},
+      methodDescriptor_Metis_ListProjects);
 };
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.api.UpdateProjectRequest,
+ *   !proto.api.UpdateProjectResponse>}
+ */
+const methodDescriptor_Metis_UpdateProject = new grpc.web.MethodDescriptor(
+  '/api.Metis/UpdateProject',
+  grpc.web.MethodType.UNARY,
+  proto.api.UpdateProjectRequest,
+  proto.api.UpdateProjectResponse,
+  /**
+   * @param {!proto.api.UpdateProjectRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.api.UpdateProjectResponse.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.api.UpdateProjectRequest,
+ *   !proto.api.UpdateProjectResponse>}
+ */
+const methodInfo_Metis_UpdateProject = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.api.UpdateProjectResponse,
+  /**
+   * @param {!proto.api.UpdateProjectRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.api.UpdateProjectResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.api.UpdateProjectRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.api.UpdateProjectResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.api.UpdateProjectResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.api.MetisClient.prototype.updateProject =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/api.Metis/UpdateProject',
+      request,
+      metadata || {},
+      methodDescriptor_Metis_UpdateProject,
+      callback);
+};
+
+
+/**
+ * @param {!proto.api.UpdateProjectRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.api.UpdateProjectResponse>}
+ *     A native promise that resolves to the response
+ */
+proto.api.MetisPromiseClient.prototype.updateProject =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/api.Metis/UpdateProject',
+      request,
+      metadata || {},
+      methodDescriptor_Metis_UpdateProject);
+};
+
 
 /**
  * @const
@@ -304,11 +401,12 @@ const methodDescriptor_Metis_DeleteProject = new grpc.web.MethodDescriptor(
    * @param {!proto.api.DeleteProjectRequest} request
    * @return {!Uint8Array}
    */
-  function (request) {
+  function(request) {
     return request.serializeBinary();
   },
-  proto.api.DeleteProjectResponse.deserializeBinary,
+  proto.api.DeleteProjectResponse.deserializeBinary
 );
+
 
 /**
  * @const
@@ -322,11 +420,12 @@ const methodInfo_Metis_DeleteProject = new grpc.web.AbstractClientBase.MethodInf
    * @param {!proto.api.DeleteProjectRequest} request
    * @return {!Uint8Array}
    */
-  function (request) {
+  function(request) {
     return request.serializeBinary();
   },
-  proto.api.DeleteProjectResponse.deserializeBinary,
+  proto.api.DeleteProjectResponse.deserializeBinary
 );
+
 
 /**
  * @param {!proto.api.DeleteProjectRequest} request The
@@ -338,15 +437,16 @@ const methodInfo_Metis_DeleteProject = new grpc.web.AbstractClientBase.MethodInf
  * @return {!grpc.web.ClientReadableStream<!proto.api.DeleteProjectResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.api.MetisClient.prototype.deleteProject = function (request, metadata, callback) {
-  return this.client_.rpcCall(
-    this.hostname_ + '/api.Metis/DeleteProject',
-    request,
-    metadata || {},
-    methodDescriptor_Metis_DeleteProject,
-    callback,
-  );
+proto.api.MetisClient.prototype.deleteProject =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/api.Metis/DeleteProject',
+      request,
+      metadata || {},
+      methodDescriptor_Metis_DeleteProject,
+      callback);
 };
+
 
 /**
  * @param {!proto.api.DeleteProjectRequest} request The
@@ -354,15 +454,17 @@ proto.api.MetisClient.prototype.deleteProject = function (request, metadata, cal
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.api.DeleteProjectResponse>}
- *     Promise that resolves to the response
+ *     A native promise that resolves to the response
  */
-proto.api.MetisPromiseClient.prototype.deleteProject = function (request, metadata) {
-  return this.client_.unaryCall(
-    this.hostname_ + '/api.Metis/DeleteProject',
-    request,
-    metadata || {},
-    methodDescriptor_Metis_DeleteProject,
-  );
+proto.api.MetisPromiseClient.prototype.deleteProject =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/api.Metis/DeleteProject',
+      request,
+      metadata || {},
+      methodDescriptor_Metis_DeleteProject);
 };
 
+
 module.exports = proto.api;
+

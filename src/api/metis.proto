@@ -6,6 +6,7 @@ service Metis {
 
     rpc CreateProject (CreateProjectRequest) returns (CreateProjectResponse);
     rpc ListProjects (ListProjectsRequest) returns (ListProjectsResponse);
+    rpc UpdateProject (UpdateProjectRequest) returns (UpdateProjectResponse);
     rpc DeleteProject (DeleteProjectRequest) returns (DeleteProjectResponse);
 }
 
@@ -24,6 +25,14 @@ message CreateProjectRequest {
 
 message CreateProjectResponse {
     Project project = 1;
+}
+
+message UpdateProjectRequest {
+    string project_id = 1;
+    string project_name = 2;
+}
+
+message UpdateProjectResponse {
 }
 
 message DeleteProjectRequest {
