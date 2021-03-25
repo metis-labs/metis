@@ -1,13 +1,16 @@
 import React, { ChangeEvent, useState, useEffect, useCallback } from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
-import Divider from '@material-ui/core/Divider';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 import TreeView from '@material-ui/lab/TreeView';
+import IconButton from '@material-ui/core/IconButton';
+import AddIcon from '@material-ui/icons/Add';
+
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 
 import { Model, PeerInfo } from 'store/types';
+import { createModel } from 'store/initialProject';
 import { useAppState } from 'index';
 
 function MinusSquare(props: SvgIconProps) {
@@ -60,8 +63,15 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: 60,
       width: drawerWidth,
     },
-    margin: {
-      margin: theme.spacing(1.5),
+    toolbar: {
+      position: 'absolute',
+      top: 75,
+      left: 200,
+      zIndex: 1,
+    },
+    addModelButton: {
+      height: 24,
+      width: 24,
     },
     buttonContainer: {
       position: 'relative',
@@ -102,6 +112,21 @@ export default function FileTreeBar() {
     [appState.remote, updateAppState, clientID],
   );
 
+  const handleAddModel = useCallback(() => {
+    const model = createModel('Untitled');
+    appState.remote.update((root) => {
+      root.project.models[model.id] = model;
+    });
+
+    updateAppState((appState) => {
+      appState.local.diagramInfos[model.id] = {
+        offset: { x: 0, y: 0 },
+        zoom: 100,
+      };
+      return appState;
+    });
+  }, [updateAppState, appState.remote]);
+
   // TODO(youngteac.hong): Replace below with type parameter.
   const models = project.models as { [key: string]: Model };
   const peersMapByModelID: { [modelID: string]: Array<PeerInfo> } = {};
@@ -121,7 +146,11 @@ export default function FileTreeBar() {
   return (
     <Drawer className={classes.drawer} variant="permanent" classes={{ paper: classes.drawerPaper }}>
       <Toolbar />
-      <Divider />
+      <div className={classes.toolbar}>
+        <IconButton className={classes.addModelButton} onClick={handleAddModel}>
+          <AddIcon fontSize="small"/>
+        </IconButton>
+      </div>
       <TreeView
         className={classes.root}
         selected={[selectedModelID]}

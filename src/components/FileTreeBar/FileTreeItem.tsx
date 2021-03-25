@@ -13,8 +13,11 @@ import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
 import { TransitionProps } from '@material-ui/core/transitions';
 import Collapse from '@material-ui/core/Collapse';
 
+import RenameDialog from './RenameDialog';
+
 import { Model } from 'store/types';
 import { PeerInfo } from '../../store/types';
+import { useAppState } from 'index';
 
 export const StyledTreeItem = withStyles((theme: Theme) =>
   createStyles({
@@ -82,22 +85,24 @@ function TransitionComponent(props: TransitionProps) {
 export default function FileTreeItem(props: { model: Model; peers: Array<PeerInfo> }) {
   const classes = useStyles();
   const { model, peers } = props;
-  const [open, setOpen] = useState(false);
-  const [show, setShow] = useState(false);
+  const [appState,] = useAppState();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [moreButtonOpen, setMoreButtonOpen] = useState(false);
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
-  const prevOpen = useRef(open);
+  const prevOpen = useRef(menuOpen);
 
   useEffect(() => {
-    if (prevOpen.current === true && open === false) {
+    if (prevOpen.current === true && menuOpen === false) {
       anchorRef.current!.focus();
     }
 
-    prevOpen.current = open;
-  }, [open]);
+    prevOpen.current = menuOpen;
+  }, [menuOpen]);
 
   const handleToggle = useCallback(() => {
-    setOpen((prevOpen) => !prevOpen);
-  }, [setOpen]);
+    setMenuOpen((prevOpen) => !prevOpen);
+  }, [setMenuOpen]);
 
   const handleClose = useCallback(
     (event: MouseEvent<EventTarget>) => {
@@ -105,34 +110,50 @@ export default function FileTreeItem(props: { model: Model; peers: Array<PeerInf
         return;
       }
 
-      setOpen(false);
+      setMenuOpen(false);
     },
-    [anchorRef, setOpen],
+    [anchorRef, setMenuOpen],
   );
 
   const handleListKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Tab') {
         event.preventDefault();
-        setOpen(false);
+        setMenuOpen(false);
       }
     },
-    [setOpen],
+    [setMenuOpen],
   );
 
   const handleMouseEnter = useCallback(
     (event: MouseEvent<EventTarget>) => {
-      setShow(true);
+      setMoreButtonOpen(true);
     },
-    [setShow],
+    [setMoreButtonOpen],
   );
 
   const handleMouseLeave = useCallback(
     (event: MouseEvent<EventTarget>) => {
-      setShow(false);
+      setMoreButtonOpen(false);
+      setMenuOpen(false);
     },
-    [setShow],
+    [setMoreButtonOpen, setMenuOpen],
   );
+
+  const handleRenameButtonClick = useCallback((event: MouseEvent<EventTarget>) => {
+    setRenameDialogOpen(true);
+  }, [setRenameDialogOpen]);
+
+  const handleRenameDialogClose = useCallback((modelName: string | undefined) => {
+    if (modelName) {
+      appState.remote.update((root) => {
+        root.project.models[model.id].name = modelName;
+      });
+    }
+    setRenameDialogOpen(false);
+    setMoreButtonOpen(false);
+    setMenuOpen(false);
+  }, [setRenameDialogOpen, setMoreButtonOpen, setMenuOpen, appState.remote, model.id]);
 
   return (
     <div className={classes.treeItemContainer} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
@@ -142,14 +163,14 @@ export default function FileTreeItem(props: { model: Model; peers: Array<PeerInf
       </div>
       <IconButton
         ref={anchorRef}
-        aria-controls={open ? 'menu-list-grow' : undefined}
+        aria-controls={menuOpen ? 'menu-list-grow' : undefined}
         aria-haspopup="true"
         onClick={handleToggle}
-        className={show ? classes.moreIconButtonShow : classes.moreIconButton}
+        className={moreButtonOpen ? classes.moreIconButtonShow : classes.moreIconButton}
       >
         <MoreVertIcon className={classes.moreIcon} />
       </IconButton>
-      <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+      <Popper open={menuOpen} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
         {({ TransitionProps, placement }) => (
           <Grow
             {...TransitionProps}
@@ -157,10 +178,11 @@ export default function FileTreeItem(props: { model: Model; peers: Array<PeerInf
           >
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
-                <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                  <MenuItem className={classes.menuItem} onClick={handleClose}>
+                <MenuList autoFocusItem={menuOpen} id="menu-list-grow" onKeyDown={handleListKeyDown}>
+                  <MenuItem className={classes.menuItem} onClick={handleRenameButtonClick}>
                     Rename
                   </MenuItem>
+                  <RenameDialog name={model.name} open={renameDialogOpen} onClose={handleRenameDialogClose}></RenameDialog>
                 </MenuList>
               </ClickAwayListener>
             </Paper>
