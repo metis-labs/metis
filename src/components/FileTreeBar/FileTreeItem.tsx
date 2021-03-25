@@ -15,8 +15,7 @@ import Collapse from '@material-ui/core/Collapse';
 
 import RenameDialog from './RenameDialog';
 
-import { Model } from 'store/types';
-import { PeerInfo } from '../../store/types';
+import { Model, PeerInfo, encodeEventDesc } from 'store/types';
 import { useAppState } from 'index';
 
 export const StyledTreeItem = withStyles((theme: Theme) =>
@@ -144,6 +143,16 @@ export default function FileTreeItem(props: { model: Model; peers: Array<PeerInf
     setRenameDialogOpen(true);
   }, [setRenameDialogOpen]);
 
+  const handleDeleteButtonClick = useCallback((event: MouseEvent<EventTarget>) => {
+    appState.remote.update((root) => {
+      delete root.project.models[model.id];
+    }, encodeEventDesc({
+      id: model.id,
+      entityType: 'model',
+      actionType: 'delete',
+    }));
+  }, [appState.remote, model.id]);
+
   const handleRenameDialogClose = useCallback((modelName: string | undefined) => {
     if (modelName) {
       appState.remote.update((root) => {
@@ -183,6 +192,9 @@ export default function FileTreeItem(props: { model: Model; peers: Array<PeerInf
                     Rename
                   </MenuItem>
                   <RenameDialog name={model.name} open={renameDialogOpen} onClose={handleRenameDialogClose}></RenameDialog>
+                  <MenuItem className={classes.menuItem} onClick={handleDeleteButtonClick}>
+                    Delete 
+                  </MenuItem>
                 </MenuList>
               </ClickAwayListener>
             </Paper>

@@ -9,7 +9,7 @@ import AddIcon from '@material-ui/icons/Add';
 
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 
-import { Model, PeerInfo } from 'store/types';
+import { Model, PeerInfo, encodeEventDesc } from 'store/types';
 import { createModel } from 'store/initialProject';
 import { useAppState } from 'index';
 
@@ -116,15 +116,12 @@ export default function FileTreeBar() {
     const model = createModel('Untitled');
     appState.remote.update((root) => {
       root.project.models[model.id] = model;
-    });
+    }, encodeEventDesc({
+      id: model.id,
+      entityType: 'model',
+      actionType: 'create',
+    }));
 
-    updateAppState((appState) => {
-      appState.local.diagramInfos[model.id] = {
-        offset: { x: 0, y: 0 },
-        zoom: 100,
-      };
-      return appState;
-    });
   }, [updateAppState, appState.remote]);
 
   // TODO(youngteac.hong): Replace below with type parameter.

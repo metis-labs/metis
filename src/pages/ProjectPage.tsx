@@ -18,6 +18,8 @@ import { initialProject } from 'store/initialProject';
 import { templateProjects } from 'store/templateProjects';
 import { useAppState } from 'index';
 
+import { decodeEventDesc } from 'store/types';
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -29,6 +31,8 @@ const useStyles = makeStyles((theme: Theme) =>
     content: {
       position: 'relative',
       flexGrow: 1,
+      height: '100vh',
+      backgroundColor: '#eaeaeb',
     },
   }),
 );
@@ -131,6 +135,26 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
                     return [isProjectChanged, isPeersChanged];
                   }
                 }
+                if (changeInfo.change.getMessage()) {
+                  const desc = decodeEventDesc(changeInfo.change.getMessage());
+                  if (desc.actionType === 'create' && desc.entityType === 'model') {
+                    updateAppState((appState) => {
+                      appState.local.diagramInfos[desc.id] = {
+                        offset: { x: 0, y: 0 },
+                        zoom: 100,
+                      };
+                      return appState;
+                    });
+                  } else if (desc.actionType === 'delete' && desc.entityType === 'model') {
+                    updateAppState((appState) => {
+                      delete appState.local.diagramInfos[desc.id];
+                      if (desc.id === appState.local.selectedModelID) {
+                        appState.local.selectedModelID = null;
+                      }
+                      return appState;
+                    });
+                  }
+                }
               }
               return [isProjectChanged, isPeersChanged];
             }
@@ -167,16 +191,22 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
     );
   }
 
+  
+
   return (
     <div className={classes.root}>
       <NavBar />
       <SideBar />
       <FileTreeBar />
       <main className={classes.content}>
-        {viewMode === 'diagram' ? <DiagramView /> : <CodeView />}
-        <StatusBar viewMode={viewMode} setViewMode={setViewMode} />
+        {appState.local.selectedModelID ? (
+          <>
+            {viewMode === 'diagram' ? <DiagramView /> : <CodeView />}
+            <StatusBar viewMode={viewMode} setViewMode={setViewMode} />
+          </>
+        ) : null}
       </main>
-      <PropertyBar />
+      {appState.local.selectedModelID && <PropertyBar />}
     </div>
   );
 }
