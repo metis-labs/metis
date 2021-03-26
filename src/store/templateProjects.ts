@@ -262,7 +262,7 @@ const resnetModel = {
 
 export const vggProject: Project = {
   id: 'vggProject',
-  name: 'vggProject',
+  name: 'VGGNet',
   models: {
     vgg_16: vggModel,
   },
@@ -270,7 +270,7 @@ export const vggProject: Project = {
 
 export const resnetProject: Project = {
   id: 'resnetProject',
-  name: 'resnetProject',
+  name: 'ResNet',
   models: {
     resnet: resnetModel,
   },

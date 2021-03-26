@@ -191,8 +191,6 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
     );
   }
 
-  
-
   return (
     <div className={classes.root}>
       <NavBar />

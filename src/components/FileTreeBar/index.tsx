@@ -6,9 +6,7 @@ import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 import TreeView from '@material-ui/lab/TreeView';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
-
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
-
 import { Model, PeerInfo, encodeEventDesc } from 'store/types';
 import { createModel } from 'store/initialProject';
 import { useAppState } from 'index';
@@ -122,7 +120,7 @@ export default function FileTreeBar() {
       actionType: 'create',
     }));
 
-  }, [updateAppState, appState.remote]);
+  }, [appState.remote]);
 
   // TODO(youngteac.hong): Replace below with type parameter.
   const models = project.models as { [key: string]: Model };
