@@ -17,8 +17,7 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 import RenameDialog from './RenameDialog';
 
-import { UpdateProjectRequest, DeleteProjectRequest } from 'api/metis_pb';
-import { MetisPromiseClient } from 'api/metis_grpc_web_pb';
+import { api } from 'api';
 import { ProjectInfo } from 'store/types';
 import { useAppState } from 'index';
 
@@ -62,7 +61,6 @@ export default function ProjectCard(props: ProjectItemProps) {
   const classes = useStyles();
   const [, updateAppState] = useAppState();
   const anchorRef = useRef<HTMLButtonElement>(null);
-  const [client] = useState<MetisPromiseClient>(new MetisPromiseClient('http://localhost:8080'));
   const [popperOpen, setPopperOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const prevOpen = useRef(popperOpen);
@@ -99,39 +97,40 @@ export default function ProjectCard(props: ProjectItemProps) {
     [anchorRef, setPopperOpen],
   );
 
-  const handleRenameButtonClick = useCallback((event: MouseEvent<EventTarget>) => {
-    setRenameDialogOpen(true);
-  }, [setRenameDialogOpen]);
+  const handleRenameButtonClick = useCallback(
+    (event: MouseEvent<EventTarget>) => {
+      setRenameDialogOpen(true);
+    },
+    [setRenameDialogOpen],
+  );
 
-  const handleRenameDialogClose = useCallback((projectName: string | undefined) => {
-    if (projectName) {
-      const req = new UpdateProjectRequest();
-      req.setProjectId(project.id);
-      req.setProjectName(projectName);
-      client.updateProject(req).then(() => {
-        updateAppState((appState) => {
-          appState.local.projectInfos[project.id].name = projectName;
-          return appState;
+  const handleRenameDialogClose = useCallback(
+    (projectName: string | undefined) => {
+      if (projectName) {
+        api.updateProject(project.id, projectName).then(() => {
+          updateAppState((appState) => {
+            appState.local.projectInfos[project.id].name = projectName;
+            return appState;
+          });
         });
-      });
-    }
+      }
 
-    setRenameDialogOpen(false);
-    setPopperOpen(false);
-  }, [setRenameDialogOpen, client, project.id, updateAppState]);
+      setRenameDialogOpen(false);
+      setPopperOpen(false);
+    },
+    [setRenameDialogOpen, project.id, updateAppState],
+  );
 
   const handleDeleteButtonClick = useCallback(
     (event: MouseEvent<EventTarget>) => {
-      const req = new DeleteProjectRequest();
-      req.setProjectId(project.id);
-      client.deleteProject(req).then((res) => {
+      api.deleteProject(project.id).then(() => {
         updateAppState((appState) => {
           delete appState.local.projectInfos[project.id];
           return appState;
         });
       });
     },
-    [updateAppState, client, project.id],
+    [updateAppState, project.id],
   );
 
   return (
@@ -139,7 +138,7 @@ export default function ProjectCard(props: ProjectItemProps) {
       <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
-            R
+            P
           </Avatar>
         }
         action={
@@ -166,7 +165,11 @@ export default function ProjectCard(props: ProjectItemProps) {
                         <MenuItem className={classes.menuItem} onClick={handleRenameButtonClick}>
                           Rename
                         </MenuItem>
-                        <RenameDialog name={project.name} open={renameDialogOpen} onClose={handleRenameDialogClose}></RenameDialog>
+                        <RenameDialog
+                          name={project.name}
+                          open={renameDialogOpen}
+                          onClose={handleRenameDialogClose}
+                        ></RenameDialog>
                         <MenuItem className={classes.menuItem} onClick={handleDeleteButtonClick}>
                           Delete
                         </MenuItem>

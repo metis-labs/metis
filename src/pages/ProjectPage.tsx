@@ -196,15 +196,17 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       <NavBar />
       <SideBar />
       <FileTreeBar />
-      <main className={classes.content}>
-        {appState.local.selectedModelID ? (
+      {
+        appState.local.selectedModelID ? (
           <>
-            {viewMode === 'diagram' ? <DiagramView /> : <CodeView />}
-            <StatusBar viewMode={viewMode} setViewMode={setViewMode} />
+            <main className={classes.content}>
+              {viewMode === 'diagram' ? <DiagramView /> : <CodeView />}
+              <StatusBar viewMode={viewMode} setViewMode={setViewMode} />
+            </main>
+            <PropertyBar />
           </>
-        ) : null}
-      </main>
-      {appState.local.selectedModelID && <PropertyBar />}
+        ) : <main className={classes.content}></main>
+      }
     </div>
   );
 }
