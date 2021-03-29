@@ -4,11 +4,11 @@ import NearMeIcon from '@material-ui/icons/NearMe';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DiagramModel } from '@projectstorm/react-diagrams';
 
-import { Engine } from 'components/DiagramView/Engine';
+import Engine from 'components/DiagramView/Engine';
 import { Position } from 'store/types';
-import { useAppState } from '../../index';
-import { MetisNodeModel } from './MetisNodeModel';
-import { MetisLinkModel } from './MetisLinkModel';
+import useAppState from '../../index';
+import MetisNodeModel from './MetisNodeModel';
+import MetisLinkModel from './MetisLinkModel';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -47,30 +47,27 @@ export default function DiagramView() {
   const [lastFunction, setLastFunction] = useState<string>();
   const [lastBlockID, setLastBlockID] = useState<string>();
   const [lastPosition, setLastPosition] = useState<Position>();
-  const selectedModelID = appState.local.selectedModelID;
-  const repaintCounter = appState.repaintCounter;
+  const { selectedModelID } = appState.local;
+  const { repaintCounter } = appState;
 
-  const handleMouseUp = useCallback(
-    (event: any) => {
-      if (lastFunction === 'selectionChanged' && lastBlockID) {
-        updateAppState((appState) => {
-          appState.local.diagramInfos[selectedModelID].selectedBlockID = lastBlockID;
-          return appState;
-        });
-      } else if (lastFunction === 'positionChanged' && lastBlockID) {
-        appState.remote.update((root) => {
-          const model = root.project.models[selectedModelID];
-          model.blocks[lastBlockID].position = lastPosition;
-        });
+  const handleMouseUp = useCallback(() => {
+    if (lastFunction === 'selectionChanged' && lastBlockID) {
+      updateAppState((appState) => {
+        appState.local.diagramInfos[selectedModelID].selectedBlockID = lastBlockID;
+        return appState;
+      });
+    } else if (lastFunction === 'positionChanged' && lastBlockID) {
+      appState.remote.update((root) => {
+        const model = root.project.models[selectedModelID];
+        model.blocks[lastBlockID].position = lastPosition;
+      });
 
-        updateAppState((appState) => {
-          appState.local.diagramInfos[selectedModelID].selectedBlockID = lastBlockID;
-          return appState;
-        });
-      }
-    },
-    [lastFunction, lastBlockID, lastPosition, updateAppState, selectedModelID, appState.remote],
-  );
+      updateAppState((appState) => {
+        appState.local.diagramInfos[selectedModelID].selectedBlockID = lastBlockID;
+        return appState;
+      });
+    }
+  }, [lastFunction, lastBlockID, lastPosition, updateAppState, selectedModelID, appState.remote]);
 
   const diagramInfo = appState.local.diagramInfos[selectedModelID];
   const clientID = appState.local.myClientID;
@@ -92,7 +89,7 @@ export default function DiagramView() {
   );
 
   useEffect(() => {
-    const project = appState.remote.getRoot().project;
+    const {project} = appState.remote.getRoot();
     const diagramInfo = appState.local.diagramInfos[selectedModelID];
     const model = project.models[selectedModelID];
     engine.update(model, diagramInfo);
@@ -112,7 +109,7 @@ export default function DiagramView() {
         if (event.function === 'targetPortChanged') {
           appState.remote.update((root) => {
             const model = root.project.models[selectedModelID];
-            let from, to;
+            let from; let to;
             if (event.entity.sourcePort.getName() === 'in') {
               from = event.entity.targetPort.parent;
               to = event.entity.sourcePort.parent;
@@ -157,7 +154,6 @@ export default function DiagramView() {
       }
     });
     return () => deregister();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     engine,
     appState.remote,
@@ -170,7 +166,7 @@ export default function DiagramView() {
   ]);
 
   const remotePeers = appState.remote.getRoot().peers;
-  const myClientID = appState.local.myClientID;
+  const {myClientID} = appState.local;
 
   const peers = [];
   for (const [peerID, peer] of Object.entries(appState.peers)) {
@@ -191,7 +187,7 @@ export default function DiagramView() {
   }
 
   return (
-    <div ref={rootElement} className={classes.root} onMouseUp={handleMouseUp} onMouseMove={handleMouseMove}>
+    <div role="presentation" ref={rootElement} className={classes.root} onMouseUp={handleMouseUp} onMouseMove={handleMouseMove}>
       <CanvasWidget className={classes.canvas} engine={engine.getEngine()} />
       {peers.map((peer) => {
         const pos = {

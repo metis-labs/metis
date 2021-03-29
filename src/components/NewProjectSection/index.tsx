@@ -8,7 +8,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 
-import { api } from 'api';
+import api from 'api';
 import { templateProjects } from 'store/templateProjects';
 
 const useStyles = makeStyles((theme: Theme) =>

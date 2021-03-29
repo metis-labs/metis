@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
@@ -8,11 +8,11 @@ import NavBar from 'components/NavBar';
 import ProjectCard from 'components/ProjectCard';
 import NewProjectSection from 'components/NewProjectSection';
 
-import { api } from 'api';
+import api from 'api';
 import { fromProjects } from 'api/converter';
-import { useAppState } from 'index';
+import useAppState from 'index';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       display: 'flex',

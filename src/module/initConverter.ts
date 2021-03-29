@@ -1,14 +1,33 @@
 import { Block, BlockType, Model, EmptyModel } from '../store/types';
 import metadata from './pytorch-metadata.json';
 
-export class InitConverter {
+function printOptionValue(value: any): string {
+  if (value === true) {
+    return 'True';
+  } if (value === false) {
+    return 'False';
+  } if (typeof value === 'string') {
+    return `"${value}"`;
+  } 
+    return value;
+  
+}
+
+export default class InitConverter {
   private blocks: { [id: string]: Block };
+
   private readonly bodyBlockList: string[];
+
   private readonly inputBlockList: string[];
+
   private readonly outputBlockList: string[];
+
   private resultInit: string;
+
   private readonly indentSize: string;
+
   private readonly indentDepth: number;
+
   private options: string;
 
   constructor() {
@@ -39,7 +58,7 @@ export class InitConverter {
     this.resultInit += `class ${model.name}(torch.nn.Module):\n`;
     this.resultInit += this.indentSize;
     this.resultInit += `def __init__(self):\n`;
-    for (let i = 0; i < this.indentDepth + 1; i++) {
+    for (let i = 0; i < this.indentDepth + 1; i+=1) {
       this.resultInit += this.indentSize;
     }
     this.resultInit += `super(${model.name}, self).__init__()\n`;
@@ -49,7 +68,7 @@ export class InitConverter {
     this.orderedBlockList(blocks);
     this.resultInit += `\n`;
     for (const blockId of this.bodyBlockList) {
-      for (let i = 0; i < this.indentDepth + 1; i++) {
+      for (let i = 0; i < this.indentDepth + 1; i+=1) {
         this.resultInit += this.indentSize;
       }
       this.resultInit += `self.${blocks[blockId].name} = nn.${blocks[blockId].type}(`;
@@ -63,9 +82,7 @@ export class InitConverter {
     const options = [];
 
     for (const attr of metadata[idx].schema.attributes) {
-      const camlAttr = attr.name.replace(/_([a-z])/g, function (g) {
-        return g[1].toUpperCase();
-      });
+      const camlAttr = attr.name.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
       const attrValue = block.parameters[camlAttr];
       // TODO: Need convert function to validate equality between default-value and assigned-value
       if (attr.default === attrValue) {
@@ -82,17 +99,5 @@ export class InitConverter {
 
   getResult(): string {
     return this.resultInit;
-  }
-}
-
-function printOptionValue(value: any): string {
-  if (value === true) {
-    return 'True';
-  } else if (value === false) {
-    return 'False';
-  } else if (typeof value === 'string') {
-    return `"${value}"`;
-  } else {
-    return value;
   }
 }

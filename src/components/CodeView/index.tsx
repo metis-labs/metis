@@ -3,8 +3,8 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Converter } from 'module/converter';
-import { useAppState } from 'index';
+import Converter from 'module/converter';
+import useAppState from 'index';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -23,7 +23,7 @@ export default function CodeView() {
   const [converter] = useState(new Converter());
   const [codeString, setCodeString] = useState('');
   const project = appState.remote.getRoot().project!;
-  const selectedModelID = appState.local.selectedModelID;
+  const {selectedModelID} = appState.local;
 
   useEffect(() => {
     converter.update(project.models[selectedModelID]);

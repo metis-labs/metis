@@ -6,7 +6,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import reportWebVitals from 'reportWebVitals';
 import App from 'App';
 import theme from 'theme';
-import { createStore } from 'store/store';
+import createStore from 'store/store';
 
 import 'index.css';
 
@@ -20,7 +20,8 @@ const AppStateStore = createStore({
   },
   peers: {},
 });
-export const useAppState = AppStateStore.useAppState;
+const { useAppState } = AppStateStore;
+export default useAppState;
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>

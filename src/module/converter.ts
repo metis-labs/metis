@@ -1,10 +1,11 @@
 import { EmptyModel, Model } from '../store/types';
-import { ImportConverter } from './importConverter';
-import { InitConverter } from './initConverter';
-import { ForwardConverter } from './forwardConverter';
+import ImportConverter from './importConverter';
+import InitConverter from './initConverter';
+import ForwardConverter from './forwardConverter';
 
-export class Converter {
+export default class Converter {
   private previousModel: Model;
+
   private codeString: string;
 
   constructor() {

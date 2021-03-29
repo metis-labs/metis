@@ -4,7 +4,7 @@ import yorkie from 'yorkie-js-sdk';
 import anonymous from 'anonymous-animals-gen';
 import randomColor from 'randomcolor';
 
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import NavBar from 'components/NavBar';
@@ -16,11 +16,11 @@ import StatusBar from 'components/StatusBar';
 import PropertyBar from 'components/PropertyBar';
 import { initialProject } from 'store/initialProject';
 import { templateProjects } from 'store/templateProjects';
-import { useAppState } from 'index';
+import useAppState from 'index';
 
 import { decodeEventDesc } from 'store/types';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       display: 'flex',
@@ -37,12 +37,15 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+
+
 export default function ProjectPage(props: RouteComponentProps<{ projectID: string }>) {
   const classes = useStyles();
   const {
     match: {
       params: { projectID },
     },
+    location: { search }
   } = props;
   const [appState, updateAppState] = useAppState();
   const [viewMode, setViewMode] = useState('diagram');
@@ -81,7 +84,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       await client.attach(doc);
 
       doc.update((root) => {
-        const params = new URLSearchParams(props.location.search);
+        const params = new URLSearchParams(search);
         const templateID = params.get('template_id');
         if (!root.project) {
           if (templateID) {
@@ -117,48 +120,50 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         return appState;
       });
 
+      function handleEvent(event) {
+        let isPeersChanged = false;
+        let isProjectChanged = false;
+        if (event.type === 'local-change' || event.type === 'remote-change') {
+          for (const changeInfo of event.value) {
+            for (const path of changeInfo.paths) {
+              if (path.startsWith('$.project')) {
+                isProjectChanged = true;
+              } else if (path.startsWith('$.peers')) {
+                isPeersChanged = true;
+              }
+              if (isProjectChanged && isPeersChanged) {
+                return [isProjectChanged, isPeersChanged];
+              }
+            }
+            if (changeInfo.change.getMessage()) {
+              const desc = decodeEventDesc(changeInfo.change.getMessage());
+              if (desc.actionType === 'create' && desc.entityType === 'model') {
+                updateAppState((appState) => {
+                  appState.local.diagramInfos[desc.id] = {
+                    offset: { x: 0, y: 0 },
+                    zoom: 100,
+                  };
+                  return appState;
+                });
+              } else if (desc.actionType === 'delete' && desc.entityType === 'model') {
+                updateAppState((appState) => {
+                  delete appState.local.diagramInfos[desc.id];
+                  if (desc.id === appState.local.selectedModelID) {
+                    appState.local.selectedModelID = null;
+                  }
+                  return appState;
+                });
+              }
+            }
+          }
+        }
+        return [isProjectChanged, isPeersChanged];
+      }
+
       // Trigger repaint using change events
       unsubscribes.push(
         doc.subscribe((event) => {
-          const [isProjectChanged, isPeersChanged] = (() => {
-            if (event.type === 'local-change' || event.type === 'remote-change') {
-              let isPeersChanged = false;
-              let isProjectChanged = false;
-              for (const changeInfo of event.value) {
-                for (const path of changeInfo.paths) {
-                  if (path.startsWith('$.project')) {
-                    isProjectChanged = true;
-                  } else if (path.startsWith('$.peers')) {
-                    isPeersChanged = true;
-                  }
-                  if (isProjectChanged && isPeersChanged) {
-                    return [isProjectChanged, isPeersChanged];
-                  }
-                }
-                if (changeInfo.change.getMessage()) {
-                  const desc = decodeEventDesc(changeInfo.change.getMessage());
-                  if (desc.actionType === 'create' && desc.entityType === 'model') {
-                    updateAppState((appState) => {
-                      appState.local.diagramInfos[desc.id] = {
-                        offset: { x: 0, y: 0 },
-                        zoom: 100,
-                      };
-                      return appState;
-                    });
-                  } else if (desc.actionType === 'delete' && desc.entityType === 'model') {
-                    updateAppState((appState) => {
-                      delete appState.local.diagramInfos[desc.id];
-                      if (desc.id === appState.local.selectedModelID) {
-                        appState.local.selectedModelID = null;
-                      }
-                      return appState;
-                    });
-                  }
-                }
-              }
-              return [isProjectChanged, isPeersChanged];
-            }
-          })();
+          const [isProjectChanged, isPeersChanged] = handleEvent(event);
 
           updateAppState((appState) => {
             if (isProjectChanged) {
@@ -181,7 +186,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         await client.deactivate();
       }
     };
-  }, [updateAppState, projectID, props.location.search]);
+  }, [updateAppState, projectID, search]);
 
   if (!appState.remote?.getRoot().project) {
     return (
@@ -205,7 +210,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
             </main>
             <PropertyBar />
           </>
-        ) : <main className={classes.content}></main>
+        ) : <main className={classes.content} />
       }
     </div>
   );

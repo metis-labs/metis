@@ -10,8 +10,8 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { useAppState } from '../../index';
 import { BlockType, PreservedBlockTypes, PropertyValue } from 'store/types';
+import useAppState from '../../index';
 
 const drawerWidth = 240;
 
@@ -44,14 +44,14 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function PropertyBar() {
   const classes = useStyles();
   const [appState,] = useAppState();
-  const project = appState.remote.getRoot().project;
-  const selectedModelID = appState.local.selectedModelID;
-  const selectedBlockID = appState.local.diagramInfos[selectedModelID].selectedBlockID;
+  const {project} = appState.remote.getRoot();
+  const {selectedModelID} = appState.local;
+  const {selectedBlockID} = appState.local.diagramInfos[selectedModelID];
 
   const onTypeChange = useCallback(
     (event: ChangeEvent<{ value: unknown }>) => {
       appState.remote.update(root => {
-        const project = root.project;
+        const {project} = root;
         const model = project.models[selectedModelID];
         model.blocks[selectedBlockID].type = event.target.value as BlockType;
       });
@@ -59,10 +59,23 @@ export default function PropertyBar() {
     [appState.remote, selectedBlockID, selectedModelID],
   );
 
+  const valueTransition = (value: string): PropertyValue => {
+    if (value === 'True' || value === 'true') {
+      return true;
+    } if (value === 'False' || value === 'false') {
+      return false;
+    } if (value === '') {
+      return value;
+    } if (!Number.isNaN(+value)) {
+      return +value;
+    } 
+      return value;
+  };
+
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<{ value: unknown }>, key: string) => {
       appState.remote.update(root => {
-        const project = root.project;
+        const {project} = root;
         const model = project.models[selectedModelID];
         model.blocks[selectedBlockID][key] = valueTransition(event.target.value as string);
       });
@@ -73,7 +86,7 @@ export default function PropertyBar() {
   const handleParameterChange = useCallback(
     (event: ChangeEvent<{ value: unknown }>, key: string) => {
       appState.remote.update(root => {
-        const project = root.project;
+        const {project} = root;
         const model = project.models[selectedModelID];
         model.blocks[selectedBlockID].parameters[key] = valueTransition(event.target.value as string);
       })
@@ -84,20 +97,6 @@ export default function PropertyBar() {
   const handleKeyDown = useCallback((event: any) => {
     event.nativeEvent.stopImmediatePropagation();
   }, []);
-
-  const valueTransition = (value: string): PropertyValue => {
-    if (value === 'True' || value === 'true') {
-      return true;
-    } else if (value === 'False' || value === 'false') {
-      return false;
-    } else if (value === '') {
-      return value;
-    } else if (!isNaN(+value)) {
-      return +value;
-    } else {
-      return value;
-    }
-  };
 
   const model = project.models[selectedModelID];
   if (!selectedBlockID || !model.blocks[selectedBlockID]) {

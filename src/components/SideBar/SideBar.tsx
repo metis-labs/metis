@@ -10,7 +10,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import AddIcon from '@material-ui/icons/Add';
 
-import { useAppState } from '../../index';
+import useAppState from '../../index';
 import { BlockType } from '../../store/types';
 
 const drawerWidth = 60;
@@ -37,7 +37,7 @@ const useStyles = makeStyles(() =>
 export default function SideBar() {
   const classes = useStyles();
   const [appState,] = useAppState();
-  const selectedModelID = appState.local.selectedModelID;
+  const {selectedModelID} = appState.local;
   const handleAddBlockClick = useCallback(
     (type: BlockType) => {
       appState.remote.update((root) => {

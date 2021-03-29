@@ -3,7 +3,7 @@ import { DiagramEngine, PortWidget } from '@projectstorm/react-diagrams-core';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
-import { MetisNodeModel } from 'components/DiagramView/MetisNodeModel';
+import MetisNodeModel from 'components/DiagramView/MetisNodeModel';
 import { BlockType } from 'store/types';
 
 export interface MetisNodeWidgetProps {

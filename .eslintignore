@@ -1,1 +1,3 @@
+src/api/metis_pb.d.ts
 src/api/metis_grpc_web_pb.js
+src/api/metis_grpc_web_pb.d.ts

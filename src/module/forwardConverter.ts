@@ -1,13 +1,22 @@
 import { Block, BlockType, EmptyModel, Link } from '../store/types';
-export class ForwardConverter {
+
+export default class ForwardConverter {
   private blocks: { [id: string]: Block };
+
   private bodyBlockList: string[];
+
   private readonly inputBlockList: string[];
+
   private readonly outputBlockList: string[];
+
   private resultInit: string;
+
   private readonly indentSize: string;
+
   private readonly indentDepth: number;
+
   private options: string;
+
   private readonly linkMapByFrom: { [fromId: string]: Link };
 
   constructor() {
@@ -58,7 +67,7 @@ export class ForwardConverter {
     // TODO: implement unifying tensor when inject multi-from-block to the next same to-block
     this.resultInit += `\n`;
     for (const inputBlock of this.inputBlockList) {
-      for (let i = 0; i < this.indentDepth + 1; i++) {
+      for (let i = 0; i < this.indentDepth + 1; i+=1) {
         this.resultInit += this.indentSize;
       }
       const fromNode = this.linkMapByFrom[inputBlock]?.from;
@@ -72,17 +81,17 @@ export class ForwardConverter {
         returnList.push(fromNode);
         continue;
       }
-      for (let i = 0; i < this.indentDepth + 1; i++) {
+      for (let i = 0; i < this.indentDepth + 1; i+=1) {
         this.resultInit += this.indentSize;
       }
 
       this.resultInit += `${blocks[bodyBlock].name}_output = self.${blocks[bodyBlock].name}(${
-        fromNode ? blocks[fromNode].name + '_output' : ''
+        fromNode ? `${blocks[fromNode].name  }_output` : ''
       })\n`;
     }
 
     this.resultInit += `\n`;
-    for (let i = 0; i < this.indentDepth + 1; i++) {
+    for (let i = 0; i < this.indentDepth + 1; i+=1) {
       this.resultInit += this.indentSize;
     }
     this.resultInit += `return `;

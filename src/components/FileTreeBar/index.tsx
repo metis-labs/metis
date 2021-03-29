@@ -6,10 +6,10 @@ import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 import TreeView from '@material-ui/lab/TreeView';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
-import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 import { Model, PeerInfo, encodeEventDesc } from 'store/types';
 import { createModel } from 'store/initialProject';
-import { useAppState } from 'index';
+import useAppState from 'index';
+import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 
 function MinusSquare(props: SvgIconProps) {
   return (
@@ -81,7 +81,7 @@ export default function FileTreeBar() {
   const classes = useStyles();
   const [appState, updateAppState] = useAppState();
   const project = appState.remote.getRoot().project!;
-  const selectedModelID = appState.local.selectedModelID;
+  const {selectedModelID} = appState.local;
   const clientID = appState.local.myClientID;
   const [expanded, setExpanded] = useState<string[]>([]);
 
@@ -96,7 +96,7 @@ export default function FileTreeBar() {
   const handleNodeSelect = useCallback(
     (event: ChangeEvent, modelID: any) => {
       updateAppState((appState) => {
-        const project = appState.remote.getRoot().project;
+        const {project} = appState.remote.getRoot();
         if (project.models[modelID]) {
           appState.local.selectedModelID = modelID;
         }
@@ -131,7 +131,7 @@ export default function FileTreeBar() {
       continue;
     }
 
-    const selectedModelID = peerInRemote.selectedModelID;
+    const {selectedModelID} = peerInRemote;
     if (!peersMapByModelID[selectedModelID]) {
       peersMapByModelID[selectedModelID] = [];
     }

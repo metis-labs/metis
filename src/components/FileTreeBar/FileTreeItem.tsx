@@ -13,10 +13,24 @@ import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
 import { TransitionProps } from '@material-ui/core/transitions';
 import Collapse from '@material-ui/core/Collapse';
 
-import RenameDialog from './RenameDialog';
 
 import { Model, PeerInfo, encodeEventDesc } from 'store/types';
-import { useAppState } from 'index';
+import useAppState from 'index';
+import RenameDialog from './RenameDialog';
+
+function TransitionComponent(props: TransitionProps) {
+  const { in: inProps } = props;
+  const style = useSpring({
+    from: { opacity: 0, transform: 'translate3d(20px,0,0)' },
+    to: { opacity: inProps ? 1 : 0, transform: `translate3d(${inProps ? 0 : 20}px,0,0)` },
+  });
+
+  return (
+    <animated.div style={style}>
+      <Collapse {...props} />
+    </animated.div>
+  );
+}
 
 export const StyledTreeItem = withStyles((theme: Theme) =>
   createStyles({
@@ -33,7 +47,7 @@ export const StyledTreeItem = withStyles((theme: Theme) =>
   }),
 )((props: TreeItemProps) => <TreeItem {...props} TransitionComponent={TransitionComponent} />);
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     treeItemContainer: {
       display: 'flex',
@@ -67,19 +81,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   }),
 );
-
-function TransitionComponent(props: TransitionProps) {
-  const style = useSpring({
-    from: { opacity: 0, transform: 'translate3d(20px,0,0)' },
-    to: { opacity: props.in ? 1 : 0, transform: `translate3d(${props.in ? 0 : 20}px,0,0)` },
-  });
-
-  return (
-    <animated.div style={style}>
-      <Collapse {...props} />
-    </animated.div>
-  );
-}
 
 export default function FileTreeItem(props: { model: Model; peers: Array<PeerInfo> }) {
   const classes = useStyles();
@@ -124,26 +125,23 @@ export default function FileTreeItem(props: { model: Model; peers: Array<PeerInf
     [setMenuOpen],
   );
 
-  const handleMouseEnter = useCallback(
-    (event: MouseEvent<EventTarget>) => {
-      setMoreButtonOpen(true);
-    },
-    [setMoreButtonOpen],
-  );
+  const handleMouseEnter = useCallback(() => {
+    setMoreButtonOpen(true);
+  }, [setMoreButtonOpen]);
 
   const handleMouseLeave = useCallback(
-    (event: MouseEvent<EventTarget>) => {
+    () => {
       setMoreButtonOpen(false);
       setMenuOpen(false);
     },
     [setMoreButtonOpen, setMenuOpen],
   );
 
-  const handleRenameButtonClick = useCallback((event: MouseEvent<EventTarget>) => {
+  const handleRenameButtonClick = useCallback(() => {
     setRenameDialogOpen(true);
   }, [setRenameDialogOpen]);
 
-  const handleDeleteButtonClick = useCallback((event: MouseEvent<EventTarget>) => {
+  const handleDeleteButtonClick = useCallback(() => {
     appState.remote.update((root) => {
       delete root.project.models[model.id];
     }, encodeEventDesc({
@@ -168,7 +166,7 @@ export default function FileTreeItem(props: { model: Model; peers: Array<PeerInf
     <div className={classes.treeItemContainer} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <div className={classes.treeItem}>
         <StyledTreeItem key={model.id} nodeId={model.id} label={model.name} />
-        {peers && peers.map((peer) => <div key={peer.username} style={{ backgroundColor: peer.color }} className={classes.peerRep}></div>)}
+        {peers && peers.map((peer) => <div key={peer.username} style={{ backgroundColor: peer.color }} className={classes.peerRep} />)}
       </div>
       <IconButton
         ref={anchorRef}
@@ -191,7 +189,7 @@ export default function FileTreeItem(props: { model: Model; peers: Array<PeerInf
                   <MenuItem className={classes.menuItem} onClick={handleRenameButtonClick}>
                     Rename
                   </MenuItem>
-                  <RenameDialog name={model.name} open={renameDialogOpen} onClose={handleRenameDialogClose}></RenameDialog>
+                  <RenameDialog name={model.name} open={renameDialogOpen} onClose={handleRenameDialogClose} />
                   <MenuItem className={classes.menuItem} onClick={handleDeleteButtonClick}>
                     Delete 
                   </MenuItem>

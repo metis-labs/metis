@@ -3,10 +3,10 @@ import { AbstractReactFactory } from '@projectstorm/react-canvas-core';
 import { DiagramEngine } from '@projectstorm/react-diagrams-core';
 import { GenerateModelEvent } from '@projectstorm/react-canvas-core/src/core/AbstractModelFactory';
 
-import { MetisNodeModel, MetisNodeModelOptions } from 'components/DiagramView/MetisNodeModel';
+import MetisNodeModel, { MetisNodeModelOptions } from 'components/DiagramView/MetisNodeModel';
 import { MetisNodeWidget } from 'components/DiagramView/MetisNodeWidget';
 
-export class MetisNodeFactory extends AbstractReactFactory<MetisNodeModel, DiagramEngine> {
+export default class MetisNodeFactory extends AbstractReactFactory<MetisNodeModel, DiagramEngine> {
   constructor() {
     super('metis-node');
   }

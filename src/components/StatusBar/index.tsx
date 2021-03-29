@@ -6,7 +6,7 @@ import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-import { useAppState } from '../../index';
+import useAppState from 'index';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -28,8 +28,8 @@ export default function StatusBar(props: { viewMode: string; setViewMode: Functi
   const { viewMode, setViewMode } = props;
   const classes = useStyles();
   const [appState] = useAppState();
-  const project = appState.remote.getRoot().project;
-  const selectedModelID = appState.local.selectedModelID;
+  const {project} = appState.remote.getRoot();
+  const {selectedModelID} = appState.local;
 
   const handleClick = useCallback(() => {
     setViewMode(viewMode === 'diagram' ? 'code' : 'diagram');

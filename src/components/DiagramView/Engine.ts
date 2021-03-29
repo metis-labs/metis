@@ -1,13 +1,14 @@
 import createEngine, { DiagramEngine, DiagramModel } from '@projectstorm/react-diagrams';
 
-import { MetisNodeModel } from 'components/DiagramView/MetisNodeModel';
-import { MetisNodeFactory } from 'components/DiagramView/MetisNodeFactory';
 import { Model, EmptyModel, DiagramInfo } from 'store/types';
-import { MetisLinkFactory } from './MetisLinkFactory';
-import { MetisLinkModel } from './MetisLinkModel';
+import MetisNodeModel from 'components/DiagramView/MetisNodeModel';
+import MetisNodeFactory from 'components/DiagramView/MetisNodeFactory';
+import MetisLinkFactory from './MetisLinkFactory';
+import MetisLinkModel from './MetisLinkModel';
 
-export class Engine {
+export default class Engine {
   private engine: DiagramEngine;
+
   private previousModel: Model;
 
   constructor() {

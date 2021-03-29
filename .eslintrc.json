@@ -1,0 +1,29 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "extends": [
+    "airbnb-typescript",
+    "prettier",
+    "plugin:@typescript-eslint/eslint-recommended"
+  ],
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "rules": {
+    "@typescript-eslint/no-shadow": 0,
+    "no-restricted-syntax": [
+      "error",
+      "ForInStatement",
+      "LabeledStatement",
+      "WithStatement"
+    ],
+    "react/jsx-props-no-spreading": 0,
+    "react/prop-types": 0,
+    "class-methods-use-this": 0,
+    "no-param-reassign": 0,
+    "prefer-destructuring": 0,
+    "no-continue": 0
+  }
+}

@@ -15,11 +15,11 @@ import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
-import RenameDialog from './RenameDialog';
 
-import { api } from 'api';
+import api from 'api';
 import { ProjectInfo } from 'store/types';
-import { useAppState } from 'index';
+import useAppState from 'index';
+import RenameDialog from './RenameDialog';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -98,7 +98,7 @@ export default function ProjectCard(props: ProjectItemProps) {
   );
 
   const handleRenameButtonClick = useCallback(
-    (event: MouseEvent<EventTarget>) => {
+    () => {
       setRenameDialogOpen(true);
     },
     [setRenameDialogOpen],
@@ -122,7 +122,7 @@ export default function ProjectCard(props: ProjectItemProps) {
   );
 
   const handleDeleteButtonClick = useCallback(
-    (event: MouseEvent<EventTarget>) => {
+    () => {
       api.deleteProject(project.id).then(() => {
         updateAppState((appState) => {
           delete appState.local.projectInfos[project.id];
@@ -169,7 +169,7 @@ export default function ProjectCard(props: ProjectItemProps) {
                           name={project.name}
                           open={renameDialogOpen}
                           onClose={handleRenameDialogClose}
-                        ></RenameDialog>
+                         />
                         <MenuItem className={classes.menuItem} onClick={handleDeleteButtonClick}>
                           Delete
                         </MenuItem>

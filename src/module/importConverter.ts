@@ -1,8 +1,10 @@
 import { Dependency, EmptyModel } from '../store/types';
 
-export class ImportConverter {
+export default class ImportConverter {
   private dependencies: { [id: string]: Dependency };
+
   private readonly resultImportList: string[];
+
   private result: string;
 
   constructor() {
