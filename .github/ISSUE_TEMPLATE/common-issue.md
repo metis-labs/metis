@@ -1,6 +1,6 @@
 ---
 name: Common Issue
-about: A common issue with the Yorkie project
+about: A common issue with the Metis project
 labels:
 
 ---
