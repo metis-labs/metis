@@ -18,7 +18,7 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 import api from 'api';
 import { ProjectInfo } from 'store/types';
-import useAppState from 'index';
+import { useAppState } from 'App';
 import RenameDialog from './RenameDialog';
 
 const useStyles = makeStyles((theme: Theme) =>

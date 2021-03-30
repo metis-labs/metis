@@ -15,7 +15,7 @@ import Collapse from '@material-ui/core/Collapse';
 
 
 import { Model, PeerInfo, encodeEventDesc } from 'store/types';
-import useAppState from 'index';
+import { useAppState } from 'App';
 import RenameDialog from './RenameDialog';
 
 function TransitionComponent(props: TransitionProps) {

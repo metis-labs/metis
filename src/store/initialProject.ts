@@ -52,10 +52,12 @@ export function createModel(name: string) {
   }
 }
 
-export const initialProject: Project = {
+const initialProject: Project = {
   id: 'initial',
   name: 'untitled',
   models: {
     model: initialModel,
   },
 };
+
+export default initialProject;

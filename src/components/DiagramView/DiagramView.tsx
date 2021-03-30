@@ -6,7 +6,7 @@ import { DiagramModel } from '@projectstorm/react-diagrams';
 
 import Engine from 'components/DiagramView/Engine';
 import { Position } from 'store/types';
-import useAppState from '../../index';
+import { useAppState } from 'App';
 import MetisNodeModel from './MetisNodeModel';
 import MetisLinkModel from './MetisLinkModel';
 

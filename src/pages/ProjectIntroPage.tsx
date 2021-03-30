@@ -10,7 +10,7 @@ import NewProjectSection from 'components/NewProjectSection';
 
 import api from 'api';
 import { fromProjects } from 'api/converter';
-import useAppState from 'index';
+import { useAppState } from 'App';
 
 const useStyles = makeStyles(() =>
   createStyles({

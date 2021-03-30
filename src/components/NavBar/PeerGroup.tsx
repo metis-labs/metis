@@ -4,7 +4,7 @@ import Avatar from '@material-ui/core/Avatar';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import useAppState from 'index';
+import { useAppState } from 'App';
 
 export default function PeerGroup() {
   const [appState] = useAppState();

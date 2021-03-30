@@ -6,7 +6,7 @@ import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-import useAppState from 'index';
+import { useAppState } from 'App';
 
 const useStyles = makeStyles(() =>
   createStyles({

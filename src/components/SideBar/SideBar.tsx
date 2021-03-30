@@ -10,7 +10,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import AddIcon from '@material-ui/icons/Add';
 
-import useAppState from '../../index';
+import { useAppState } from 'App';
 import { BlockType } from '../../store/types';
 
 const drawerWidth = 60;

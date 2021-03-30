@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 
 import api from 'api';
-import { templateProjects } from 'store/templateProjects';
+import templateProjects from 'store/templates';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

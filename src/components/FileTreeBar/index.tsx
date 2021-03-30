@@ -8,7 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import { Model, PeerInfo, encodeEventDesc } from 'store/types';
 import { createModel } from 'store/initialProject';
-import useAppState from 'index';
+import { useAppState } from 'App';
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 
 function MinusSquare(props: SvgIconProps) {

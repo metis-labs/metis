@@ -4,7 +4,7 @@ import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Converter from 'module/converter';
-import useAppState from 'index';
+import { useAppState } from 'App';
 
 const useStyles = makeStyles(() =>
   createStyles({

@@ -11,7 +11,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
 import { BlockType, PreservedBlockTypes, PropertyValue } from 'store/types';
-import useAppState from '../../index';
+import { useAppState } from 'App';
 
 const drawerWidth = 240;
 

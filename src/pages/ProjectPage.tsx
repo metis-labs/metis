@@ -14,9 +14,9 @@ import DiagramView from 'components/DiagramView';
 import CodeView from 'components/CodeView';
 import StatusBar from 'components/StatusBar';
 import PropertyBar from 'components/PropertyBar';
-import { initialProject } from 'store/initialProject';
-import { templateProjects } from 'store/templateProjects';
-import useAppState from 'index';
+import initialProject from 'store/initialProject';
+import templateProjects from 'store/templates';
+import { useAppState } from 'App';
 
 import { decodeEventDesc } from 'store/types';
 
