@@ -38,6 +38,11 @@ export const StyledTreeItem = withStyles((theme: Theme) =>
         opacity: 0.3,
       },
     },
+    label: {
+      overflow: 'hidden',
+      width: 135,
+      textOverflow: 'ellipsis',
+    },
     group: {
       marginLeft: 7,
       paddingLeft: 18,
