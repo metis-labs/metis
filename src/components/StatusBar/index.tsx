@@ -18,8 +18,12 @@ const useStyles = makeStyles(() =>
       height: '60px',
       padding: '10px',
       display: 'flex',
+      pointerEvents: 'none',
       justifyContent: 'space-between',
       alignItems: 'center',
+    },
+    button: {
+      pointerEvents: 'auto',
     },
   }),
 );
@@ -28,8 +32,8 @@ export default function StatusBar(props: { viewMode: string; setViewMode: Functi
   const { viewMode, setViewMode } = props;
   const classes = useStyles();
   const [appState] = useAppState();
-  const {project} = appState.remote.getRoot();
-  const {selectedModelID} = appState.local;
+  const { project } = appState.remote.getRoot();
+  const { selectedModelID } = appState.local;
 
   const handleClick = useCallback(() => {
     setViewMode(viewMode === 'diagram' ? 'code' : 'diagram');
@@ -38,7 +42,9 @@ export default function StatusBar(props: { viewMode: string; setViewMode: Functi
   return (
     <div className={classes.root}>
       <Typography variant="h5">{project.models[selectedModelID].name}</Typography>
-      <IconButton onClick={handleClick}>{viewMode === 'diagram' ? <CodeIcon /> : <AccountTreeIcon />}</IconButton>
+      <IconButton className={classes.button} onClick={handleClick}>
+        {viewMode === 'diagram' ? <CodeIcon /> : <AccountTreeIcon />}
+      </IconButton>
     </div>
   );
 }

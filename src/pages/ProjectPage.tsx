@@ -37,15 +37,13 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-
-
 export default function ProjectPage(props: RouteComponentProps<{ projectID: string }>) {
   const classes = useStyles();
   const {
     match: {
       params: { projectID },
     },
-    location: { search }
+    location: { search },
   } = props;
   const [appState, updateAppState] = useAppState();
   const [viewMode, setViewMode] = useState('diagram');
@@ -143,6 +141,10 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
                     offset: { x: 0, y: 0 },
                     zoom: 100,
                   };
+
+                  if (event.type === 'local-change') {
+                    appState.local.selectedModelID = desc.id;
+                  }
                   return appState;
                 });
               } else if (desc.actionType === 'delete' && desc.entityType === 'model') {
@@ -201,17 +203,17 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       <NavBar />
       <SideBar />
       <FileTreeBar />
-      {
-        appState.local.selectedModelID ? (
-          <>
-            <main className={classes.content}>
-              {viewMode === 'diagram' ? <DiagramView /> : <CodeView />}
-              <StatusBar viewMode={viewMode} setViewMode={setViewMode} />
-            </main>
-            <PropertyBar />
-          </>
-        ) : <main className={classes.content} />
-      }
+      {appState.local.selectedModelID ? (
+        <>
+          <main className={classes.content}>
+            {viewMode === 'diagram' ? <DiagramView /> : <CodeView />}
+            <StatusBar viewMode={viewMode} setViewMode={setViewMode} />
+          </main>
+          <PropertyBar />
+        </>
+      ) : (
+        <main className={classes.content} />
+      )}
     </div>
   );
 }

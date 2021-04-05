@@ -81,7 +81,7 @@ export default function FileTreeBar() {
   const classes = useStyles();
   const [appState, updateAppState] = useAppState();
   const project = appState.remote.getRoot().project!;
-  const {selectedModelID} = appState.local;
+  const { selectedModelID } = appState.local;
   const clientID = appState.local.myClientID;
   const [expanded, setExpanded] = useState<string[]>([]);
 
@@ -96,7 +96,7 @@ export default function FileTreeBar() {
   const handleNodeSelect = useCallback(
     (event: ChangeEvent, modelID: any) => {
       updateAppState((appState) => {
-        const {project} = appState.remote.getRoot();
+        const { project } = appState.remote.getRoot();
         if (project.models[modelID]) {
           appState.local.selectedModelID = modelID;
         }
@@ -112,15 +112,21 @@ export default function FileTreeBar() {
 
   const handleAddModel = useCallback(() => {
     const model = createModel('Untitled');
-    appState.remote.update((root) => {
-      root.project.models[model.id] = model;
-    }, encodeEventDesc({
-      id: model.id,
-      entityType: 'model',
-      actionType: 'create',
-    }));
+    appState.remote.update(
+      (root) => {
+        root.project.models[model.id] = model;
+      },
+      encodeEventDesc({
+        id: model.id,
+        entityType: 'model',
+        actionType: 'create',
+      }),
+    );
 
-  }, [appState.remote]);
+    appState.remote.update((root) => {
+      root.peers[clientID].selectedModelID = model.id;
+    });
+  }, [appState.remote, clientID]);
 
   // TODO(youngteac.hong): Replace below with type parameter.
   const models = project.models as { [key: string]: Model };
@@ -131,7 +137,7 @@ export default function FileTreeBar() {
       continue;
     }
 
-    const {selectedModelID} = peerInRemote;
+    const { selectedModelID } = peerInRemote;
     if (!peersMapByModelID[selectedModelID]) {
       peersMapByModelID[selectedModelID] = [];
     }
@@ -143,7 +149,7 @@ export default function FileTreeBar() {
       <Toolbar />
       <div className={classes.toolbar}>
         <IconButton className={classes.addModelButton} onClick={handleAddModel}>
-          <AddIcon fontSize="small"/>
+          <AddIcon fontSize="small" />
         </IconButton>
       </div>
       <TreeView
