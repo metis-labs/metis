@@ -7,11 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 
-export default function RenameDialog(props: {
-  open: boolean;
-  name: string;
-  onClose: (value?: string) => void;
-}) {
+export default function RenameDialog(props: { open: boolean; name: string; onClose: (value?: string) => void }) {
   const { name, onClose, open } = props;
   const nameInput = useRef<TextFieldProps>(null);
 
@@ -23,11 +19,14 @@ export default function RenameDialog(props: {
     onClose();
   }, [onClose]);
 
-  const handleKeyPress = useCallback((event: KeyboardEvent) => {
-    if (event.key === "Enter") {
-      onClose(nameInput.current.value as string);
-    }
-  }, [onClose])
+  const handleKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        onClose(nameInput.current.value as string);
+      }
+    },
+    [onClose],
+  );
 
   return (
     <Dialog onClose={handleCancel} aria-labelledby="rename-dialog-title" open={open}>
@@ -47,7 +46,9 @@ export default function RenameDialog(props: {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleOk} color="primary">Ok</Button>
+        <Button onClick={handleOk} color="primary">
+          Ok
+        </Button>
         <Button onClick={handleCancel}>Cancel</Button>
       </DialogActions>
     </Dialog>

@@ -11,7 +11,7 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import AddIcon from '@material-ui/icons/Add';
 
 import { useAppState } from 'App';
-import { BlockType } from '../../store/types';
+import { Block, BlockType } from '../../store/types';
 
 const drawerWidth = 60;
 
@@ -36,20 +36,21 @@ const useStyles = makeStyles(() =>
 
 export default function SideBar() {
   const classes = useStyles();
-  const [appState,] = useAppState();
-  const {selectedModelID} = appState.local;
+  const [appState] = useAppState();
+  const { selectedModelID } = appState.local;
   const handleAddBlockClick = useCallback(
     (type: BlockType) => {
       appState.remote.update((root) => {
         const model = root.project.models[selectedModelID];
-        const blockLength = Object.keys(model.blocks).length;
-        const position = { x: 100 + 10 * blockLength, y: 100 + 10 * blockLength };
+        const blockLength = Object.values(model.blocks).filter((block: Block) => block.type === type).length;
+        const diagramOffset = appState.local.diagramInfos[selectedModelID].offset;
+        const position = { x: 200 + 10 * blockLength - diagramOffset.x, y: 200 + 10 * blockLength - diagramOffset.y };
         const id = uuidv4();
         switch (type) {
           case BlockType.In:
             model.blocks[id] = {
               id,
-              name: `test_in_${blockLength + 1}`,
+              name: `in_${blockLength + 1}`,
               type: BlockType.In,
               position,
             };
@@ -57,7 +58,7 @@ export default function SideBar() {
           case BlockType.Out:
             model.blocks[id] = {
               id,
-              name: `test_out_${blockLength + 1}`,
+              name: `out_${blockLength + 1}`,
               type: BlockType.Out,
               position,
             };
@@ -65,7 +66,7 @@ export default function SideBar() {
           default:
             model.blocks[id] = {
               id,
-              name: `test_${blockLength + 1}`,
+              name: `${BlockType.Conv2d.toLowerCase()}_${blockLength + 1}`,
               type: BlockType.Conv2d,
               position,
               repeats: 1,
@@ -84,7 +85,7 @@ export default function SideBar() {
         }
       });
     },
-    [appState.remote, selectedModelID],
+    [appState.remote, selectedModelID, appState.local.diagramInfos],
   );
 
   return (

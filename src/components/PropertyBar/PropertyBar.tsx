@@ -12,6 +12,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { BlockType, PreservedBlockTypes, PropertyValue } from 'store/types';
 import { useAppState } from 'App';
+import { createParams } from 'module/initConverter';
 
 const drawerWidth = 240;
 
@@ -43,17 +44,19 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function PropertyBar() {
   const classes = useStyles();
-  const [appState,] = useAppState();
-  const {project} = appState.remote.getRoot();
-  const {selectedModelID} = appState.local;
-  const {selectedBlockID} = appState.local.diagramInfos[selectedModelID];
+  const [appState] = useAppState();
+  const { project } = appState.remote.getRoot();
+  const { selectedModelID } = appState.local;
+  const { selectedBlockID } = appState.local.diagramInfos[selectedModelID];
 
   const onTypeChange = useCallback(
     (event: ChangeEvent<{ value: unknown }>) => {
-      appState.remote.update(root => {
-        const {project} = root;
+      appState.remote.update((root) => {
+        const { project } = root;
         const model = project.models[selectedModelID];
-        model.blocks[selectedBlockID].type = event.target.value as BlockType;
+        const type = event.target.value as BlockType;
+        model.blocks[selectedBlockID].type = type;
+        model.blocks[selectedBlockID].parameters = createParams(type);
       });
     },
     [appState.remote, selectedBlockID, selectedModelID],
@@ -62,20 +65,23 @@ export default function PropertyBar() {
   const valueTransition = (value: string): PropertyValue => {
     if (value === 'True' || value === 'true') {
       return true;
-    } if (value === 'False' || value === 'false') {
+    }
+    if (value === 'False' || value === 'false') {
       return false;
-    } if (value === '') {
+    }
+    if (value === '') {
       return value;
-    } if (!Number.isNaN(+value)) {
+    }
+    if (!Number.isNaN(+value)) {
       return +value;
-    } 
-      return value;
+    }
+    return value;
   };
 
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<{ value: unknown }>, key: string) => {
-      appState.remote.update(root => {
-        const {project} = root;
+      appState.remote.update((root) => {
+        const { project } = root;
         const model = project.models[selectedModelID];
         model.blocks[selectedBlockID][key] = valueTransition(event.target.value as string);
       });
@@ -85,11 +91,11 @@ export default function PropertyBar() {
 
   const handleParameterChange = useCallback(
     (event: ChangeEvent<{ value: unknown }>, key: string) => {
-      appState.remote.update(root => {
-        const {project} = root;
+      appState.remote.update((root) => {
+        const { project } = root;
         const model = project.models[selectedModelID];
         model.blocks[selectedBlockID].parameters[key] = valueTransition(event.target.value as string);
-      })
+      });
     },
     [appState.remote, selectedBlockID, selectedModelID],
   );

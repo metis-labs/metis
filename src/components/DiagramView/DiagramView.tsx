@@ -89,7 +89,7 @@ export default function DiagramView() {
   );
 
   useEffect(() => {
-    const {project} = appState.remote.getRoot();
+    const { project } = appState.remote.getRoot();
     const diagramInfo = appState.local.diagramInfos[selectedModelID];
     const model = project.models[selectedModelID];
     engine.update(model, diagramInfo);
@@ -109,7 +109,8 @@ export default function DiagramView() {
         if (event.function === 'targetPortChanged') {
           appState.remote.update((root) => {
             const model = root.project.models[selectedModelID];
-            let from; let to;
+            let from;
+            let to;
             if (event.entity.sourcePort.getName() === 'in') {
               from = event.entity.targetPort.parent;
               to = event.entity.sourcePort.parent;
@@ -166,7 +167,7 @@ export default function DiagramView() {
   ]);
 
   const remotePeers = appState.remote.getRoot().peers;
-  const {myClientID} = appState.local;
+  const { myClientID } = appState.local;
 
   const peers = [];
   for (const [peerID, peer] of Object.entries(appState.peers)) {
@@ -187,14 +188,19 @@ export default function DiagramView() {
   }
 
   return (
-    <div role="presentation" ref={rootElement} className={classes.root} onMouseUp={handleMouseUp} onMouseMove={handleMouseMove}>
+    <div
+      role="presentation"
+      ref={rootElement}
+      className={classes.root}
+      onMouseUp={handleMouseUp}
+      onMouseMove={handleMouseMove}
+    >
       <CanvasWidget className={classes.canvas} engine={engine.getEngine()} />
       {peers.map((peer) => {
         const pos = {
           x: peer.cursor.x * (diagramInfo.zoom / 100) + diagramInfo.offset.x,
           y: peer.cursor.y * (diagramInfo.zoom / 100) + diagramInfo.offset.y,
         };
-        // console.log('peer', { x: peer.cursor.x, y: peer.cursor.y })
         return (
           <div key={peer.id} className={classes.cursor} style={{ left: pos.x, top: pos.y }}>
             <NearMeIcon className={classes.cursorIcon} style={{ color: peer.color }} />

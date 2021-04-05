@@ -1,16 +1,27 @@
-import { Block, BlockType, Model, EmptyModel } from '../store/types';
+import { Block, BlockType, Model, EmptyModel, Properties } from '../store/types';
 import metadata from './pytorch-metadata.json';
 
-function printOptionValue(value: any): string {
+export function printOptionValue(value: any): string {
   if (value === true) {
     return 'True';
-  } if (value === false) {
+  }
+  if (value === false) {
     return 'False';
-  } if (typeof value === 'string') {
+  }
+  if (typeof value === 'string') {
     return `"${value}"`;
-  } 
-    return value;
-  
+  }
+
+  return JSON.stringify(value);
+}
+
+export function createParams(type: BlockType): Properties {
+  const meta = metadata.find((meta) => meta.abbrev === type);
+  const parameters = {};
+  for (const attribute of meta.schema.attributes) {
+    parameters[attribute.name] = printOptionValue(attribute.default);
+  }
+  return parameters;
 }
 
 export default class InitConverter {
@@ -58,7 +69,7 @@ export default class InitConverter {
     this.resultInit += `class ${model.name}(torch.nn.Module):\n`;
     this.resultInit += this.indentSize;
     this.resultInit += `def __init__(self):\n`;
-    for (let i = 0; i < this.indentDepth + 1; i+=1) {
+    for (let i = 0; i < this.indentDepth + 1; i += 1) {
       this.resultInit += this.indentSize;
     }
     this.resultInit += `super(${model.name}, self).__init__()\n`;
@@ -68,7 +79,7 @@ export default class InitConverter {
     this.orderedBlockList(blocks);
     this.resultInit += `\n`;
     for (const blockId of this.bodyBlockList) {
-      for (let i = 0; i < this.indentDepth + 1; i+=1) {
+      for (let i = 0; i < this.indentDepth + 1; i += 1) {
         this.resultInit += this.indentSize;
       }
       this.resultInit += `self.${blocks[blockId].name} = nn.${blocks[blockId].type}(`;

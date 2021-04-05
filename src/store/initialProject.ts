@@ -14,15 +14,15 @@ const dependencies: { [id: string]: Dependency } = {
 };
 
 const blocks: { [id: string]: Block } = {
-  vgg_in: {
-    id: 'vgg_in',
-    name: 'vgg_in',
+  in: {
+    id: 'in',
+    name: 'in',
     type: BlockType.In,
     position: { x: 100, y: 100 },
   },
-  vgg_out: {
-    id: 'vgg_out',
-    name: 'vgg_out',
+  out: {
+    id: 'out',
+    name: 'out',
     type: BlockType.Out,
     position: { x: 100, y: 200 },
   },
@@ -49,7 +49,7 @@ export function createModel(name: string) {
     dependencies,
     blocks,
     links,
-  }
+  };
 }
 
 const initialProject: Project = {

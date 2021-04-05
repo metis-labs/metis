@@ -13,7 +13,6 @@ import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
 import { TransitionProps } from '@material-ui/core/transitions';
 import Collapse from '@material-ui/core/Collapse';
 
-
 import { Model, PeerInfo, encodeEventDesc } from 'store/types';
 import { useAppState } from 'App';
 import RenameDialog from './RenameDialog';
@@ -85,7 +84,7 @@ const useStyles = makeStyles(() =>
 export default function FileTreeItem(props: { model: Model; peers: Array<PeerInfo> }) {
   const classes = useStyles();
   const { model, peers } = props;
-  const [appState,] = useAppState();
+  const [appState] = useAppState();
   const [menuOpen, setMenuOpen] = useState(false);
   const [moreButtonOpen, setMoreButtonOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
@@ -129,44 +128,52 @@ export default function FileTreeItem(props: { model: Model; peers: Array<PeerInf
     setMoreButtonOpen(true);
   }, [setMoreButtonOpen]);
 
-  const handleMouseLeave = useCallback(
-    () => {
+  const handleMouseLeave = useCallback(() => {
+    if (!renameDialogOpen) {
       setMoreButtonOpen(false);
       setMenuOpen(false);
-    },
-    [setMoreButtonOpen, setMenuOpen],
-  );
+    }
+  }, [setMoreButtonOpen, setMenuOpen, renameDialogOpen]);
 
   const handleRenameButtonClick = useCallback(() => {
     setRenameDialogOpen(true);
   }, [setRenameDialogOpen]);
 
   const handleDeleteButtonClick = useCallback(() => {
-    appState.remote.update((root) => {
-      delete root.project.models[model.id];
-    }, encodeEventDesc({
-      id: model.id,
-      entityType: 'model',
-      actionType: 'delete',
-    }));
+    appState.remote.update(
+      (root) => {
+        delete root.project.models[model.id];
+      },
+      encodeEventDesc({
+        id: model.id,
+        entityType: 'model',
+        actionType: 'delete',
+      }),
+    );
   }, [appState.remote, model.id]);
 
-  const handleRenameDialogClose = useCallback((modelName: string | undefined) => {
-    if (modelName) {
-      appState.remote.update((root) => {
-        root.project.models[model.id].name = modelName;
-      });
-    }
-    setRenameDialogOpen(false);
-    setMoreButtonOpen(false);
-    setMenuOpen(false);
-  }, [setRenameDialogOpen, setMoreButtonOpen, setMenuOpen, appState.remote, model.id]);
+  const handleRenameDialogClose = useCallback(
+    (modelName: string | undefined) => {
+      if (modelName) {
+        appState.remote.update((root) => {
+          root.project.models[model.id].name = modelName;
+        });
+      }
+      setRenameDialogOpen(false);
+      setMoreButtonOpen(false);
+      setMenuOpen(false);
+    },
+    [setRenameDialogOpen, setMoreButtonOpen, setMenuOpen, appState.remote, model.id],
+  );
 
   return (
     <div className={classes.treeItemContainer} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <div className={classes.treeItem}>
         <StyledTreeItem key={model.id} nodeId={model.id} label={model.name} />
-        {peers && peers.map((peer) => <div key={peer.username} style={{ backgroundColor: peer.color }} className={classes.peerRep} />)}
+        {peers &&
+          peers.map((peer) => (
+            <div key={peer.username} style={{ backgroundColor: peer.color }} className={classes.peerRep} />
+          ))}
       </div>
       <IconButton
         ref={anchorRef}
@@ -191,7 +198,7 @@ export default function FileTreeItem(props: { model: Model; peers: Array<PeerInf
                   </MenuItem>
                   <RenameDialog name={model.name} open={renameDialogOpen} onClose={handleRenameDialogClose} />
                   <MenuItem className={classes.menuItem} onClick={handleDeleteButtonClick}>
-                    Delete 
+                    Delete
                   </MenuItem>
                 </MenuList>
               </ClickAwayListener>
