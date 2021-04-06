@@ -7,7 +7,7 @@ import Popper from '@material-ui/core/Popper';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import MenuList from '@material-ui/core/MenuList';
+import List from '@material-ui/core/List';
 import MenuItem from '@material-ui/core/MenuItem';
 import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
 import { TransitionProps } from '@material-ui/core/transitions';
@@ -197,7 +197,7 @@ export default function FileTreeItem(props: { model: Model; peers: Array<PeerInf
           >
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
-                <MenuList autoFocusItem={menuOpen} id="menu-list-grow" onKeyDown={handleListKeyDown}>
+                <List id="menu-list-grow" onKeyDown={handleListKeyDown}>
                   <MenuItem className={classes.menuItem} onClick={handleRenameButtonClick}>
                     Rename
                   </MenuItem>
@@ -205,7 +205,7 @@ export default function FileTreeItem(props: { model: Model; peers: Array<PeerInf
                   <MenuItem className={classes.menuItem} onClick={handleDeleteButtonClick}>
                     Delete
                   </MenuItem>
-                </MenuList>
+                </List>
               </ClickAwayListener>
             </Paper>
           </Grow>
