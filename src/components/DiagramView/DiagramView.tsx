@@ -38,36 +38,43 @@ const useStyles = makeStyles(() =>
   }),
 );
 
+interface ChangeEvent {
+  funcName: string;
+  blockID: string;
+  position?: Position;
+}
+
 export default function DiagramView() {
   const classes = useStyles();
 
   const rootElement = useRef(null);
   const [appState, updateAppState] = useAppState();
   const [engine] = useState(new Engine());
-  const [lastFunction, setLastFunction] = useState<string>();
-  const [lastBlockID, setLastBlockID] = useState<string>();
-  const [lastPosition, setLastPosition] = useState<Position>();
+  const [changeEvents, setChangeEvents] = useState<{ [id: string]: ChangeEvent }>({});
   const { selectedModelID } = appState.local;
   const { repaintCounter } = appState;
 
   const handleMouseUp = useCallback(() => {
-    if (lastFunction === 'selectionChanged' && lastBlockID) {
-      updateAppState((appState) => {
-        appState.local.diagramInfos[selectedModelID].selectedBlockID = lastBlockID;
-        return appState;
-      });
-    } else if (lastFunction === 'positionChanged' && lastBlockID) {
-      appState.remote.update((root) => {
-        const model = root.project.models[selectedModelID];
-        model.blocks[lastBlockID].position = lastPosition;
-      });
-
-      updateAppState((appState) => {
-        appState.local.diagramInfos[selectedModelID].selectedBlockID = lastBlockID;
-        return appState;
-      });
+    for (const event of Object.values(changeEvents)) {
+      if (event.funcName === 'selectionChanged' && event.blockID) {
+        updateAppState((appState) => {
+          appState.local.diagramInfos[selectedModelID].selectedBlockID = event.blockID;
+          return appState;
+        });
+      } else if (event.funcName === 'positionChanged' && event.blockID) {
+        appState.remote.update((root) => {
+          const model = root.project.models[selectedModelID];
+          model.blocks[event.blockID].position = event.position;
+        });
+        updateAppState((appState) => {
+          appState.local.diagramInfos[selectedModelID].selectedBlockID = event.blockID;
+          return appState;
+        });
+      }
     }
-  }, [lastFunction, lastBlockID, lastPosition, updateAppState, selectedModelID, appState.remote]);
+
+    setChangeEvents({});
+  }, [changeEvents, updateAppState, selectedModelID, appState.remote]);
 
   const diagramInfo = appState.local.diagramInfos[selectedModelID];
   const clientID = appState.local.myClientID;
@@ -93,12 +100,18 @@ export default function DiagramView() {
     const diagramInfo = appState.local.diagramInfos[selectedModelID];
     const model = project.models[selectedModelID];
     engine.update(model, diagramInfo);
+
     const deregister = engine.registerListener((event: any, entity: any) => {
-      setLastFunction(event.function);
       if (entity instanceof MetisNodeModel) {
-        setLastBlockID(entity.getBlockID());
-        if (event.function === 'positionChanged') {
-          setLastPosition(event.entity.position);
+        if (event.function === 'positionChanged' || event.function === 'selectionChanged') {
+          // eslint-disable-next-line
+          setChangeEvents((events) => Object.assign({}, events, {
+            [entity.getBlockID()]: {
+              funcName: event.function,
+              blockID: entity.getBlockID(),
+              position: event.entity.position,
+            }
+          }));
         } else if (event.function === 'entityRemoved') {
           appState.remote.update((root) => {
             const model = root.project.models[selectedModelID];
@@ -161,9 +174,7 @@ export default function DiagramView() {
     repaintCounter,
     selectedModelID,
     updateAppState,
-    setLastFunction,
-    setLastBlockID,
-    setLastPosition,
+    setChangeEvents,
   ]);
 
   const remotePeers = appState.remote.getRoot().peers;
