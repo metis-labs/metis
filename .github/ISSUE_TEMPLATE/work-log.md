@@ -13,5 +13,5 @@ labels: work log
 ## 오늘 한 일: 21.xx.xx
 - [ ] Blah Blah
 
-## 내일 한 일: 21.xx.xx
+## 내일 할 일: 21.xx.xx
 - [ ] Blah Blah
