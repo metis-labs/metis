@@ -73,7 +73,6 @@ export type ProjectInfo = {
 export type LocalState = {
   diagramInfos: { [modelID: string]: DiagramInfo };
   projectInfos: { [projectID: string]: ProjectInfo };
-  myClientID?: string;
   selectedModelID?: string;
 };
 
@@ -87,9 +86,10 @@ export type PeerInfo = {
 
 export type AppState = {
   local: LocalState;
-  peers: { [peerID: string]: PeerInfo };
+  peers: { [docID: string]: { [peerID: string]: PeerInfo } };
   repaintCounter: number; // TODO: repainting with mutable.
   peersRepaintCounter: number;
+  client?: any; // TODO: compatibility issue with immer and Yorkie
   remote?: any; // TODO: compatibility issue with immer and Yorkie
 };
 

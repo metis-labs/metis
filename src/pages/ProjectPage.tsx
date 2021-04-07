@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router';
-import yorkie from 'yorkie-js-sdk';
-import anonymous from 'anonymous-animals-gen';
-import randomColor from 'randomcolor';
+import yorkie, { Client, Document } from 'yorkie-js-sdk';
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -49,36 +47,15 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
   const [viewMode, setViewMode] = useState('diagram');
 
   useEffect(() => {
-    let client;
+    let doc: Document;
     const unsubscribes: Array<Function> = [];
     (async () => {
-      const { name, animal } = anonymous.generate();
-      client = yorkie.createClient(`${process.env.REACT_APP_YORKIE_RPC_ADDR}`, {
-        metadata: {
-          username: name,
-          image: animal,
-          color: randomColor(),
-        },
-      });
+      if (!appState.client) {
+        return;
+      }
+      const client = appState.client as Client;
 
-      const doc = yorkie.createDocument('projects', projectID);
-      unsubscribes.push(
-        client.subscribe((event) => {
-          if (event.type === 'peers-changed') {
-            const documentKey = doc.getKey().toIDString();
-            const changedPeers = event.value[documentKey];
-            if (!changedPeers) {
-              return;
-            }
-
-            updateAppState((appState) => {
-              appState.peers = changedPeers;
-              return appState;
-            });
-          }
-        }),
-      );
-      await client.activate();
+      doc = yorkie.createDocument('projects', projectID);
       await client.attach(doc);
 
       doc.update((root) => {
@@ -107,7 +84,6 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       // client.updateMetadata('selectedModelID', modelIDs[0]);
       updateAppState((appState) => {
         appState.remote = doc;
-        appState.local.myClientID = client.getID();
         appState.local.selectedModelID = modelIDs[0];
         for (const modelID of modelIDs) {
           appState.local.diagramInfos[modelID] = {
@@ -184,11 +160,15 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       for (const unsubscribe of unsubscribes) {
         unsubscribe();
       }
-      if (client) {
-        await client.deactivate();
+      if (appState.client && doc) {
+        await appState.client.detach(doc);
       }
+      updateAppState((appState) => {
+        appState.remote = null;
+        return appState;
+      });
     };
-  }, [updateAppState, projectID, search]);
+  }, [appState.client, updateAppState, projectID, search]);
 
   if (!appState.remote?.getRoot().project) {
     return (

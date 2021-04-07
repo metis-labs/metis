@@ -5,9 +5,9 @@ import ProjectIntroPage from 'pages/ProjectIntroPage';
 import ProjectPage from 'pages/ProjectPage';
 import createStore from 'store/store';
 
+import AppStateInitializer from 'AppStateInitializer';
 import 'App.scss';
 
-// TODO(youngteac.hong): we need to store below state to local storage.
 const AppStateStore = createStore({
   repaintCounter: 0,
   peersRepaintCounter: 0,
@@ -22,6 +22,7 @@ export const { useAppState } = AppStateStore;
 function App() {
   return (
     <AppStateStore.Provider>
+      <AppStateInitializer />
       <Router>
         <Route path="/" exact component={ProjectIntroPage} />
         <Route path="/:projectID" exact component={ProjectPage} />

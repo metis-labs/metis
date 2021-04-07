@@ -82,7 +82,7 @@ export default function FileTreeBar() {
   const [appState, updateAppState] = useAppState();
   const project = appState.remote.getRoot().project!;
   const { selectedModelID } = appState.local;
-  const clientID = appState.local.myClientID;
+  const clientID = appState.client.getID();
   const [expanded, setExpanded] = useState<string[]>([]);
 
   useEffect(() => {
@@ -131,7 +131,8 @@ export default function FileTreeBar() {
   // TODO(youngteac.hong): Replace below with type parameter.
   const models = project.models as { [key: string]: Model };
   const peersMapByModelID: { [modelID: string]: Array<PeerInfo> } = {};
-  for (const [peerID, peer] of Object.entries(appState.peers)) {
+  const docKey = appState.remote.getKey().toIDString();
+  for (const [peerID, peer] of Object.entries(appState.peers[docKey] || {})) {
     const peerInRemote = appState.remote.getRoot().peers[peerID];
     if (!peerInRemote) {
       continue;

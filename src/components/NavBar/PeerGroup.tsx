@@ -8,11 +8,15 @@ import { useAppState } from 'App';
 
 export default function PeerGroup() {
   const [appState] = useAppState();
-  const myID = appState.local.myClientID;
+  if (!appState.remote) {
+    return null;
+  }
 
+  const docKey = appState.remote.getKey().toIDString();
+  const myID = appState.client.getID();
   return (
     <AvatarGroup max={4}>
-      {Object.entries(appState.peers).map(([peerID, peer]) => (
+      {Object.entries(appState.peers[docKey] || {}).map(([peerID, peer]) => (
         <Tooltip key={peerID} title={peer.username} data-id={peerID} arrow>
           <Avatar
             key={peerID}

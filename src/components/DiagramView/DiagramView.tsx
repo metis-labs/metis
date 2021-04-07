@@ -77,7 +77,7 @@ export default function DiagramView() {
   }, [changeEvents, updateAppState, selectedModelID, appState.remote]);
 
   const diagramInfo = appState.local.diagramInfos[selectedModelID];
-  const clientID = appState.local.myClientID;
+  const clientID = appState.client.getID();
   const rect = rootElement.current?.getBoundingClientRect();
   const handleMouseMove = useCallback(
     (event: React.MouseEvent) => {
@@ -178,10 +178,11 @@ export default function DiagramView() {
   ]);
 
   const remotePeers = appState.remote.getRoot().peers;
-  const { myClientID } = appState.local;
+  const myClientID = appState.client.getID();
 
   const peers = [];
-  for (const [peerID, peer] of Object.entries(appState.peers)) {
+  const docKey = appState.remote.getKey().toIDString();
+  for (const [peerID, peer] of Object.entries(appState.peers[docKey] || {})) {
     if (
       myClientID === peerID ||
       !remotePeers[peerID] ||
