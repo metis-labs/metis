@@ -129,7 +129,7 @@ export default function FileTreeBar() {
   }, [appState.remote, clientID]);
 
   // TODO(youngteac.hong): Replace below with type parameter.
-  const models = project.models as { [key: string]: Model };
+  const models = Object.values(project.models) as Array<Model>;
   const peersMapByModelID: { [modelID: string]: Array<PeerInfo> } = {};
   const docKey = appState.remote.getKey().toIDString();
   for (const [peerID, peer] of Object.entries(appState.peers[docKey] || {})) {
@@ -164,9 +164,11 @@ export default function FileTreeBar() {
         onNodeSelect={handleNodeSelect}
       >
         <StyledTreeItem nodeId={project.id} label={project.name}>
-          {Object.values(models).map((model) => (
-            <FileTreeItem key={model.id} model={model} peers={peersMapByModelID[model.id]} />
-          ))}
+          {models
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((model) => (
+              <FileTreeItem key={model.id} model={model} peers={peersMapByModelID[model.id]} />
+            ))}
         </StyledTreeItem>
       </TreeView>
     </Drawer>

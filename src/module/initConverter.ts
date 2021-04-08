@@ -1,5 +1,5 @@
 import { Block, BlockType, Model, EmptyModel, Properties } from '../store/types';
-import metadata from './pytorch-metadata.json';
+import operatorMetaInfos from './pytorch-metadata.json';
 
 export function printOptionValue(value: any): string {
   if (value === true) {
@@ -16,12 +16,24 @@ export function printOptionValue(value: any): string {
 }
 
 export function createParams(type: BlockType): Properties {
-  const meta = metadata.find((meta) => meta.abbrev === type);
+  const meta = operatorMetaInfos.find((meta) => meta.abbrev === type);
   const parameters = {};
   for (const attribute of meta.schema.attributes) {
     parameters[attribute.name] = printOptionValue(attribute.default);
   }
   return parameters;
+}
+
+export function getOrderedAttrNames(type: BlockType): string[] {
+  const operatorMetaInfo = operatorMetaInfos.find((metaInfo) => metaInfo.abbrev === type);
+  const attrNames = [];
+  if (!operatorMetaInfo || !operatorMetaInfo.schema) {
+    return attrNames;
+  }
+  for (const attribute of operatorMetaInfo.schema.attributes) {
+    attrNames.push(attribute.name);
+  }
+  return attrNames;
 }
 
 export default class InitConverter {
@@ -89,10 +101,10 @@ export default class InitConverter {
   }
 
   updateOption(block: Block): void {
-    const idx = metadata.findIndex((data) => data.abbrev === block.type);
+    const idx = operatorMetaInfos.findIndex((metaInfo) => metaInfo.abbrev === block.type);
     const options = [];
 
-    for (const attr of metadata[idx].schema.attributes) {
+    for (const attr of operatorMetaInfos[idx].schema.attributes) {
       const camlAttr = attr.name.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
       const attrValue = block.parameters[camlAttr];
       // TODO: Need convert function to validate equality between default-value and assigned-value

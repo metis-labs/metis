@@ -12,7 +12,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { BlockType, PreservedBlockTypes, PropertyValue } from 'store/types';
 import { useAppState } from 'App';
-import { createParams } from 'module/initConverter';
+import { createParams, getOrderedAttrNames } from 'module/initConverter';
 
 const drawerWidth = 240;
 
@@ -110,6 +110,8 @@ export default function PropertyBar() {
   }
 
   const selectedBlock = model.blocks[selectedBlockID];
+  const attrNames = getOrderedAttrNames(selectedBlock.type);
+
   return (
     <Drawer className={classes.drawer} variant="permanent" classes={{ paper: classes.drawerPaper }} anchor="right">
       <Toolbar />
@@ -155,12 +157,12 @@ export default function PropertyBar() {
           <div className={classes.section}>
             <Typography variant="h6">Parameters</Typography>
             <FormControl className={classes.formControl}>
-              {Object.entries(selectedBlock.parameters).map(([key, value]) => (
+              {attrNames.map((attrName) => (
                 <TextField
-                  key={key}
-                  label={key}
-                  value={value}
-                  onChange={(event) => handleParameterChange(event, key)}
+                  key={attrName}
+                  label={attrName}
+                  value={selectedBlock.parameters[attrName]}
+                  onChange={(event) => handleParameterChange(event, attrName)}
                   onKeyDown={handleKeyDown}
                 />
               ))}
