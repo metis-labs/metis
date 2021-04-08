@@ -11,7 +11,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Popper from '@material-ui/core/Popper';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
-import MenuList from '@material-ui/core/MenuList';
+import List from '@material-ui/core/List';
 import MenuItem from '@material-ui/core/MenuItem';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
@@ -161,7 +161,7 @@ export default function ProjectCard(props: ProjectItemProps) {
                 >
                   <Paper>
                     <ClickAwayListener onClickAway={handleClose}>
-                      <MenuList autoFocusItem={popperOpen} id="menu-list-grow" onKeyDown={handleListKeyDown}>
+                      <List id="menu-list-grow" onKeyDown={handleListKeyDown}>
                         <MenuItem className={classes.menuItem} onClick={handleRenameButtonClick}>
                           Rename
                         </MenuItem>
@@ -173,7 +173,7 @@ export default function ProjectCard(props: ProjectItemProps) {
                         <MenuItem className={classes.menuItem} onClick={handleDeleteButtonClick}>
                           Delete
                         </MenuItem>
-                      </MenuList>
+                      </List>
                     </ClickAwayListener>
                   </Paper>
                 </Grow>
