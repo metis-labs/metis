@@ -61,6 +61,10 @@ const useStyles = makeStyles(() =>
     treeItem: {
       display: 'flex',
     },
+    peerGroup: {
+      overflow: 'hidden',
+      height: '24px',
+    },
     peerRep: {
       marginLeft: '1px',
       width: '8px',
@@ -175,10 +179,12 @@ export default function FileTreeItem(props: { model: Model; peers: Array<PeerInf
     <div className={classes.treeItemContainer} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <div className={classes.treeItem}>
         <StyledTreeItem key={model.id} nodeId={model.id} label={model.name} />
-        {peers &&
-          peers.map((peer) => (
-            <div key={peer.username} style={{ backgroundColor: peer.color }} className={classes.peerRep} />
-          ))}
+        <div className={classes.peerGroup}>
+          {peers &&
+            peers.map((peer) => (
+              <div key={peer.username} style={{ backgroundColor: peer.color }} className={classes.peerRep} />
+            ))}
+        </div>
       </div>
       <IconButton
         ref={anchorRef}
