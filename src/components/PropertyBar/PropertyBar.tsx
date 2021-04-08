@@ -42,6 +42,15 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+function preserveCaret(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+  const caret = event.target.selectionStart;
+  const element = event.target;
+  window.requestAnimationFrame(() => {
+    element.selectionStart = caret
+    element.selectionEnd = caret
+  });
+}
+
 export default function PropertyBar() {
   const classes = useStyles();
   const [appState] = useAppState();
@@ -50,7 +59,7 @@ export default function PropertyBar() {
   const { selectedBlockID } = appState.local.diagramInfos[selectedModelID];
 
   const onTypeChange = useCallback(
-    (event: ChangeEvent<{ value: unknown }>) => {
+    (event: ChangeEvent<HTMLSelectElement>) => {
       appState.remote.update((root) => {
         const { project } = root;
         const model = project.models[selectedModelID];
@@ -79,7 +88,8 @@ export default function PropertyBar() {
   };
 
   const handlePropertyChange = useCallback(
-    (event: ChangeEvent<{ value: unknown }>, key: string) => {
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
+      preserveCaret(event);
       appState.remote.update((root) => {
         const { project } = root;
         const model = project.models[selectedModelID];
@@ -90,7 +100,8 @@ export default function PropertyBar() {
   );
 
   const handleParameterChange = useCallback(
-    (event: ChangeEvent<{ value: unknown }>, key: string) => {
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
+      preserveCaret(event);
       appState.remote.update((root) => {
         const { project } = root;
         const model = project.models[selectedModelID];
