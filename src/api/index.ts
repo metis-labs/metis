@@ -10,25 +10,25 @@ import {
   DeleteProjectResponse,
 } from 'api/metis_pb';
 
-const client = new MetisPromiseClient('http://localhost:8080');
+const client = new MetisPromiseClient(`${process.env.REACT_APP_METIS_RPC_ADDR}`);
 
 const api = {
-  createProject (name: string): Promise<CreateProjectResponse> {
+  createProject(name: string): Promise<CreateProjectResponse> {
     const req = new CreateProjectRequest();
     req.setProjectName(name);
     return client.createProject(req);
   },
-  listProjects (): Promise<ListProjectsResponse> {
+  listProjects(): Promise<ListProjectsResponse> {
     const req = new ListProjectsRequest();
     return client.listProjects(req);
   },
-  updateProject (id: string, name: string): Promise<UpdateProjectResponse> {
+  updateProject(id: string, name: string): Promise<UpdateProjectResponse> {
     const req = new UpdateProjectRequest();
     req.setProjectId(id);
     req.setProjectName(name);
     return client.updateProject(req);
   },
-  deleteProject (id: string): Promise<DeleteProjectResponse> {
+  deleteProject(id: string): Promise<DeleteProjectResponse> {
     const req = new DeleteProjectRequest();
     req.setProjectId(id);
     return client.deleteProject(req);
