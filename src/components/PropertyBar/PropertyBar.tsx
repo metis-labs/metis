@@ -10,7 +10,7 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { BlockType, PreservedBlockTypes, PropertyValue } from 'store/types';
+import { BlockType, IOBlockTypes, PropertyValue } from 'store/types';
 import { useAppState } from 'App';
 import { createParams, getOrderedAttrNames } from 'module/initConverter';
 
@@ -136,27 +136,33 @@ export default function PropertyBar() {
             value={selectedBlock.type}
             className={classes.formSelect}
             onChange={onTypeChange}
-            disabled={PreservedBlockTypes.has(selectedBlock.type)}
+            disabled={IOBlockTypes.has(selectedBlock.type)}
           >
             {Object.keys(BlockType).map((item) => (
-              <MenuItem key={item} value={item} disabled={PreservedBlockTypes.has(item as BlockType)}>
+              <MenuItem key={item} value={item} disabled={IOBlockTypes.has(item as BlockType)}>
                 {item}
               </MenuItem>
             ))}
           </Select>
-          {selectedBlock.name !== undefined && (
-            <TextField
-              label="Instance name"
-              value={selectedBlock.name}
-              onChange={(event) => handlePropertyChange(event, 'name')}
-              onKeyDown={handleKeyDown}
-            />
-          )}
+          <TextField
+            label="Instance name"
+            value={selectedBlock.name}
+            onChange={(event) => handlePropertyChange(event, 'name')}
+            onKeyDown={handleKeyDown}
+          />
           {selectedBlock.repeats !== undefined && (
             <TextField
               label="Repeats"
               value={selectedBlock.repeats}
               onChange={(event) => handlePropertyChange(event, 'repeats')}
+              onKeyDown={handleKeyDown}
+            />
+          )}
+          {selectedBlock.type === BlockType.In && (
+            <TextField
+              label="Init Variables"
+              value={selectedBlock.initVariables || ''}
+              onChange={(event) => handlePropertyChange(event, 'initVariables')}
               onKeyDown={handleKeyDown}
             />
           )}

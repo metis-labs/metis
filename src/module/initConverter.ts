@@ -16,11 +16,17 @@ export function printOptionValue(value: any): string {
 }
 
 export function createParams(type: BlockType): Properties {
-  const meta = operatorMetaInfos.find((meta) => meta.abbrev === type);
   const parameters = {};
-  for (const attribute of meta.schema.attributes) {
-    parameters[attribute.name] = printOptionValue(attribute.default);
+
+  if (type === BlockType.Network) {
+    // continue;
+  } else {
+    const meta = operatorMetaInfos.find((meta) => meta.abbrev === type);
+    for (const attribute of meta.schema.attributes) {
+      parameters[attribute.name] = printOptionValue(attribute.default);
+    }
   }
+
   return parameters;
 }
 

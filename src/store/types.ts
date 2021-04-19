@@ -6,13 +6,14 @@ export enum DiagramType {
 export enum BlockType {
   In = 'In',
   Out = 'Out',
+  Network = 'Network',
   Conv2d = 'Conv2d',
   BatchNorm2d = 'BatchNorm2d',
   ReLU = 'ReLU',
   MaxPool2d = 'MaxPool2d',
 }
 
-export const PreservedBlockTypes = new Set([BlockType.In, BlockType.Out]);
+export const IOBlockTypes = new Set([BlockType.In, BlockType.Out]);
 
 export type Position = {
   x: number;
@@ -27,6 +28,7 @@ export type Block = {
   name: string;
   type: BlockType;
   position: Position;
+  initVariables?: string;
   repeats?: number;
   parameters?: Properties;
 };
