@@ -19,6 +19,9 @@ export function createNetworkParams(network: Model): Properties {
   const parameters = {};
   for (const block of Object.values(network!.blocks)) {
     if (block.type === BlockType.In) {
+      if (!block.initVariables) {
+        continue;
+      }
       for (const variable of block.initVariables.split(',')) {
         parameters[variable] = '';
       }

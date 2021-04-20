@@ -96,7 +96,7 @@ export type PeerInfo = {
 export type AppState = {
   local: LocalState;
   peers: { [docID: string]: { [peerID: string]: PeerInfo } };
-  repaintCounter: number; // TODO: repainting with mutable.
+  repaintCounter: number;
   peersRepaintCounter: number;
   client?: any; // TODO: compatibility issue with immer and Yorkie
   remote?: any; // TODO: compatibility issue with immer and Yorkie
