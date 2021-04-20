@@ -23,12 +23,18 @@ export type Position = {
 export type PropertyValue = string | number | boolean;
 export type Properties = { [key: string]: PropertyValue };
 
+// TODO subtyping: Block, NetworkBlock, NormalBlock
 export type Block = {
   id: string;
   name: string;
   type: BlockType;
   position: Position;
+
+  // Network
   initVariables?: string;
+  refNetwork?: string;
+
+  // Normal
   repeats?: number;
   parameters?: Properties;
 };
@@ -52,6 +58,7 @@ export type DiagramInfo = {
   selectedBlockID?: string;
 };
 
+// TODO: Rename Model to Network
 export type Model = {
   id: string;
   name: string;
@@ -112,7 +119,7 @@ export type EventDesc = {
   id: string;
   entityType: EntityType;
   actionType: ActionType;
-}
+};
 
 export function encodeEventDesc(desc: EventDesc): string {
   return JSON.stringify(desc);

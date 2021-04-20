@@ -15,21 +15,29 @@ export function printOptionValue(value: any): string {
   return JSON.stringify(value);
 }
 
-export function createParams(type: BlockType): Properties {
+export function createNetworkParams(network: Model): Properties {
   const parameters = {};
-
-  if (type === BlockType.Network) {
-    // continue;
-  } else {
-    const meta = operatorMetaInfos.find((meta) => meta.abbrev === type);
-    for (const attribute of meta.schema.attributes) {
-      parameters[attribute.name] = printOptionValue(attribute.default);
+  for (const block of Object.values(network!.blocks)) {
+    if (block.type === BlockType.In) {
+      for (const variable of block.initVariables.split(',')) {
+        parameters[variable] = '';
+      }
     }
   }
-
   return parameters;
 }
 
+// TODO: extract this method
+export function createParams(type: BlockType): Properties {
+  const parameters = {};
+  const meta = operatorMetaInfos.find((meta) => meta.abbrev === type);
+  for (const attribute of meta.schema.attributes) {
+    parameters[attribute.name] = printOptionValue(attribute.default);
+  }
+  return parameters;
+}
+
+// TODO: extract this method
 export function getOrderedAttrNames(type: BlockType): string[] {
   const operatorMetaInfo = operatorMetaInfos.find((metaInfo) => metaInfo.abbrev === type);
   const attrNames = [];

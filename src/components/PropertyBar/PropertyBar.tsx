@@ -10,9 +10,9 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { BlockType, IOBlockTypes, PropertyValue } from 'store/types';
+import { BlockType, IOBlockTypes, PropertyValue, Model } from 'store/types';
 import { useAppState } from 'App';
-import { createParams, getOrderedAttrNames } from 'module/initConverter';
+import { createNetworkParams, createParams, getOrderedAttrNames } from 'module/initConverter';
 
 const drawerWidth = 240;
 
@@ -46,8 +46,8 @@ function preserveCaret(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement
   const caret = event.target.selectionStart;
   const element = event.target;
   window.requestAnimationFrame(() => {
-    element.selectionStart = caret
-    element.selectionEnd = caret
+    element.selectionStart = caret;
+    element.selectionEnd = caret;
   });
 }
 
@@ -58,6 +58,10 @@ export default function PropertyBar() {
   const { selectedModelID } = appState.local;
   const { selectedBlockID } = appState.local.diagramInfos[selectedModelID];
 
+  const networks = Object.values(project.models).filter(
+    (network: any) => network.id !== selectedModelID,
+  ) as Array<Model>;
+
   const onTypeChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       appState.remote.update((root) => {
@@ -65,7 +69,27 @@ export default function PropertyBar() {
         const model = project.models[selectedModelID];
         const type = event.target.value as BlockType;
         model.blocks[selectedBlockID].type = type;
-        model.blocks[selectedBlockID].parameters = createParams(type);
+        if (![BlockType.Network, BlockType.In, BlockType.Out].includes(type)) {
+          model.blocks[selectedBlockID].parameters = createParams(type);
+        } else {
+          model.blocks[selectedBlockID].parameters = {};
+        }
+      });
+    },
+    [appState.remote, selectedBlockID, selectedModelID],
+  );
+
+  const onRefNetworkChange = useCallback(
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      appState.remote.update((root) => {
+        const networkID = event.target.value;
+        if (networkID) {
+          const { project } = root;
+          const model = project.models[selectedModelID];
+          const network = project.models[networkID];
+          model.blocks[selectedBlockID].refNetwork = networkID;
+          model.blocks[selectedBlockID].parameters = createNetworkParams(network);
+        }
       });
     },
     [appState.remote, selectedBlockID, selectedModelID],
@@ -121,7 +145,14 @@ export default function PropertyBar() {
   }
 
   const selectedBlock = model.blocks[selectedBlockID];
-  const attrNames = getOrderedAttrNames(selectedBlock.type);
+
+  // TODO: rename attrName to parameterName
+  let attrNames;
+  if (selectedBlock.type === BlockType.Network) {
+    attrNames = Object.keys(selectedBlock.parameters);
+  } else {
+    attrNames = getOrderedAttrNames(selectedBlock.type);
+  }
 
   return (
     <Drawer className={classes.drawer} variant="permanent" classes={{ paper: classes.drawerPaper }} anchor="right">
@@ -130,9 +161,10 @@ export default function PropertyBar() {
       <div className={classes.section}>
         <Typography variant="h6">Properties</Typography>
         <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="grouped-native-select">Type</InputLabel>
+          <InputLabel id="type-select-label">Type</InputLabel>
           <Select
-            id="grouped-select"
+            id="type-select"
+            labelId="type-select-label"
             value={selectedBlock.type}
             className={classes.formSelect}
             onChange={onTypeChange}
@@ -144,6 +176,29 @@ export default function PropertyBar() {
               </MenuItem>
             ))}
           </Select>
+        </FormControl>
+        {/* TODO: Overlap between input and label */}
+        <FormControl className={classes.formControl}>
+          {selectedBlock.type === BlockType.Network && (
+            <>
+              <InputLabel id="ref-network-select-label">Reference Network</InputLabel>
+              <Select
+                id="ref-network-select"
+                labelId="ref-network-select-label"
+                value={selectedBlock.refNetwork}
+                className={classes.formSelect}
+                onChange={onRefNetworkChange}
+              >
+                {networks.map((network) => (
+                  <MenuItem key={network.name} value={network.name}>
+                    {network.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </>
+          )}
+        </FormControl>
+        <FormControl className={classes.formControl}>
           <TextField
             label="Instance name"
             value={selectedBlock.name}
@@ -166,6 +221,14 @@ export default function PropertyBar() {
               onKeyDown={handleKeyDown}
             />
           )}
+          {selectedBlock.type === BlockType.Network && (
+            <TextField
+              label="Reference Network"
+              value={selectedBlock.refNetwork || ''}
+              onChange={(event) => handlePropertyChange(event, 'refNetwork')}
+              onKeyDown={handleKeyDown}
+            />
+          )}
         </FormControl>
       </div>
       {selectedBlock.parameters && (
@@ -178,7 +241,7 @@ export default function PropertyBar() {
                 <TextField
                   key={attrName}
                   label={attrName}
-                  value={selectedBlock.parameters[attrName]}
+                  value={selectedBlock.parameters[attrName] || ''}
                   onChange={(event) => handleParameterChange(event, attrName)}
                   onKeyDown={handleKeyDown}
                 />
