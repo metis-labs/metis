@@ -14,6 +14,7 @@ services:
     command: ['/etc/envoy/envoy.yaml']
     depends_on:
       - yorkie
+      - metis-server
   yorkie:
     image: 'yorkieteam/yorkie:latest'
     container_name: 'yorkie'
@@ -27,7 +28,19 @@ services:
       - '11101:11101'
     depends_on:
       - mongo
-  # TODO(youngteac.hong): We need to create Metis service here.
+  metis-server:
+    image: 'reg.navercorp.com/metis/metis-server:0.0.2'
+    container_name: 'metis-server'
+    command: [
+      'server',
+      '--mongo-connection-uri',
+      'mongodb://mongo:27017',
+    ]
+    restart: always
+    ports:
+      - '10118:10118'
+    depends_on:
+      - mongo
   mongo:
     image: 'mongo:latest'
     container_name: 'mongo'
