@@ -1,8 +1,3 @@
-export enum DiagramType {
-  Main = 'Main',
-  Module = 'Module',
-}
-
 export enum BlockType {
   In = 'In',
   Out = 'Out',
@@ -58,11 +53,9 @@ export type DiagramInfo = {
   selectedBlockID?: string;
 };
 
-// TODO: Rename Model to Network
-export type Model = {
+export type Network = {
   id: string;
   name: string;
-  type: DiagramType;
   dependencies: { [id: string]: Dependency };
   blocks: { [id: string]: Block };
   links: { [id: string]: Link };
@@ -71,7 +64,7 @@ export type Model = {
 export type Project = {
   id: string;
   name: string;
-  models: { [modelID: string]: Model };
+  networks: { [networkID: string]: Network };
 };
 
 export type ProjectInfo = {
@@ -80,16 +73,16 @@ export type ProjectInfo = {
 };
 
 export type LocalState = {
-  diagramInfos: { [modelID: string]: DiagramInfo };
+  diagramInfos: { [networkID: string]: DiagramInfo };
   projectInfos: { [projectID: string]: ProjectInfo };
-  selectedModelID?: string;
+  selectedNetworkID?: string;
 };
 
 export type PeerInfo = {
   color: string;
   image: string;
   username: string;
-  selectedModelID?: string;
+  selectedNetworkID?: string;
   cursor: Position;
 };
 
@@ -102,17 +95,16 @@ export type AppState = {
   remote?: any; // TODO: compatibility issue with immer and Yorkie
 };
 
-export const EmptyModel = {
+export const EmptyNetwork = {
   id: '',
   name: '',
-  type: DiagramType.Main,
   diagramInfo: {},
   dependencies: {},
   blocks: {},
   links: {},
 };
 
-type EntityType = 'model';
+type EntityType = 'network';
 type ActionType = 'create' | 'delete';
 
 export type EventDesc = {

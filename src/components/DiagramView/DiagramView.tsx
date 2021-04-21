@@ -51,32 +51,32 @@ export default function DiagramView() {
   const [appState, updateAppState] = useAppState();
   const [engine] = useState(new Engine());
   const [changeEvents, setChangeEvents] = useState<{ [id: string]: ChangeEvent }>({});
-  const { selectedModelID } = appState.local;
+  const { selectedNetworkID } = appState.local;
   const { repaintCounter } = appState;
 
   const handleMouseUp = useCallback(() => {
     for (const event of Object.values(changeEvents)) {
       if (event.funcName === 'selectionChanged' && event.blockID) {
         updateAppState((appState) => {
-          appState.local.diagramInfos[selectedModelID].selectedBlockID = event.blockID;
+          appState.local.diagramInfos[selectedNetworkID].selectedBlockID = event.blockID;
           return appState;
         });
       } else if (event.funcName === 'positionChanged' && event.blockID) {
         appState.remote.update((root) => {
-          const model = root.project.models[selectedModelID];
+          const model = root.project.networks[selectedNetworkID];
           model.blocks[event.blockID].position = event.position;
         });
         updateAppState((appState) => {
-          appState.local.diagramInfos[selectedModelID].selectedBlockID = event.blockID;
+          appState.local.diagramInfos[selectedNetworkID].selectedBlockID = event.blockID;
           return appState;
         });
       }
     }
 
     setChangeEvents({});
-  }, [changeEvents, updateAppState, selectedModelID, appState.remote]);
+  }, [changeEvents, updateAppState, selectedNetworkID, appState.remote]);
 
-  const diagramInfo = appState.local.diagramInfos[selectedModelID];
+  const diagramInfo = appState.local.diagramInfos[selectedNetworkID];
   const clientID = appState.client.getID();
   const rect = rootElement.current?.getBoundingClientRect();
   const handleMouseMove = useCallback(
@@ -97,8 +97,8 @@ export default function DiagramView() {
 
   useEffect(() => {
     const { project } = appState.remote.getRoot();
-    const diagramInfo = appState.local.diagramInfos[selectedModelID];
-    const model = project.models[selectedModelID];
+    const diagramInfo = appState.local.diagramInfos[selectedNetworkID];
+    const model = project.networks[selectedNetworkID];
     engine.update(model, diagramInfo);
 
     const deregister = engine.registerListener((event: any, entity: any) => {
@@ -114,14 +114,14 @@ export default function DiagramView() {
           }));
         } else if (event.function === 'entityRemoved') {
           appState.remote.update((root) => {
-            const model = root.project.models[selectedModelID];
+            const model = root.project.networks[selectedNetworkID];
             delete model.blocks[entity.getBlockID()];
           });
         }
       } else if (entity instanceof MetisLinkModel) {
         if (event.function === 'targetPortChanged') {
           appState.remote.update((root) => {
-            const model = root.project.models[selectedModelID];
+            const model = root.project.networks[selectedNetworkID];
             let from;
             let to;
             if (event.entity.sourcePort.getName() === 'in') {
@@ -142,7 +142,7 @@ export default function DiagramView() {
           });
         } else if (event.function === 'entityRemoved') {
           appState.remote.update((root) => {
-            const model = root.project.models[selectedModelID];
+            const model = root.project.networks[selectedNetworkID];
             // NOTE: If users don't complete the link, it won't store in remote.
             // So we only delete the link if it exists in remote.
             if (model.links[entity.getLinkID()]) {
@@ -153,7 +153,7 @@ export default function DiagramView() {
       } else if (entity instanceof DiagramModel) {
         if (event.function === 'offsetUpdated') {
           updateAppState((appState) => {
-            appState.local.diagramInfos[selectedModelID].offset = {
+            appState.local.diagramInfos[selectedNetworkID].offset = {
               x: entity.getOffsetX(),
               y: entity.getOffsetY(),
             };
@@ -161,7 +161,7 @@ export default function DiagramView() {
           });
         } else if (event.function === 'zoomUpdated') {
           updateAppState((appState) => {
-            appState.local.diagramInfos[selectedModelID].zoom = event.zoom;
+            appState.local.diagramInfos[selectedNetworkID].zoom = event.zoom;
             return appState;
           });
         }
@@ -172,7 +172,7 @@ export default function DiagramView() {
     engine,
     appState.remote,
     repaintCounter,
-    selectedModelID,
+    selectedNetworkID,
     updateAppState,
     setChangeEvents,
   ]);
@@ -187,7 +187,7 @@ export default function DiagramView() {
       myClientID === peerID ||
       !remotePeers[peerID] ||
       !remotePeers[peerID].cursor ||
-      remotePeers[peerID].selectedModelID !== selectedModelID
+      remotePeers[peerID].selectedNetworkID !== selectedNetworkID
     ) {
       continue;
     }

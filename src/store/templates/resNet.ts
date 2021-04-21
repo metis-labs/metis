@@ -1,4 +1,4 @@
-import { Block, BlockType, Dependency, DiagramType, Link, Project } from 'store/types';
+import { Block, BlockType, Dependency, Link, Project } from 'store/types';
 
 const dependencies: { [id: string]: Dependency } = {
   torch: {
@@ -143,11 +143,10 @@ const resnetLinks: { [id: string]: Link } = {
 const resnetProject: Project = {
   id: 'resnetProject',
   name: 'ResNet',
-  models: {
+  networks: {
     resnet: {
       id: 'resnet',
       name: 'resnet',
-      type: DiagramType.Module,
       dependencies,
       blocks: resnetBlocks,
       links: resnetLinks,

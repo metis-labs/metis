@@ -1,4 +1,4 @@
-import { Block, BlockType, Dependency, DiagramType, Link, Project } from 'store/types';
+import { Block, BlockType, Dependency, Link, Project } from 'store/types';
 
 const dependencies: { [id: string]: Dependency } = {
   torch: {
@@ -115,11 +115,10 @@ const links: { [id: string]: Link } = {
 const vggProject: Project = {
   id: 'vggProject',
   name: 'VGGNet',
-  models: {
+  networks: {
     vgg_16: {
       id: 'vgg_16',
       name: 'vgg_16',
-      type: DiagramType.Main,
       dependencies,
       blocks,
       links,

@@ -1,23 +1,23 @@
-import { EmptyModel, Model } from '../store/types';
+import { EmptyNetwork, Network } from '../store/types';
 import ImportConverter from './importConverter';
 import InitConverter from './initConverter';
 import ForwardConverter from './forwardConverter';
 
 export default class Converter {
-  private previousModel: Model;
+  private previousNetwork: Network;
 
   private codeString: string;
 
   constructor() {
-    this.previousModel = EmptyModel;
+    this.previousNetwork = EmptyNetwork;
     this.codeString = '';
   }
 
-  update(model: Model): void {
+  update(network: Network): void {
     if (
-      model.dependencies === this.previousModel.dependencies &&
-      model.blocks === this.previousModel.blocks &&
-      model.links === this.previousModel.links
+      network.dependencies === this.previousNetwork.dependencies &&
+      network.blocks === this.previousNetwork.blocks &&
+      network.links === this.previousNetwork.links
     ) {
       return;
     }
@@ -25,21 +25,21 @@ export default class Converter {
     this.codeString = '';
 
     const importTemplate = new ImportConverter();
-    importTemplate.update(model.dependencies);
+    importTemplate.update(network.dependencies);
 
     const initTemplate = new InitConverter();
-    initTemplate.updateInitFront(model);
-    initTemplate.updateInitBody(model.blocks);
+    initTemplate.updateInitFront(network);
+    initTemplate.updateInitBody(network.blocks);
 
     const forwardTemplate = new ForwardConverter();
-    forwardTemplate.updateForwardFront(model.links, model.blocks);
-    forwardTemplate.updateForwardBody(model.blocks);
+    forwardTemplate.updateForwardFront(network.links, network.blocks);
+    forwardTemplate.updateForwardBody(network.blocks);
 
     this.codeString += importTemplate.getResult();
     this.codeString += initTemplate.getResult();
     this.codeString += forwardTemplate.getResult();
 
-    this.previousModel = model;
+    this.previousNetwork = network;
   }
 
   getResult(): string {

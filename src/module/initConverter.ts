@@ -1,4 +1,4 @@
-import { Block, BlockType, Model, EmptyModel, Properties } from '../store/types';
+import { Block, BlockType, Network, EmptyNetwork, Properties } from '../store/types';
 import operatorMetaInfos from './pytorch-metadata.json';
 
 export function printOptionValue(value: any): string {
@@ -15,7 +15,7 @@ export function printOptionValue(value: any): string {
   return JSON.stringify(value);
 }
 
-export function createNetworkParams(network: Model): Properties {
+export function createNetworkParams(network: Network): Properties {
   const parameters = {};
   for (const block of Object.values(network!.blocks)) {
     if (block.type === BlockType.In) {
@@ -71,7 +71,7 @@ export default class InitConverter {
   private options: string;
 
   constructor() {
-    this.blocks = EmptyModel.blocks;
+    this.blocks = EmptyNetwork.blocks;
     this.bodyBlockList = [];
     this.inputBlockList = [];
     this.outputBlockList = [];
@@ -93,15 +93,15 @@ export default class InitConverter {
     }
   }
 
-  updateInitFront(model: Model): void {
+  updateInitFront(network: Network): void {
     this.resultInit = `\n\n`;
-    this.resultInit += `class ${model.name}(torch.nn.Module):\n`;
+    this.resultInit += `class ${network.name}(torch.nn.Module):\n`;
     this.resultInit += this.indentSize;
     this.resultInit += `def __init__(self):\n`;
     for (let i = 0; i < this.indentDepth + 1; i += 1) {
       this.resultInit += this.indentSize;
     }
-    this.resultInit += `super(${model.name}, self).__init__()\n`;
+    this.resultInit += `super(${network.name}, self).__init__()\n`;
   }
 
   updateInitBody(blocks: { [id: string]: Block }): void {

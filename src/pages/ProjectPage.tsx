@@ -71,22 +71,22 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         if (!root.peers) {
           root.peers = {};
         }
-        const modelIDs = Object.keys(root.project.models);
+        const networkIDs = Object.keys(root.project.networks);
         if (!root.peers[client.getID()]) {
           root.peers[client.getID()] = {
-            selectedModelID: modelIDs[0],
+            selectedNetworkID: networkIDs[0],
           };
         }
       });
 
-      const modelIDs = Object.keys(doc.getRoot().project.models);
+      const networkIDs = Object.keys(doc.getRoot().project.networks);
       // TODO(youngteac.hong): Until Yorkie supports metadata-update, we use remote temporarily.
-      // client.updateMetadata('selectedModelID', modelIDs[0]);
+      // client.updateMetadata('selectedNetworkID', networkIDs[0]);
       updateAppState((appState) => {
         appState.remote = doc;
-        appState.local.selectedModelID = modelIDs[0];
-        for (const modelID of modelIDs) {
-          appState.local.diagramInfos[modelID] = {
+        appState.local.selectedNetworkID = networkIDs[0];
+        for (const networkID of networkIDs) {
+          appState.local.diagramInfos[networkID] = {
             offset: { x: 0, y: 0 },
             zoom: 100,
           };
@@ -111,7 +111,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
             }
             if (changeInfo.change.getMessage()) {
               const desc = decodeEventDesc(changeInfo.change.getMessage());
-              if (desc.actionType === 'create' && desc.entityType === 'model') {
+              if (desc.actionType === 'create' && desc.entityType === 'network') {
                 updateAppState((appState) => {
                   appState.local.diagramInfos[desc.id] = {
                     offset: { x: 0, y: 0 },
@@ -119,15 +119,15 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
                   };
 
                   if (event.type === 'local-change') {
-                    appState.local.selectedModelID = desc.id;
+                    appState.local.selectedNetworkID = desc.id;
                   }
                   return appState;
                 });
-              } else if (desc.actionType === 'delete' && desc.entityType === 'model') {
+              } else if (desc.actionType === 'delete' && desc.entityType === 'network') {
                 updateAppState((appState) => {
                   delete appState.local.diagramInfos[desc.id];
-                  if (desc.id === appState.local.selectedModelID) {
-                    appState.local.selectedModelID = null;
+                  if (desc.id === appState.local.selectedNetworkID) {
+                    appState.local.selectedNetworkID = null;
                   }
                   return appState;
                 });
@@ -183,7 +183,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       <NavBar />
       <SideBar />
       <FileTreeBar />
-      {appState.local.selectedModelID ? (
+      {appState.local.selectedNetworkID ? (
         <>
           <main className={classes.content}>
             {viewMode === 'diagram' ? <DiagramView /> : <CodeView />}

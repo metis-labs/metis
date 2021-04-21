@@ -37,18 +37,18 @@ const useStyles = makeStyles(() =>
 export default function SideBar() {
   const classes = useStyles();
   const [appState] = useAppState();
-  const { selectedModelID } = appState.local;
+  const { selectedNetworkID } = appState.local;
   const handleAddBlockClick = useCallback(
     (type: BlockType) => {
       appState.remote.update((root) => {
-        const model = root.project.models[selectedModelID];
-        const blockLength = Object.values(model.blocks).filter((block: Block) => block.type === type).length;
-        const diagramOffset = appState.local.diagramInfos[selectedModelID].offset;
+        const network = root.project.networks[selectedNetworkID];
+        const blockLength = Object.values(network.blocks).filter((block: Block) => block.type === type).length;
+        const diagramOffset = appState.local.diagramInfos[selectedNetworkID].offset;
         const position = { x: 200 + 10 * blockLength - diagramOffset.x, y: 200 + 10 * blockLength - diagramOffset.y };
         const id = uuidv4();
         switch (type) {
           case BlockType.In:
-            model.blocks[id] = {
+            network.blocks[id] = {
               id,
               name: `in_${blockLength + 1}`,
               type: BlockType.In,
@@ -56,7 +56,7 @@ export default function SideBar() {
             };
             break;
           case BlockType.Out:
-            model.blocks[id] = {
+            network.blocks[id] = {
               id,
               name: `out_${blockLength + 1}`,
               type: BlockType.Out,
@@ -64,7 +64,7 @@ export default function SideBar() {
             };
             break;
           default:
-            model.blocks[id] = {
+            network.blocks[id] = {
               id,
               name: `${BlockType.Conv2d.toLowerCase()}_${blockLength + 1}`,
               type: BlockType.Conv2d,
@@ -85,7 +85,7 @@ export default function SideBar() {
         }
       });
     },
-    [appState.remote, selectedModelID, appState.local.diagramInfos],
+    [appState.remote, selectedNetworkID, appState.local.diagramInfos],
   );
 
   return (

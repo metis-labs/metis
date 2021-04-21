@@ -10,7 +10,7 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { Project, BlockType, IOBlockTypes, PropertyValue, Model } from 'store/types';
+import { Project, BlockType, IOBlockTypes, PropertyValue, Network } from 'store/types';
 import { useAppState } from 'App';
 import { createNetworkParams, createParams, getOrderedAttrNames } from 'module/initConverter';
 
@@ -56,16 +56,16 @@ export default function PropertyBar() {
   const [appState] = useAppState();
   const remoteState = appState.remote.getRoot();
   const project = remoteState.project as Project;
-  const { selectedModelID } = appState.local;
-  const { selectedBlockID } = appState.local.diagramInfos[selectedModelID];
+  const { selectedNetworkID } = appState.local;
+  const { selectedBlockID } = appState.local.diagramInfos[selectedNetworkID];
 
-  const otherNetworks = Object.values(project.models).filter((network: any) => network.id !== selectedModelID);
+  const otherNetworks = Object.values(project.networks).filter((network: any) => network.id !== selectedNetworkID);
 
   const onTypeChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       appState.remote.update((root) => {
         const { project } = root;
-        const model = project.models[selectedModelID];
+        const model = project.networks[selectedNetworkID];
         const type = event.target.value as BlockType;
         model.blocks[selectedBlockID].type = type;
         if (![BlockType.Network, BlockType.In, BlockType.Out].includes(type)) {
@@ -75,7 +75,7 @@ export default function PropertyBar() {
         }
       });
     },
-    [appState.remote, selectedBlockID, selectedModelID],
+    [appState.remote, selectedBlockID, selectedNetworkID],
   );
 
   const onRefNetworkChange = useCallback(
@@ -84,15 +84,15 @@ export default function PropertyBar() {
         const networkName = event.target.value;
         if (networkName) {
           const { project } = root;
-          const networks = project.models as { [networkID: string]: Model };
-          const model = project.models[selectedModelID];
+          const networks = project.networks as { [networkID: string]: Network };
+          const model = project.networks[selectedNetworkID];
           const network = Object.values(networks).find((network) => network.name === networkName);
           model.blocks[selectedBlockID].refNetwork = network.id;
           model.blocks[selectedBlockID].parameters = createNetworkParams(network);
         }
       });
     },
-    [appState.remote, selectedBlockID, selectedModelID],
+    [appState.remote, selectedBlockID, selectedNetworkID],
   );
 
   const valueTransition = (value: string): PropertyValue => {
@@ -116,11 +116,11 @@ export default function PropertyBar() {
       preserveCaret(event);
       appState.remote.update((root) => {
         const { project } = root;
-        const model = project.models[selectedModelID];
+        const model = project.networks[selectedNetworkID];
         model.blocks[selectedBlockID][key] = valueTransition(event.target.value as string);
       });
     },
-    [appState.remote, selectedBlockID, selectedModelID],
+    [appState.remote, selectedBlockID, selectedNetworkID],
   );
 
   const handleParameterChange = useCallback(
@@ -128,18 +128,18 @@ export default function PropertyBar() {
       preserveCaret(event);
       appState.remote.update((root) => {
         const { project } = root;
-        const model = project.models[selectedModelID];
+        const model = project.networks[selectedNetworkID];
         model.blocks[selectedBlockID].parameters[key] = valueTransition(event.target.value as string);
       });
     },
-    [appState.remote, selectedBlockID, selectedModelID],
+    [appState.remote, selectedBlockID, selectedNetworkID],
   );
 
   const handleKeyDown = useCallback((event: any) => {
     event.nativeEvent.stopImmediatePropagation();
   }, []);
 
-  const model = project.models[selectedModelID];
+  const model = project.networks[selectedNetworkID];
   if (!selectedBlockID || !model.blocks[selectedBlockID]) {
     return null;
   }
@@ -154,7 +154,7 @@ export default function PropertyBar() {
     attrNames = getOrderedAttrNames(selectedBlock.type);
   }
 
-  const refNetwork = project.models[selectedBlock.refNetwork];
+  const refNetwork = project.networks[selectedBlock.refNetwork];
 
   return (
     <Drawer className={classes.drawer} variant="permanent" classes={{ paper: classes.drawerPaper }} anchor="right">
