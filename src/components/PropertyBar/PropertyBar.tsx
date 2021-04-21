@@ -204,23 +204,27 @@ export default function PropertyBar() {
             onChange={(event) => handlePropertyChange(event, 'name')}
             onKeyDown={handleKeyDown}
           />
-          {selectedBlock.repeats !== undefined && (
+        </FormControl>
+        {selectedBlock.repeats !== undefined && (
+          <FormControl className={classes.formControl}>
             <TextField
               label="Repeats"
               value={selectedBlock.repeats}
               onChange={(event) => handlePropertyChange(event, 'repeats')}
               onKeyDown={handleKeyDown}
             />
-          )}
-          {selectedBlock.type === BlockType.In && (
-            <TextField
-              label="Init Variables"
-              value={selectedBlock.initVariables || ''}
-              onChange={(event) => handlePropertyChange(event, 'initVariables')}
-              onKeyDown={handleKeyDown}
-            />
-          )}
+          </FormControl>
+        )}
+        {selectedBlock.type === BlockType.In && (
+        <FormControl className={classes.formControl}>
+          <TextField
+            label="Init Variables"
+            value={selectedBlock.initVariables || ''}
+            onChange={(event) => handlePropertyChange(event, 'initVariables')}
+            onKeyDown={handleKeyDown}
+          />
         </FormControl>
+        )}
       </div>
       {selectedBlock.parameters && (
         <>
