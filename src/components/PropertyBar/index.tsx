@@ -4,7 +4,15 @@ import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
 import Divider from '@material-ui/core/Divider';
 
-import { Project, BlockType, IOBlock, NetworkBlock, NormalBlock, isNormalBlockType } from 'store/types';
+import {
+  Project,
+  IOBlock,
+  NetworkBlock,
+  NormalBlock,
+  isIOBlockType,
+  isNetworkBlockType,
+  isNormalBlockType
+} from 'store/types';
 import { useAppState } from 'App';
 
 import IOProperties from './IOProperties';
@@ -43,8 +51,8 @@ export default function PropertyBar() {
     <Drawer className={classes.drawer} variant="permanent" classes={{ paper: classes.drawerPaper }} anchor="right">
       <Toolbar />
       <Divider />
-      {selectedBlock.type === BlockType.Network && <NetworkProperties block={selectedBlock as NetworkBlock} />}
-      {(selectedBlock.type === BlockType.In || selectedBlock.type === BlockType.Out) && <IOProperties block={selectedBlock as IOBlock} />}
+      {isNetworkBlockType(selectedBlock.type) && <NetworkProperties block={selectedBlock as NetworkBlock} />}
+      {isIOBlockType(selectedBlock.type) && <IOProperties block={selectedBlock as IOBlock} />}
       {isNormalBlockType(selectedBlock.type) && <NormalProperties block={selectedBlock as NormalBlock} />}
     </Drawer>
   );

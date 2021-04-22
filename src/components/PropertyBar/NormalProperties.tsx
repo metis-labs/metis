@@ -8,7 +8,7 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { BlockType, PropertyValue, NormalBlock, IOBlockTypes } from 'store/types';
+import { BlockType, PropertyValue, NormalBlock, isIOBlockType } from 'store/types';
 import { useAppState } from 'App';
 import { createParams, getOrderedAttrNames } from 'module/initConverter';
 
@@ -124,7 +124,7 @@ export default function NetworkProperties(props: {block: NormalBlock}) {
             onChange={onTypeChange}
           >
             {Object.keys(BlockType).map((item) => (
-              <MenuItem key={item} value={item} disabled={IOBlockTypes.has(item as BlockType)}>
+              <MenuItem key={item} value={item} disabled={isIOBlockType(item as BlockType)}>
                 {item}
               </MenuItem>
             ))}
@@ -138,36 +138,30 @@ export default function NetworkProperties(props: {block: NormalBlock}) {
             onKeyDown={handleKeyDown}
           />
         </FormControl>
-        {selectedBlock.repeats !== undefined && (
-          <FormControl className={classes.formControl}>
+        <FormControl className={classes.formControl}>
+          <TextField
+            label="Repeats"
+            value={selectedBlock.repeats}
+            onChange={(event) => handlePropertyChange(event, 'repeats')}
+            onKeyDown={handleKeyDown}
+          />
+        </FormControl>
+      </div>
+      <Divider className={classes.divider} />
+      <div className={classes.section}>
+        <Typography variant="h6">Parameters</Typography>
+        <FormControl className={classes.formControl}>
+          {attrNames.map((attrName) => (
             <TextField
-              label="Repeats"
-              value={selectedBlock.repeats}
-              onChange={(event) => handlePropertyChange(event, 'repeats')}
+              key={attrName}
+              label={attrName}
+              value={selectedBlock.parameters[attrName] || ''}
+              onChange={(event) => handleParameterChange(event, attrName)}
               onKeyDown={handleKeyDown}
             />
-          </FormControl>
-        )}
+          ))}
+        </FormControl>
       </div>
-      {selectedBlock.parameters && (
-        <>
-          <Divider className={classes.divider} />
-          <div className={classes.section}>
-            <Typography variant="h6">Parameters</Typography>
-            <FormControl className={classes.formControl}>
-              {attrNames.map((attrName) => (
-                <TextField
-                  key={attrName}
-                  label={attrName}
-                  value={selectedBlock.parameters[attrName] || ''}
-                  onChange={(event) => handleParameterChange(event, attrName)}
-                  onKeyDown={handleKeyDown}
-                />
-              ))}
-            </FormControl>
-          </div>
-        </>
-      )}
     </>
   );
 }

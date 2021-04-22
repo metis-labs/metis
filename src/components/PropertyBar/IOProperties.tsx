@@ -7,9 +7,8 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { BlockType, IOBlockTypes, PropertyValue, IOBlock } from 'store/types';
+import { BlockType, isIOBlockType, PropertyValue, IOBlock } from 'store/types';
 import { useAppState } from 'App';
-import { createParams } from 'module/initConverter';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,23 +45,6 @@ export default function NetworkProperties(props: {block: IOBlock}) {
   const { selectedBlockID } = appState.local.diagramInfos[selectedNetworkID];
   const { block: selectedBlock } = props;
 
-  const onTypeChange = useCallback(
-    (event: ChangeEvent<HTMLSelectElement>) => {
-      appState.remote.update((root) => {
-        const { project } = root;
-        const model = project.networks[selectedNetworkID];
-        const type = event.target.value as BlockType;
-        model.blocks[selectedBlockID].type = type;
-        if (![BlockType.Network, BlockType.In, BlockType.Out].includes(type)) {
-          model.blocks[selectedBlockID].parameters = createParams(type);
-        } else {
-          model.blocks[selectedBlockID].parameters = {};
-        }
-      });
-    },
-    [appState.remote, selectedBlockID, selectedNetworkID],
-  );
-
   const valueTransition = (value: string): PropertyValue => {
     if (value === 'True' || value === 'true') {
       return true;
@@ -96,35 +78,33 @@ export default function NetworkProperties(props: {block: IOBlock}) {
   }, []);
 
   return (
-    <>
-      <div className={classes.section}>
-        <Typography variant="h6">Properties</Typography>
-        <FormControl className={classes.formControl}>
-          <InputLabel id="type-select-label">Type</InputLabel>
-          <Select
-            id="type-select"
-            labelId="type-select-label"
-            value={selectedBlock.type}
-            className={classes.formSelect}
-            onChange={onTypeChange}
-            disabled={IOBlockTypes.has(selectedBlock.type)}
-          >
-            {Object.keys(BlockType).map((item) => (
-              <MenuItem key={item} value={item} disabled={IOBlockTypes.has(item as BlockType)}>
-                {item}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl className={classes.formControl}>
-          <TextField
-            label="Instance name"
-            value={selectedBlock.name}
-            onChange={(event) => handlePropertyChange(event, 'name')}
-            onKeyDown={handleKeyDown}
-          />
-        </FormControl>
-        {selectedBlock.type === BlockType.In && (
+    <div className={classes.section}>
+      <Typography variant="h6">Properties</Typography>
+      <FormControl className={classes.formControl}>
+        <InputLabel id="type-select-label">Type</InputLabel>
+        <Select
+          id="type-select"
+          labelId="type-select-label"
+          value={selectedBlock.type}
+          className={classes.formSelect}
+          disabled
+        >
+          {Object.keys(BlockType).map((item) => (
+            <MenuItem key={item} value={item} disabled={isIOBlockType(item as BlockType)}>
+              {item}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControl className={classes.formControl}>
+        <TextField
+          label="Instance name"
+          value={selectedBlock.name}
+          onChange={(event) => handlePropertyChange(event, 'name')}
+          onKeyDown={handleKeyDown}
+        />
+      </FormControl>
+      {selectedBlock.type === BlockType.In && (
         <FormControl className={classes.formControl}>
           <TextField
             label="Init Variables"
@@ -133,8 +113,7 @@ export default function NetworkProperties(props: {block: IOBlock}) {
             onKeyDown={handleKeyDown}
           />
         </FormControl>
-        )}
-      </div>
-    </>
+      )}
+    </div>
   );
 }

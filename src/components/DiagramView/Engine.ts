@@ -1,8 +1,9 @@
 import createEngine, { DiagramEngine, DiagramModel } from '@projectstorm/react-diagrams';
 
-import { EmptyNetwork, Network, DiagramInfo, BlockType } from 'store/types';
+import { EmptyNetwork, Network, DiagramInfo, isIOBlockType } from 'store/types';
 import MetisNodeModel from 'components/DiagramView/MetisNodeModel';
 import MetisNodeFactory from 'components/DiagramView/MetisNodeFactory';
+
 import MetisLinkFactory from './MetisLinkFactory';
 import MetisLinkModel from './MetisLinkModel';
 
@@ -35,7 +36,7 @@ export default class Engine {
 
     for (const [, block] of Object.entries(network.blocks)) {
       let repeats = 0;
-      if (block.type !== BlockType.Network && block.type !== BlockType.In && block.type !== BlockType.Out) {
+      if (!isIOBlockType(block.type)) {
         // @ts-ignore
         repeats = block.repeats;
       }
@@ -54,7 +55,7 @@ export default class Engine {
 
     const links: Array<MetisLinkModel> = [];
 
-    for (const [, link] of Object.entries(network.links)) {
+    for (const link of Object.values(network.links)) {
       if (!nodeInfoMap[link.from] || !nodeInfoMap[link.to]) {
         continue;
       }

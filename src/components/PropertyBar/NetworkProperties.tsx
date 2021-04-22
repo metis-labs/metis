@@ -8,7 +8,7 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { Project, BlockType, IOBlockTypes, PropertyValue, Network, NetworkBlock } from 'store/types';
+import { Project, BlockType, isIOBlockType, PropertyValue, Network, NetworkBlock } from 'store/types';
 import { useAppState } from 'App';
 import { createNetworkParams, createParams } from 'module/initConverter';
 
@@ -145,33 +145,31 @@ export default function NetworkProperties(props: {block: NetworkBlock}) {
             value={selectedBlock.type}
             className={classes.formSelect}
             onChange={onTypeChange}
-            disabled={IOBlockTypes.has(selectedBlock.type)}
+            disabled={isIOBlockType(selectedBlock.type)}
           >
             {Object.keys(BlockType).map((item) => (
-              <MenuItem key={item} value={item} disabled={IOBlockTypes.has(item as BlockType)}>
+              <MenuItem key={item} value={item} disabled={isIOBlockType(item as BlockType)}>
                 {item}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
-        {selectedBlock.type === BlockType.Network && (
-          <FormControl className={classes.formControl}>
-            <InputLabel id="ref-network-select-label">Reference Network</InputLabel>
-            <Select
-              id="ref-network-select"
-              labelId="ref-network-select-label"
-              value={refNetwork ? refNetwork.name : ''}
-              className={classes.formSelect}
-              onChange={onRefNetworkChange}
-            >
-              {otherNetworks.map((network) => (
-                <MenuItem key={network.name} value={network.name}>
-                  {network.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        )}
+        <FormControl className={classes.formControl}>
+          <InputLabel id="ref-network-select-label">Reference Network</InputLabel>
+          <Select
+            id="ref-network-select"
+            labelId="ref-network-select-label"
+            value={refNetwork ? refNetwork.name : ''}
+            className={classes.formSelect}
+            onChange={onRefNetworkChange}
+          >
+            {otherNetworks.map((network) => (
+              <MenuItem key={network.name} value={network.name}>
+                {network.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <FormControl className={classes.formControl}>
           <TextField
             label="Instance name"
@@ -180,26 +178,30 @@ export default function NetworkProperties(props: {block: NetworkBlock}) {
             onKeyDown={handleKeyDown}
           />
         </FormControl>
+        <FormControl className={classes.formControl}>
+          <TextField
+            label="Repeats"
+            value={selectedBlock.repeats}
+            onChange={(event) => handlePropertyChange(event, 'repeats')}
+            onKeyDown={handleKeyDown}
+          />
+        </FormControl>
       </div>
-      {selectedBlock.parameters && (
-        <>
-          <Divider className={classes.divider} />
-          <div className={classes.section}>
-            <Typography variant="h6">Parameters</Typography>
-            <FormControl className={classes.formControl}>
-              {attrNames.map((attrName) => (
-                <TextField
-                  key={attrName}
-                  label={attrName}
-                  value={selectedBlock.parameters[attrName] || ''}
-                  onChange={(event) => handleParameterChange(event, attrName)}
-                  onKeyDown={handleKeyDown}
-                />
-              ))}
-            </FormControl>
-          </div>
-        </>
-      )}
+      <Divider className={classes.divider} />
+      <div className={classes.section}>
+        <Typography variant="h6">Parameters</Typography>
+        <FormControl className={classes.formControl}>
+          {attrNames.map((attrName) => (
+            <TextField
+              key={attrName}
+              label={attrName}
+              value={selectedBlock.parameters[attrName] || ''}
+              onChange={(event) => handleParameterChange(event, attrName)}
+              onKeyDown={handleKeyDown}
+            />
+          ))}
+        </FormControl>
+      </div>
     </>
   );
 }

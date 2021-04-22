@@ -8,7 +8,13 @@ export enum BlockType {
   MaxPool2d = 'MaxPool2d',
 }
 
-export const IOBlockTypes = new Set([BlockType.In, BlockType.Out]);
+export function isIOBlockType(blockType: BlockType): boolean {
+  return [BlockType.In, BlockType.Out].includes(blockType);
+}
+
+export function isNetworkBlockType(blockType: BlockType): boolean {
+  return BlockType.Network === blockType;
+}
 
 export function isNormalBlockType(blockType: BlockType): boolean {
   return ![BlockType.In, BlockType.Out, BlockType.Network].includes(blockType);
@@ -39,6 +45,7 @@ export interface IOBlock extends BaseBlock {
 export interface NetworkBlock extends BaseBlock {
   type: BlockType.Network;
   refNetwork: string;
+  repeats: number;
   parameters: Properties;
 }
 
