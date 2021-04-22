@@ -18,12 +18,14 @@ const resnetBlocks: { [id: string]: Block } = {
     name: 'resnet_in',
     type: BlockType.In,
     position: { x: 100, y: 100 },
+    initVariables: '',
   },
   resnet_out: {
     id: 'resnet_out',
     name: 'resnet_out',
     type: BlockType.Out,
     position: { x: 100, y: 700 },
+    initVariables: '',
   },
   conv_1: {
     id: 'conv_1',

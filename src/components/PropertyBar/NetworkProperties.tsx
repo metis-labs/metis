@@ -1,7 +1,5 @@
 import React, { ChangeEvent, useCallback } from 'react';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import Toolbar from '@material-ui/core/Toolbar';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl/FormControl';
 import Select from '@material-ui/core/Select';
@@ -10,21 +8,12 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { Project, BlockType, IOBlockTypes, PropertyValue, Network } from 'store/types';
+import { Project, BlockType, IOBlockTypes, PropertyValue, Network, NetworkBlock } from 'store/types';
 import { useAppState } from 'App';
-import { createNetworkParams, createParams, getOrderedAttrNames } from 'module/initConverter';
-
-const drawerWidth = 240;
+import { createNetworkParams, createParams } from 'module/initConverter';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    drawer: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
-    drawerPaper: {
-      width: drawerWidth,
-    },
     divider: {
       margin: '15px 0',
     },
@@ -51,13 +40,14 @@ function preserveCaret(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement
   });
 }
 
-export default function PropertyBar() {
+export default function NetworkProperties(props: {block: NetworkBlock}) {
   const classes = useStyles();
   const [appState] = useAppState();
   const remoteState = appState.remote.getRoot();
   const project = remoteState.project as Project;
   const { selectedNetworkID } = appState.local;
   const { selectedBlockID } = appState.local.diagramInfos[selectedNetworkID];
+  const { block: selectedBlock } = props;
 
   const otherNetworks = Object.values(project.networks).filter((network: any) => network.id !== selectedNetworkID);
 
@@ -139,27 +129,12 @@ export default function PropertyBar() {
     event.nativeEvent.stopImmediatePropagation();
   }, []);
 
-  const model = project.networks[selectedNetworkID];
-  if (!selectedBlockID || !model.blocks[selectedBlockID]) {
-    return null;
-  }
-
-  const selectedBlock = model.blocks[selectedBlockID];
-
   // TODO: rename attrName to parameterName
-  let attrNames;
-  if (selectedBlock.type === BlockType.Network) {
-    attrNames = Object.keys(selectedBlock.parameters);
-  } else {
-    attrNames = getOrderedAttrNames(selectedBlock.type);
-  }
-
-  const refNetwork = project.networks[selectedBlock.refNetwork];
+  const attrNames = Object.keys(selectedBlock.parameters);
+  const refNetwork = selectedBlock.type === BlockType.Network ? project.networks[selectedBlock.refNetwork] : '';
 
   return (
-    <Drawer className={classes.drawer} variant="permanent" classes={{ paper: classes.drawerPaper }} anchor="right">
-      <Toolbar />
-      <Divider />
+    <>
       <div className={classes.section}>
         <Typography variant="h6">Properties</Typography>
         <FormControl className={classes.formControl}>
@@ -205,26 +180,6 @@ export default function PropertyBar() {
             onKeyDown={handleKeyDown}
           />
         </FormControl>
-        {selectedBlock.repeats !== undefined && (
-          <FormControl className={classes.formControl}>
-            <TextField
-              label="Repeats"
-              value={selectedBlock.repeats}
-              onChange={(event) => handlePropertyChange(event, 'repeats')}
-              onKeyDown={handleKeyDown}
-            />
-          </FormControl>
-        )}
-        {selectedBlock.type === BlockType.In && (
-        <FormControl className={classes.formControl}>
-          <TextField
-            label="Init Variables"
-            value={selectedBlock.initVariables || ''}
-            onChange={(event) => handlePropertyChange(event, 'initVariables')}
-            onKeyDown={handleKeyDown}
-          />
-        </FormControl>
-        )}
       </div>
       {selectedBlock.parameters && (
         <>
@@ -245,6 +200,6 @@ export default function PropertyBar() {
           </div>
         </>
       )}
-    </Drawer>
+    </>
   );
 }

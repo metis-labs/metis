@@ -19,12 +19,14 @@ const blocks: { [id: string]: Block } = {
     name: 'in',
     type: BlockType.In,
     position: { x: 100, y: 100 },
+    initVariables: '',
   },
   out: {
     id: 'out',
     name: 'out',
     type: BlockType.Out,
     position: { x: 100, y: 200 },
+    initVariables: '',
   },
 };
 

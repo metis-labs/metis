@@ -10,6 +10,10 @@ export enum BlockType {
 
 export const IOBlockTypes = new Set([BlockType.In, BlockType.Out]);
 
+export function isNormalBlockType(blockType: BlockType): boolean {
+  return ![BlockType.In, BlockType.Out, BlockType.Network].includes(blockType);
+}
+
 export type Position = {
   x: number;
   y: number;
@@ -18,21 +22,31 @@ export type Position = {
 export type PropertyValue = string | number | boolean;
 export type Properties = { [key: string]: PropertyValue };
 
-// TODO subtyping: Block, NetworkBlock, NormalBlock
-export type Block = {
+export type Block = NormalBlock | NetworkBlock | IOBlock;
+
+export interface BaseBlock {
   id: string;
   name: string;
   type: BlockType;
   position: Position;
+}
 
-  // Network
-  initVariables?: string;
-  refNetwork?: string;
+export interface IOBlock extends BaseBlock {
+  type: BlockType.In | BlockType.Out;
+  initVariables: string;
+}
 
-  // Normal
-  repeats?: number;
-  parameters?: Properties;
-};
+export interface NetworkBlock extends BaseBlock {
+  type: BlockType.Network;
+  refNetwork: string;
+  parameters: Properties;
+}
+
+export interface NormalBlock extends BaseBlock {
+  type: BlockType.Conv2d | BlockType.BatchNorm2d | BlockType.ReLU | BlockType.MaxPool2d;
+  repeats: number;
+  parameters: Properties;
+}
 
 export type Link = {
   id: string;

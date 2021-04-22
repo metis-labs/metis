@@ -18,12 +18,14 @@ const blocks: { [id: string]: Block } = {
     name: 'vgg_in',
     type: BlockType.In,
     position: { x: 100, y: 100 },
+    initVariables: '',
   },
   vgg_out: {
     id: 'vgg_out',
     name: 'vgg_out',
     type: BlockType.Out,
     position: { x: 100, y: 600 },
+    initVariables: '',
   },
   conv_1: {
     id: 'conv_1',

@@ -1,4 +1,4 @@
-import { Block, BlockType, Network, EmptyNetwork, Properties } from '../store/types';
+import { Block, NormalBlock, IOBlock, BlockType, Network, EmptyNetwork, Properties } from '../store/types';
 import operatorMetaInfos from './pytorch-metadata.json';
 
 export function printOptionValue(value: any): string {
@@ -17,12 +17,13 @@ export function printOptionValue(value: any): string {
 
 export function createNetworkParams(network: Network): Properties {
   const parameters = {};
-  for (const block of Object.values(network!.blocks)) {
+  for (const block of Object.values(network.blocks)) {
     if (block.type === BlockType.In) {
-      if (!block.initVariables) {
+      const ioBlock = block as IOBlock;
+      if (!ioBlock.initVariables) {
         continue;
       }
-      for (const variable of block.initVariables.split(',')) {
+      for (const variable of ioBlock.initVariables.split(',')) {
         parameters[variable] = '';
       }
     }
@@ -112,12 +113,12 @@ export default class InitConverter {
         this.resultInit += this.indentSize;
       }
       this.resultInit += `self.${blocks[blockId].name} = nn.${blocks[blockId].type}(`;
-      this.updateOption(blocks[blockId]);
+      this.updateOption(blocks[blockId] as NormalBlock);
       this.resultInit += `) \n`;
     }
   }
 
-  updateOption(block: Block): void {
+  updateOption(block: NormalBlock): void {
     const idx = operatorMetaInfos.findIndex((metaInfo) => metaInfo.abbrev === block.type);
     const options = [];
 
