@@ -96,9 +96,18 @@ export default class InitConverter {
 
   updateInitFront(network: Network): void {
     this.resultInit = `\n\n`;
-    this.resultInit += `class ${network.name}(torch.nn.Module):\n`;
+    this.resultInit += `class ${network.name}(nn.Module):\n`;
     this.resultInit += this.indentSize;
-    this.resultInit += `def __init__(self):\n`;
+    this.resultInit += `def __init__(self`;
+    this.inputBlockList.forEach((inputBlockId) => {
+      const block = network.blocks[inputBlockId] as IOBlock;
+      if (block.initVariables) {
+        block.initVariables.split(',').forEach((initVariable) => {
+          this.resultInit += `, ${initVariable}`;
+        });
+      }
+    });
+    this.resultInit += `):\n`;
     for (let i = 0; i < this.indentDepth + 1; i += 1) {
       this.resultInit += this.indentSize;
     }
@@ -106,7 +115,6 @@ export default class InitConverter {
   }
 
   updateInitBody(blocks: { [id: string]: Block }): void {
-    this.orderedBlockList(blocks);
     this.resultInit += `\n`;
     for (const blockId of this.bodyBlockList) {
       for (let i = 0; i < this.indentDepth + 1; i += 1) {

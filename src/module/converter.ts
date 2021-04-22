@@ -28,6 +28,7 @@ export default class Converter {
     importTemplate.update(network.dependencies);
 
     const initTemplate = new InitConverter();
+    initTemplate.orderedBlockList(network.blocks);
     initTemplate.updateInitFront(network);
     initTemplate.updateInitBody(network.blocks);
 
