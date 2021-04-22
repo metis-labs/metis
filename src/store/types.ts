@@ -1,8 +1,3 @@
-export enum DiagramType {
-  Main = 'Main',
-  Module = 'Module',
-}
-
 export enum BlockType {
   In = 'In',
   Out = 'Out',
@@ -15,6 +10,10 @@ export enum BlockType {
 
 export const IOBlockTypes = new Set([BlockType.In, BlockType.Out]);
 
+export function isNormalBlockType(blockType: BlockType): boolean {
+  return ![BlockType.In, BlockType.Out, BlockType.Network].includes(blockType);
+}
+
 export type Position = {
   x: number;
   y: number;
@@ -23,21 +22,31 @@ export type Position = {
 export type PropertyValue = string | number | boolean;
 export type Properties = { [key: string]: PropertyValue };
 
-// TODO subtyping: Block, NetworkBlock, NormalBlock
-export type Block = {
+export type Block = NormalBlock | NetworkBlock | IOBlock;
+
+export interface BaseBlock {
   id: string;
   name: string;
   type: BlockType;
   position: Position;
+}
 
-  // Network
-  initVariables?: string;
-  refNetwork?: string;
+export interface IOBlock extends BaseBlock {
+  type: BlockType.In | BlockType.Out;
+  initVariables: string;
+}
 
-  // Normal
-  repeats?: number;
-  parameters?: Properties;
-};
+export interface NetworkBlock extends BaseBlock {
+  type: BlockType.Network;
+  refNetwork: string;
+  parameters: Properties;
+}
+
+export interface NormalBlock extends BaseBlock {
+  type: BlockType.Conv2d | BlockType.BatchNorm2d | BlockType.ReLU | BlockType.MaxPool2d;
+  repeats: number;
+  parameters: Properties;
+}
 
 export type Link = {
   id: string;
@@ -58,11 +67,9 @@ export type DiagramInfo = {
   selectedBlockID?: string;
 };
 
-// TODO: Rename Model to Network
-export type Model = {
+export type Network = {
   id: string;
   name: string;
-  type: DiagramType;
   dependencies: { [id: string]: Dependency };
   blocks: { [id: string]: Block };
   links: { [id: string]: Link };
@@ -71,7 +78,7 @@ export type Model = {
 export type Project = {
   id: string;
   name: string;
-  models: { [modelID: string]: Model };
+  networks: { [networkID: string]: Network };
 };
 
 export type ProjectInfo = {
@@ -80,39 +87,38 @@ export type ProjectInfo = {
 };
 
 export type LocalState = {
-  diagramInfos: { [modelID: string]: DiagramInfo };
+  diagramInfos: { [networkID: string]: DiagramInfo };
   projectInfos: { [projectID: string]: ProjectInfo };
-  selectedModelID?: string;
+  selectedNetworkID?: string;
 };
 
 export type PeerInfo = {
   color: string;
   image: string;
   username: string;
-  selectedModelID?: string;
+  selectedNetworkID?: string;
   cursor: Position;
 };
 
 export type AppState = {
   local: LocalState;
   peers: { [docID: string]: { [peerID: string]: PeerInfo } };
-  repaintCounter: number; // TODO: repainting with mutable.
+  repaintCounter: number;
   peersRepaintCounter: number;
   client?: any; // TODO: compatibility issue with immer and Yorkie
   remote?: any; // TODO: compatibility issue with immer and Yorkie
 };
 
-export const EmptyModel = {
+export const EmptyNetwork = {
   id: '',
   name: '',
-  type: DiagramType.Main,
   diagramInfo: {},
   dependencies: {},
   blocks: {},
   links: {},
 };
 
-type EntityType = 'model';
+type EntityType = 'network';
 type ActionType = 'create' | 'delete';
 
 export type EventDesc = {

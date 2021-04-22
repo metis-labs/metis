@@ -1,4 +1,4 @@
-import { Block, BlockType, Dependency, DiagramType, Link, Project } from 'store/types';
+import { Block, BlockType, Dependency, Link, Project } from 'store/types';
 
 const dependencies: { [id: string]: Dependency } = {
   torch: {
@@ -18,12 +18,14 @@ const resnetBlocks: { [id: string]: Block } = {
     name: 'resnet_in',
     type: BlockType.In,
     position: { x: 100, y: 100 },
+    initVariables: '',
   },
   resnet_out: {
     id: 'resnet_out',
     name: 'resnet_out',
     type: BlockType.Out,
     position: { x: 100, y: 700 },
+    initVariables: '',
   },
   conv_1: {
     id: 'conv_1',
@@ -143,11 +145,10 @@ const resnetLinks: { [id: string]: Link } = {
 const resnetProject: Project = {
   id: 'resnetProject',
   name: 'ResNet',
-  models: {
+  networks: {
     resnet: {
       id: 'resnet',
       name: 'resnet',
-      type: DiagramType.Module,
       dependencies,
       blocks: resnetBlocks,
       links: resnetLinks,

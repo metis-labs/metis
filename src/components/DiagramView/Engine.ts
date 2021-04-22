@@ -1,6 +1,6 @@
 import createEngine, { DiagramEngine, DiagramModel } from '@projectstorm/react-diagrams';
 
-import { Model, EmptyModel, DiagramInfo } from 'store/types';
+import { EmptyNetwork, Network, DiagramInfo, BlockType } from 'store/types';
 import MetisNodeModel from 'components/DiagramView/MetisNodeModel';
 import MetisNodeFactory from 'components/DiagramView/MetisNodeFactory';
 import MetisLinkFactory from './MetisLinkFactory';
@@ -9,7 +9,7 @@ import MetisLinkModel from './MetisLinkModel';
 export default class Engine {
   private engine: DiagramEngine;
 
-  private previousModel: Model;
+  private previousNetwork: Network;
 
   constructor() {
     this.engine = createEngine();
@@ -17,10 +17,10 @@ export default class Engine {
     this.engine.getNodeFactories().registerFactory(new MetisNodeFactory());
     this.engine.getLinkFactories().registerFactory(new MetisLinkFactory());
     this.engine.setModel(new DiagramModel());
-    this.previousModel = EmptyModel;
+    this.previousNetwork = EmptyNetwork;
   }
 
-  update(model: Model, diagramInfo: DiagramInfo) {
+  update(network: Network, diagramInfo: DiagramInfo) {
     // TODO(youngteac.hong): If we got performance issues, we need to compare more strictly.
     const diagramModel = new DiagramModel();
     const nodes = [];
@@ -33,12 +33,18 @@ export default class Engine {
       diagramModel.setZoomLevel(diagramInfo.zoom);
     }
 
-    for (const [, block] of Object.entries(model.blocks)) {
+    for (const [, block] of Object.entries(network.blocks)) {
+      let repeats = 0;
+      if (block.type !== BlockType.Network && block.type !== BlockType.In && block.type !== BlockType.Out) {
+        // @ts-ignore
+        repeats = block.repeats;
+      }
+
       const node = new MetisNodeModel({
         blockType: block.type,
         name: block.name,
         blockID: block.id,
-        repeats: block.repeats,
+        repeats,
       });
       node.setPosition(block.position.x, block.position.y);
       nodes.push(node);
@@ -48,7 +54,7 @@ export default class Engine {
 
     const links: Array<MetisLinkModel> = [];
 
-    for (const [, link] of Object.entries(model.links)) {
+    for (const [, link] of Object.entries(network.links)) {
       if (!nodeInfoMap[link.from] || !nodeInfoMap[link.to]) {
         continue;
       }
@@ -62,7 +68,7 @@ export default class Engine {
 
     diagramModel.addAll(...nodes, ...links);
     this.engine.setModel(diagramModel);
-    this.previousModel = model;
+    this.previousNetwork = network;
   }
 
   public getEngine(): DiagramEngine {

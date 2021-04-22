@@ -6,8 +6,8 @@ import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 import TreeView from '@material-ui/lab/TreeView';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
-import { Model, PeerInfo, encodeEventDesc } from 'store/types';
-import { createModel } from 'store/initialProject';
+import { Network, PeerInfo, encodeEventDesc } from 'store/types';
+import { createNetwork } from 'store/initialProject';
 import { useAppState } from 'App';
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 
@@ -81,7 +81,7 @@ export default function FileTreeBar() {
   const classes = useStyles();
   const [appState, updateAppState] = useAppState();
   const project = appState.remote.getRoot().project!;
-  const { selectedModelID } = appState.local;
+  const { selectedNetworkID } = appState.local;
   const clientID = appState.client.getID();
   const [expanded, setExpanded] = useState<string[]>([]);
 
@@ -94,43 +94,43 @@ export default function FileTreeBar() {
   }, []);
 
   const handleNodeSelect = useCallback(
-    (event: ChangeEvent, modelID: any) => {
+    (event: ChangeEvent, networkID: any) => {
       updateAppState((appState) => {
         const { project } = appState.remote.getRoot();
-        if (project.models[modelID]) {
-          appState.local.selectedModelID = modelID;
+        if (project.networks[networkID]) {
+          appState.local.selectedNetworkID = networkID;
         }
         return appState;
       });
 
       appState.remote.update((root) => {
-        root.peers[clientID].selectedModelID = modelID;
+        root.peers[clientID].selectedNetworkID = networkID;
       });
     },
     [appState.remote, updateAppState, clientID],
   );
 
-  const handleAddModel = useCallback(() => {
-    const model = createModel('Untitled');
+  const handleAddNetwork = useCallback(() => {
+    const network = createNetwork('Untitled');
     appState.remote.update(
       (root) => {
-        root.project.models[model.id] = model;
+        root.project.networks[network.id] = network;
       },
       encodeEventDesc({
-        id: model.id,
-        entityType: 'model',
+        id: network.id,
+        entityType: 'network',
         actionType: 'create',
       }),
     );
 
     appState.remote.update((root) => {
-      root.peers[clientID].selectedModelID = model.id;
+      root.peers[clientID].selectedNetworkID = network.id;
     });
   }, [appState.remote, clientID]);
 
   // TODO(youngteac.hong): Replace below with type parameter.
-  const models = Object.values(project.models) as Array<Model>;
-  const peersMapByModelID: { [modelID: string]: Array<PeerInfo> } = {};
+  const networks = Object.values(project.networks) as Array<Network>;
+  const peersMapByNetworkID: { [networkID: string]: Array<PeerInfo> } = {};
   const docKey = appState.remote.getKey().toIDString();
   for (const [peerID, peer] of Object.entries(appState.peers[docKey] || {})) {
     const peerInRemote = appState.remote.getRoot().peers[peerID];
@@ -138,24 +138,24 @@ export default function FileTreeBar() {
       continue;
     }
 
-    const { selectedModelID } = peerInRemote;
-    if (!peersMapByModelID[selectedModelID]) {
-      peersMapByModelID[selectedModelID] = [];
+    const { selectedNetworkID } = peerInRemote;
+    if (!peersMapByNetworkID[selectedNetworkID]) {
+      peersMapByNetworkID[selectedNetworkID] = [];
     }
-    peersMapByModelID[selectedModelID].push(peer);
+    peersMapByNetworkID[selectedNetworkID].push(peer);
   }
 
   return (
     <Drawer className={classes.drawer} variant="permanent" classes={{ paper: classes.drawerPaper }}>
       <Toolbar />
       <div className={classes.toolbar}>
-        <IconButton className={classes.addModelButton} onClick={handleAddModel}>
+        <IconButton className={classes.addModelButton} onClick={handleAddNetwork}>
           <AddIcon fontSize="small" />
         </IconButton>
       </div>
       <TreeView
         className={classes.root}
-        selected={[selectedModelID]}
+        selected={[selectedNetworkID]}
         expanded={expanded}
         defaultCollapseIcon={<MinusSquare />}
         defaultExpandIcon={<PlusSquare />}
@@ -164,10 +164,10 @@ export default function FileTreeBar() {
         onNodeSelect={handleNodeSelect}
       >
         <StyledTreeItem nodeId={project.id} label={project.name}>
-          {models
+          {networks
             .sort((a, b) => a.name.localeCompare(b.name))
-            .map((model) => (
-              <FileTreeItem key={model.id} model={model} peers={peersMapByModelID[model.id]} />
+            .map((network) => (
+              <FileTreeItem key={network.id} network={network} peers={peersMapByNetworkID[network.id]} />
             ))}
         </StyledTreeItem>
       </TreeView>

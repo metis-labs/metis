@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Block, BlockType, Dependency, DiagramType, Link, Model, Project } from './types';
+import { Block, BlockType, Dependency, Link, Network, Project } from './types';
 
 const dependencies: { [id: string]: Dependency } = {
   torch: {
@@ -19,32 +19,32 @@ const blocks: { [id: string]: Block } = {
     name: 'in',
     type: BlockType.In,
     position: { x: 100, y: 100 },
+    initVariables: '',
   },
   out: {
     id: 'out',
     name: 'out',
     type: BlockType.Out,
     position: { x: 100, y: 200 },
+    initVariables: '',
   },
 };
 
 const links: { [id: string]: Link } = {};
 
-const initialModel = {
-  id: 'model',
-  name: 'model',
-  type: DiagramType.Main,
+const initialNetwork = {
+  id: 'network',
+  name: 'network',
   diagramInfo: {},
   dependencies,
   blocks,
   links,
-} as Model;
+} as Network;
 
-export function createModel(name: string) {
+export function createNetwork(name: string) {
   return {
     id: uuidv4(),
     name,
-    type: DiagramType.Main,
     diagramInfo: {},
     dependencies,
     blocks,
@@ -55,8 +55,8 @@ export function createModel(name: string) {
 const initialProject: Project = {
   id: 'initial',
   name: 'untitled',
-  models: {
-    model: initialModel,
+  networks: {
+    network: initialNetwork,
   },
 };
 
