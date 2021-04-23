@@ -1,17 +1,25 @@
-import { Block, NormalBlock, IOBlock, BlockType, Network, EmptyNetwork, Properties } from '../store/types';
+import {
+  Block,
+  NormalBlock,
+  IOBlock,
+  BlockType,
+  Network,
+  EmptyNetwork,
+  Properties,
+  NetworkBlock,
+} from '../store/types';
 import operatorMetaInfos from './pytorch-metadata.json';
 
 export function printOptionValue(value: any): string {
-  if (value === true) {
+  if (value === 'true' || value === 'True') {
     return 'True';
   }
-  if (value === false) {
+  if (value === 'false' || value === 'False') {
     return 'False';
   }
   if (typeof value === 'string') {
-    return `"${value}"`;
+    return `${value}`;
   }
-
   return JSON.stringify(value);
 }
 
@@ -121,26 +129,32 @@ export default class InitConverter {
         this.resultInit += this.indentSize;
       }
       this.resultInit += `self.${blocks[blockId].name} = nn.${blocks[blockId].type}(`;
-      this.updateOption(blocks[blockId] as NormalBlock);
+      this.updateOption(blocks[blockId] as Block);
       this.resultInit += `) \n`;
     }
   }
 
-  updateOption(block: NormalBlock): void {
-    const idx = operatorMetaInfos.findIndex((metaInfo) => metaInfo.abbrev === block.type);
+  updateOption(block: Block): void {
     const options = [];
-
-    for (const attr of operatorMetaInfos[idx].schema.attributes) {
-      const camlAttr = attr.name.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
-      const attrValue = block.parameters[camlAttr];
-      // TODO: Need convert function to validate equality between default-value and assigned-value
-      if (attr.default === attrValue) {
-        continue;
-      }
-      if (attr.visible !== false) {
-        options.push(`${attr.name}=${printOptionValue(attrValue)}`);
-      } else {
+    if (block.type === 'Network') {
+      const blockType = block as NetworkBlock;
+      for (const attrValue of Object.values(blockType.parameters)) {
         options.push(`${printOptionValue(attrValue)}`);
+      }
+    } else {
+      const blockType = block as NormalBlock;
+      const idx = operatorMetaInfos.findIndex((metaInfo) => metaInfo.abbrev === blockType.type);
+      for (const attr of operatorMetaInfos[idx].schema.attributes) {
+        const attrValue = blockType.parameters[attr.name];
+        // TODO: Need convert function to validate equality between default-value and assigned-value
+        if (attr.default === attrValue) {
+          continue;
+        }
+        if (attr.visible !== false) {
+          options.push(`${attr.name}=${printOptionValue(attrValue)}`);
+        } else {
+          options.push(`${printOptionValue(attrValue)}`);
+        }
       }
     }
     this.resultInit += options.join(', ');
