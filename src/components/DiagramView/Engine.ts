@@ -1,6 +1,6 @@
 import createEngine, { DiagramEngine, DiagramModel } from '@projectstorm/react-diagrams';
 
-import { EmptyNetwork, Network, DiagramInfo, isIOBlockType } from 'store/types';
+import { EmptyNetwork, Network, DiagramInfo, isIOBlockType, BlockType } from 'store/types';
 import MetisNodeModel from 'components/DiagramView/MetisNodeModel';
 import MetisNodeFactory from 'components/DiagramView/MetisNodeFactory';
 
@@ -21,7 +21,7 @@ export default class Engine {
     this.previousNetwork = EmptyNetwork;
   }
 
-  update(network: Network, diagramInfo: DiagramInfo) {
+  update(network: Network, networks: { [networkID: string]: Network }, diagramInfo: DiagramInfo) {
     // TODO(youngteac.hong): If we got performance issues, we need to compare more strictly.
     const diagramModel = new DiagramModel();
     const nodes = [];
@@ -41,11 +41,17 @@ export default class Engine {
         repeats = block.repeats;
       }
 
+      let refNetworkName = '';
+      if (block.type === BlockType.Network) {
+        refNetworkName = block.refNetwork ? networks[block.refNetwork].name : BlockType.Network;
+      }
+
       const node = new MetisNodeModel({
         blockType: block.type,
         name: block.name,
         blockID: block.id,
         repeats,
+        refNetworkName,
       });
       node.setPosition(block.position.x, block.position.y);
       nodes.push(node);

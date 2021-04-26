@@ -98,30 +98,32 @@ export default function DiagramView() {
   useEffect(() => {
     const { project } = appState.remote.getRoot();
     const diagramInfo = appState.local.diagramInfos[selectedNetworkID];
-    const model = project.networks[selectedNetworkID];
-    engine.update(model, diagramInfo);
+    const network = project.networks[selectedNetworkID];
+    engine.update(network, project.networks, diagramInfo);
 
     const deregister = engine.registerListener((event: any, entity: any) => {
       if (entity instanceof MetisNodeModel) {
         if (event.function === 'positionChanged' || event.function === 'selectionChanged') {
           // eslint-disable-next-line
-          setChangeEvents((events) => Object.assign({}, events, {
-            [entity.getBlockID()]: {
-              funcName: event.function,
-              blockID: entity.getBlockID(),
-              position: event.entity.position,
-            }
-          }));
+          setChangeEvents((events) =>
+            Object.assign(events, {
+              [entity.getBlockID()]: {
+                funcName: event.function,
+                blockID: entity.getBlockID(),
+                position: event.entity.position,
+              },
+            }),
+          );
         } else if (event.function === 'entityRemoved') {
           appState.remote.update((root) => {
-            const model = root.project.networks[selectedNetworkID];
-            delete model.blocks[entity.getBlockID()];
+            const network = root.project.networks[selectedNetworkID];
+            delete network.blocks[entity.getBlockID()];
           });
         }
       } else if (entity instanceof MetisLinkModel) {
         if (event.function === 'targetPortChanged') {
           appState.remote.update((root) => {
-            const model = root.project.networks[selectedNetworkID];
+            const network = root.project.networks[selectedNetworkID];
             let from;
             let to;
             if (event.entity.sourcePort.getName() === 'in') {
@@ -134,7 +136,7 @@ export default function DiagramView() {
               return;
             }
 
-            model.links[entity.getID()] = {
+            network.links[entity.getID()] = {
               id: entity.getID(),
               from: from.getBlockID() as string,
               to: to.getBlockID() as string,
@@ -142,11 +144,11 @@ export default function DiagramView() {
           });
         } else if (event.function === 'entityRemoved') {
           appState.remote.update((root) => {
-            const model = root.project.networks[selectedNetworkID];
+            const network = root.project.networks[selectedNetworkID];
             // NOTE: If users don't complete the link, it won't store in remote.
             // So we only delete the link if it exists in remote.
-            if (model.links[entity.getLinkID()]) {
-              delete model.links[entity.getLinkID()];
+            if (network.links[entity.getLinkID()]) {
+              delete network.links[entity.getLinkID()];
             }
           });
         }
@@ -168,14 +170,7 @@ export default function DiagramView() {
       }
     });
     return () => deregister();
-  }, [
-    engine,
-    appState.remote,
-    repaintCounter,
-    selectedNetworkID,
-    updateAppState,
-    setChangeEvents,
-  ]);
+  }, [engine, appState.remote, repaintCounter, selectedNetworkID, updateAppState, setChangeEvents]);
 
   const remotePeers = appState.remote.getRoot().peers;
   const myClientID = appState.client.getID();

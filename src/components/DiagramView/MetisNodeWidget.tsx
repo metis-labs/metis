@@ -32,7 +32,9 @@ export class MetisNodeWidget extends React.Component<MetisNodeWidgetProps, Metis
             backgroundColor: colorMap[node.getBlockType()],
           }}
         >
-          <div className="metis-node-type">{node.getBlockType()}</div>
+          <div className="metis-node-type">
+            {node.getBlockType() === BlockType.Network ? node.getRefNetworkName() : node.getBlockType()}
+          </div>
           <div className="metis-node-name">{node.getName()}</div>
           {node.getRepeats() > 1 && <div className="metis-node-repeats">x{node.getRepeats()}</div>}
         </div>

@@ -9,6 +9,7 @@ export interface MetisNodeModelOptions extends BaseModelOptions {
   blockType: BlockType;
   name: string;
   repeats: number;
+  refNetworkName: string;
 }
 
 export default class MetisNodeModel extends NodeModel {
@@ -19,6 +20,8 @@ export default class MetisNodeModel extends NodeModel {
   private name: string;
 
   private readonly repeats: number;
+
+  private readonly refNetworkName?: string;
 
   private readonly inPort?: MetisPortModel;
 
@@ -33,6 +36,7 @@ export default class MetisNodeModel extends NodeModel {
     this.blockType = options.blockType;
     this.name = options.name;
     this.repeats = options.repeats;
+    this.refNetworkName = options.refNetworkName;
 
     if (this.blockType !== BlockType.In) {
       this.inPort = new MetisPortModel({
@@ -89,5 +93,9 @@ export default class MetisNodeModel extends NodeModel {
 
   getRepeats() {
     return this.repeats;
+  }
+
+  getRefNetworkName() {
+    return this.refNetworkName;
   }
 }
