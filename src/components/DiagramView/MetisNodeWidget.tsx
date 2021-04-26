@@ -5,6 +5,7 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 import MetisNodeModel from 'components/DiagramView/MetisNodeModel';
 import { BlockType } from 'store/types';
+import colorMap from 'store/colorMap';
 
 export interface MetisNodeWidgetProps {
   node: MetisNodeModel;
@@ -24,12 +25,16 @@ export class MetisNodeWidget extends React.Component<MetisNodeWidgetProps, Metis
 
     return (
       <div>
-        <div className={node.getOptions().selected ? 'metis-node selected' : 'metis-node'}>
+        <div
+          className={node.getOptions().selected ? 'metis-node selected' : 'metis-node'}
+          style={{
+            color: 'white',
+            backgroundColor: colorMap[node.getBlockType()],
+          }}
+        >
           <div className="metis-node-type">{node.getBlockType()}</div>
           <div className="metis-node-name">{node.getName()}</div>
-          {
-            node.getRepeats() > 1 && <div className="metis-node-repeats">x{node.getRepeats()}</div>
-          }
+          {node.getRepeats() > 1 && <div className="metis-node-repeats">x{node.getRepeats()}</div>}
         </div>
         {node.getBlockType() !== BlockType.In && (
           <PortWidget className="metis-node-port-in" engine={engine} port={node.getInPort()}>
