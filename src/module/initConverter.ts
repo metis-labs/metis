@@ -50,16 +50,16 @@ export function createParams(type: BlockType): Properties {
 }
 
 // TODO: extract this method
-export function getOrderedAttrNames(type: BlockType): string[] {
+export function getOrderedParamNames(type: BlockType): string[] {
   const operatorMetaInfo = operatorMetaInfos.find((metaInfo) => metaInfo.abbrev === type);
-  const attrNames = [];
+  const paramNames = [];
   if (!operatorMetaInfo || !operatorMetaInfo.schema) {
-    return attrNames;
+    return paramNames;
   }
   for (const attribute of operatorMetaInfo.schema.attributes) {
-    attrNames.push(attribute.name);
+    paramNames.push(attribute.name);
   }
-  return attrNames;
+  return paramNames;
 }
 
 export default class InitConverter {
