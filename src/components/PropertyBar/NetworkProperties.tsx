@@ -47,11 +47,21 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
         const project = root.project as Project;
         const network = project.networks[selectedNetworkID];
 
+        // Update network block
+        const targetNetwork = Object.values(project.networks).find((network) => network.name === networkName);
+        const block = network.blocks[selectedBlockID];
+        if (block.type === BlockType.Network) {
+          block.refNetwork = targetNetwork ? targetNetwork.id : '';
+          block.parameters = targetNetwork ? createNetworkParams(targetNetwork) : {};
+        }
+
         // Update dependencies
         const refNetBlockList = [];
-        Object.values(network.blocks)
-          .filter((block) => block.type === BlockType.Network)
-          .map((block) => refNetBlockList.push(block.name));
+        (Object.values(network.blocks).filter(
+          (block) => block.type === BlockType.Network,
+        ) as NetworkBlock[]).map((block) =>
+          block.refNetwork ? refNetBlockList.push(project.networks[block.refNetwork].name) : '',
+        );
         refNetBlockList.push.apply(refNetBlockList, ['torch', 'torchNN']);
         const notInRefs = Object.keys(network.dependencies).filter((dep) => !refNetBlockList.includes(dep));
         notInRefs.map((notInRef) => delete network.dependencies[notInRef]);
@@ -61,14 +71,6 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
             name: networkName,
             package: networkName,
           };
-        }
-
-        // Update network block
-        const targetNetwork = Object.values(project.networks).find((network) => network.name === networkName);
-        const block = network.blocks[selectedBlockID];
-        if (block.type === BlockType.Network) {
-          block.refNetwork = targetNetwork ? targetNetwork.id : '';
-          block.parameters = targetNetwork ? createNetworkParams(targetNetwork) : {};
         }
       });
     },
