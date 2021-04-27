@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function NetworkProperties(props: {block: NetworkBlock}) {
+export default function NetworkProperties(props: { block: NetworkBlock }) {
   const classes = useStyles();
   const [appState] = useAppState();
   const remoteState = appState.remote.getRoot();
@@ -46,6 +46,18 @@ export default function NetworkProperties(props: {block: NetworkBlock}) {
         const networkName = event.target.value;
         const project = root.project as Project;
         const network = project.networks[selectedNetworkID];
+        const refNetBlockList = [];
+        Object.values(network.blocks)
+          .filter((block) => block.type === BlockType.Network)
+          .map((block) => refNetBlockList.push(block.name));
+        refNetBlockList.push.apply(refNetBlockList, ['torch', 'torchNN']);
+        const notInRefs = Object.keys(network.dependencies).filter((dep) => !refNetBlockList.includes(dep));
+        notInRefs.map((notInRef) => delete network.dependencies[notInRef]);
+        network.dependencies[networkName] = {
+          id: networkName,
+          name: networkName,
+          package: networkName,
+        };
         const targetNetwork = Object.values(project.networks).find((network) => network.name === networkName);
         const block = network.blocks[selectedBlockID];
         if (block.type === BlockType.Network) {
@@ -95,9 +107,13 @@ export default function NetworkProperties(props: {block: NetworkBlock}) {
           value={refNetwork ? refNetwork.name : ''}
           onChange={onRefNetworkChange}
         >
-          <MenuItem value=""><em>None</em></MenuItem>
+          <MenuItem value="">
+            <em>None</em>
+          </MenuItem>
           {otherNetworks.map((network) => (
-            <MenuItem key={network.name} value={network.name}>{network.name}</MenuItem>
+            <MenuItem key={network.name} value={network.name}>
+              {network.name}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>
