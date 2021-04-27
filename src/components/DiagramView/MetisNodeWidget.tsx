@@ -24,7 +24,7 @@ export class MetisNodeWidget extends React.Component<MetisNodeWidgetProps, Metis
     const { node, engine } = this.props;
 
     return (
-      <div>
+      <div onDoubleClick={() => node.handleDoubleClick()}>
         <div
           className={node.getOptions().selected ? 'metis-node selected' : 'metis-node'}
           style={{

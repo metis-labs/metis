@@ -115,13 +115,9 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
           value={refNetwork ? refNetwork.name : ''}
           onChange={onRefNetworkChange}
         >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
+          <MenuItem key="none" value=""><em>None</em></MenuItem>
           {otherNetworks.map((network) => (
-            <MenuItem key={network.name} value={network.name}>
-              {network.name}
-            </MenuItem>
+            <MenuItem key={network.id} value={network.name}>{network.name}</MenuItem>
           ))}
         </Select>
       </FormControl>

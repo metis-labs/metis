@@ -98,4 +98,15 @@ export default class MetisNodeModel extends NodeModel {
   getRefNetworkName() {
     return this.refNetworkName;
   }
+
+  handleDoubleClick() {
+    this.iterateListeners((listener: any) => {
+      if (listener.doubleClicked) {
+        listener.doubleClicked({
+          function: 'doubleClicked',
+          entity: this
+        });
+      }
+    });
+  }
 }

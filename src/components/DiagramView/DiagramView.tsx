@@ -5,8 +5,9 @@ import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DiagramModel } from '@projectstorm/react-diagrams';
 
 import Engine from 'components/DiagramView/Engine';
-import { Position } from 'store/types';
+import { Position, BlockType } from 'store/types';
 import { useAppState } from 'App';
+
 import MetisNodeModel from './MetisNodeModel';
 import MetisLinkModel from './MetisLinkModel';
 
@@ -118,6 +119,24 @@ export default function DiagramView() {
           appState.remote.update((root) => {
             const network = root.project.networks[selectedNetworkID];
             delete network.blocks[entity.getBlockID()];
+          });
+        } else if (event.function === 'doubleClicked') {
+          const network = project.networks[selectedNetworkID];
+          const block = network.blocks[entity.getBlockID()];
+          if (block.type !== BlockType.Network) {
+            return;
+          }
+          const networkID = block.refNetwork;
+          updateAppState((appState) => {
+            const { project } = appState.remote.getRoot();
+            if (project.networks[networkID]) {
+              appState.local.selectedNetworkID = networkID;
+            }
+            return appState;
+          });
+
+          appState.remote.update((root) => {
+            root.peers[clientID].selectedNetworkID = networkID;
           });
         }
       } else if (entity instanceof MetisLinkModel) {

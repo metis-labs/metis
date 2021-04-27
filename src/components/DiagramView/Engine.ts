@@ -89,6 +89,9 @@ export default class Engine {
       eventDidFire: (event: any) => {
         listener(event, event.entity);
       },
+      doubleClicked: (event: any) => {
+        listener(event, event.entity);
+      },
     };
 
     const handle = this.engine.getModel().registerListener({

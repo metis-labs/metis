@@ -23,7 +23,7 @@ import {
 import { useAppState } from 'App';
 import { createParams } from 'module/initConverter';
 
-import { valueTransition } from './utils';
+import { valueTransition, preserveCaret, stopPropagationOnKeydown } from './utils';
 import IOProperties from './IOProperties';
 import NetworkProperties from './NetworkProperties';
 import NormalProperties from './NormalProperties';
@@ -51,19 +51,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   }),
 );
-
-function preserveCaret(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-  const caret = event.target.selectionStart;
-  const element = event.target;
-  window.requestAnimationFrame(() => {
-    element.selectionStart = caret;
-    element.selectionEnd = caret;
-  });
-}
-
-function handleKeyDown(event: any) {
-  event.nativeEvent.stopImmediatePropagation();
-}
 
 export default function PropertyBar() {
   const classes = useStyles();
@@ -136,7 +123,7 @@ export default function PropertyBar() {
             label="Instance name"
             value={selectedBlock.name}
             onChange={(event) => handlePropertyChange(event, 'name')}
-            onKeyDown={handleKeyDown}
+            onKeyDown={stopPropagationOnKeydown}
           />
         </FormControl>
         {isNetworkBlockType(selectedBlock.type) && <NetworkProperties block={selectedBlock as NetworkBlock} />}
