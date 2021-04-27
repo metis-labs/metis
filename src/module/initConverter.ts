@@ -7,6 +7,7 @@ import {
   EmptyNetwork,
   Properties,
   NetworkBlock,
+  Project,
 } from '../store/types';
 import operatorMetaInfos from './pytorch-metadata.json';
 
@@ -122,13 +123,18 @@ export default class InitConverter {
     this.resultInit += `super(${network.name}, self).__init__()\n`;
   }
 
-  updateInitBody(blocks: { [id: string]: Block }): void {
+  updateInitBody(project: Project, blocks: { [id: string]: Block }): void {
     this.resultInit += `\n`;
     for (const blockId of this.bodyBlockList) {
       for (let i = 0; i < this.indentDepth + 1; i += 1) {
         this.resultInit += this.indentSize;
       }
-      this.resultInit += `self.${blocks[blockId].name} = nn.${blocks[blockId].type}(`;
+      if (blocks[blockId].type === BlockType.Network) {
+        const refBlock = blocks[blockId] as NetworkBlock;
+        this.resultInit += `self.${refBlock.name} = ${project.networks[refBlock.refNetwork].name}(`;
+      } else {
+        this.resultInit += `self.${blocks[blockId].name} = nn.${blocks[blockId].type}(`;
+      }
       this.updateOption(blocks[blockId] as Block);
       this.resultInit += `) \n`;
     }

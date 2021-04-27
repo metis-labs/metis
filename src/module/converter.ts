@@ -1,4 +1,4 @@
-import { EmptyNetwork, Network } from '../store/types';
+import { EmptyNetwork, Network, Project } from '../store/types';
 import ImportConverter from './importConverter';
 import InitConverter from './initConverter';
 import ForwardConverter from './forwardConverter';
@@ -13,7 +13,8 @@ export default class Converter {
     this.codeString = '';
   }
 
-  update(network: Network): void {
+  update(project: Project, selectedNetworkID: string): void {
+    const network = project.networks[selectedNetworkID] as Network;
     if (
       network.dependencies === this.previousNetwork.dependencies &&
       network.blocks === this.previousNetwork.blocks &&
@@ -30,7 +31,7 @@ export default class Converter {
     const initTemplate = new InitConverter();
     initTemplate.orderedBlockList(network.blocks);
     initTemplate.updateInitFront(network);
-    initTemplate.updateInitBody(network.blocks);
+    initTemplate.updateInitBody(project, network.blocks);
 
     const forwardTemplate = new ForwardConverter();
     forwardTemplate.updateForwardFront(network.links, network.blocks);
