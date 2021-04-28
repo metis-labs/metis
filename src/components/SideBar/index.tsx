@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -11,7 +10,7 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import AddIcon from '@material-ui/icons/Add';
 
 import { useAppState } from 'App';
-import { Block, BlockType } from '../../store/types/blocks';
+import { Block, BlockType, createBlock } from 'store/types/blocks';
 
 const drawerWidth = 60;
 
@@ -45,44 +44,8 @@ export default function SideBar() {
         const blockLength = Object.values(network.blocks).filter((block: Block) => block.type === type).length;
         const diagramOffset = appState.local.diagramInfos[selectedNetworkID].offset;
         const position = { x: 200 + 10 * blockLength - diagramOffset.x, y: 200 + 10 * blockLength - diagramOffset.y };
-        const id = uuidv4();
-        switch (type) {
-          case BlockType.In:
-            network.blocks[id] = {
-              id,
-              name: `in_${blockLength + 1}`,
-              type: BlockType.In,
-              position,
-            };
-            break;
-          case BlockType.Out:
-            network.blocks[id] = {
-              id,
-              name: `out_${blockLength + 1}`,
-              type: BlockType.Out,
-              position,
-            };
-            break;
-          default:
-            network.blocks[id] = {
-              id,
-              name: `${BlockType.Conv2d.toLowerCase()}_${blockLength + 1}`,
-              type: BlockType.Conv2d,
-              position,
-              repeats: 1,
-              parameters: {
-                inChannels: ' ',
-                outChannels: ' ',
-                kernelSize: ' ',
-                stride: 1,
-                padding: 0,
-                paddingMode: 'zeros', // categorical
-                dilation: 1,
-                groups: 1,
-                bias: false, // boolean
-              },
-            };
-        }
+        const block = createBlock(type, position, blockLength);
+        network.blocks[block.id] = block;
       });
     },
     [appState.remote, selectedNetworkID, appState.local.diagramInfos],

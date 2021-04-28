@@ -8,7 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import { PeerInfo, Project } from 'store/types';
 import { encodeEventDesc } from 'store/types/events';
-import { createNetwork } from 'store/initialProject';
+import { createNetwork } from 'store/types/networks';
 import { useAppState } from 'App';
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 

@@ -1,5 +1,6 @@
+import { v4 as uuidv4 } from 'uuid';
 import { Position } from './base';
-import { Network } from './networks';
+import { Network, createNetwork } from './networks';
 
 export type Project = {
   id: string;
@@ -46,3 +47,14 @@ export type AppState = {
   // remote: Document<{project: Project}>;
   remote?: any;
 };
+
+export function createProject(name: string): Project {
+  const network = createNetwork(name);
+  return {
+    id: uuidv4(),
+    name,
+    networks: {
+      [network.id]: network,
+    },
+  }
+}

@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { Block, IOBlock, BlockType, Parameters } from './blocks';
 
 export type Link = {
@@ -35,4 +36,39 @@ export function createNetworkParams(network: Network): Parameters {
     }
   }
   return parameters;
+}
+
+export function createNetwork(name: string): Network {
+  return {
+    id: uuidv4(),
+    name,
+    dependencies: {
+      torch: {
+        id: 'torch',
+        name: 'torch',
+      },
+      torchNN: {
+        id: 'torchNN',
+        name: 'torch.nn',
+        alias: 'nn',
+      },
+    },
+    blocks: {
+      in: {
+        id: 'in',
+        name: 'in',
+        type: BlockType.In,
+        position: { x: 100, y: 100 },
+        initVariables: '',
+      },
+      out: {
+        id: 'out',
+        name: 'out',
+        type: BlockType.Out,
+        position: { x: 100, y: 200 },
+        initVariables: '',
+      },
+    },
+    links: {},
+  };
 }
