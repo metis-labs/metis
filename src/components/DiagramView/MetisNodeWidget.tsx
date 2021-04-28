@@ -4,8 +4,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 import MetisNodeModel from 'components/DiagramView/MetisNodeModel';
-import { BlockType } from 'store/types';
-import colorMap from 'store/colorMap';
+import { BlockType, colorMap } from 'store/types/blocks';
 
 export interface MetisNodeWidgetProps {
   node: MetisNodeModel;

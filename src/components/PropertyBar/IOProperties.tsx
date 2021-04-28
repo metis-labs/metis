@@ -3,7 +3,7 @@ import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl/FormControl';
 import TextField from '@material-ui/core/TextField';
 
-import { BlockType, IOBlock } from 'store/types';
+import { BlockType, IOBlock } from 'store/types/blocks';
 import { useAppState } from 'App';
 
 import { valueTransition, preserveCaret, stopPropagationOnKeydown } from './utils';
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function NetworkProperties(props: {block: IOBlock}) {
+export default function NetworkProperties(props: { block: IOBlock }) {
   const classes = useStyles();
   const [appState] = useAppState();
   const { selectedNetworkID } = appState.local;
@@ -31,7 +31,7 @@ export default function NetworkProperties(props: {block: IOBlock}) {
       appState.remote.update((root) => {
         const { project } = root;
         const model = project.networks[selectedNetworkID];
-        model.blocks[selectedBlockID][key] = valueTransition(event.target.value as string);
+        model.blocks[selectedBlockID][key] = valueTransition(event.target.value);
       });
     },
     [appState.remote, selectedBlockID, selectedNetworkID],

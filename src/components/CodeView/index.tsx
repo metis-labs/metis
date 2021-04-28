@@ -3,7 +3,7 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Converter from 'module/converter';
+import Converter from 'converter';
 import { useAppState } from 'App';
 
 const useStyles = makeStyles(() =>
@@ -24,11 +24,12 @@ export default function CodeView() {
   const [codeString, setCodeString] = useState('');
   const project = appState.remote.getRoot().project!;
   const { selectedNetworkID } = appState.local;
+  const { remoteRepaintCounter } = appState;
 
   useEffect(() => {
     converter.update(project, selectedNetworkID);
     setCodeString(converter.getResult());
-  }, [converter, project, selectedNetworkID]);
+  }, [remoteRepaintCounter, appState.remote, setCodeString, selectedNetworkID]);
 
   return (
     <div className={classes.root}>

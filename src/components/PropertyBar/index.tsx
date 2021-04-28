@@ -10,18 +10,18 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import { Project } from 'store/types';
 import {
-  Project,
   BlockType,
   IOBlock,
   NetworkBlock,
   NormalBlock,
+  createParams,
   isIOBlockType,
   isNetworkBlockType,
   isNormalBlockType,
-} from 'store/types';
+} from 'store/types/blocks';
 import { useAppState } from 'App';
-import { createParams } from 'module/initConverter';
 
 import { valueTransition, preserveCaret, stopPropagationOnKeydown } from './utils';
 import IOProperties from './IOProperties';

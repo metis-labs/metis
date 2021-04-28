@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Block, BlockType, Dependency, Link, Network, Project } from './types';
+import { Project } from './types';
+import { Link, Network, Dependency } from './types/networks';
+import { Block, BlockType } from './types/blocks';
 
 const dependencies: { [id: string]: Dependency } = {
   torch: {

@@ -7,9 +7,10 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { Project, BlockType, NetworkBlock } from 'store/types';
+import { Project } from 'store/types';
+import { BlockType, NetworkBlock } from 'store/types/blocks';
+import { createNetworkParams } from 'store/types/networks';
 import { useAppState } from 'App';
-import { createNetworkParams } from 'module/initConverter';
 
 import { valueTransition, preserveCaret, stopPropagationOnKeydown } from './utils';
 
@@ -56,22 +57,22 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
         }
 
         // Update dependencies
-        const refNetBlockList = [];
-        (Object.values(network.blocks).filter(
-          (block) => block.type === BlockType.Network,
-        ) as NetworkBlock[]).map((block) =>
-          block.refNetwork ? refNetBlockList.push(project.networks[block.refNetwork].name) : '',
-        );
-        refNetBlockList.push.apply(refNetBlockList, ['torch', 'torchNN']);
-        const notInRefs = Object.keys(network.dependencies).filter((dep) => !refNetBlockList.includes(dep));
-        notInRefs.map((notInRef) => delete network.dependencies[notInRef]);
-        if (networkName) {
-          network.dependencies[networkName] = {
-            id: networkName,
-            name: networkName,
-            package: networkName,
-          };
-        }
+        // const refNetBlockList = [];
+        // (Object.values(network.blocks).filter(
+        //   (block) => block.type === BlockType.Network,
+        // ) as NetworkBlock[]).map((block) =>
+        //   block.refNetwork ? refNetBlockList.push(project.networks[block.refNetwork].name) : '',
+        // );
+        // refNetBlockList.push.apply(refNetBlockList, ['torch', 'torchNN']);
+        // const notInRefs = Object.keys(network.dependencies).filter((dep) => !refNetBlockList.includes(dep));
+        // notInRefs.map((notInRef) => delete network.dependencies[notInRef]);
+        // if (networkName) {
+        //   network.dependencies[networkName] = {
+        //     id: networkName,
+        //     name: networkName,
+        //     package: networkName,
+        //   };
+        // }
       });
     },
     [appState.remote, selectedBlockID, selectedNetworkID],
@@ -115,9 +116,13 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
           value={refNetwork ? refNetwork.name : ''}
           onChange={onRefNetworkChange}
         >
-          <MenuItem key="none" value=""><em>None</em></MenuItem>
+          <MenuItem key="none" value="">
+            <em>None</em>
+          </MenuItem>
           {otherNetworks.map((network) => (
-            <MenuItem key={network.id} value={network.name}>{network.name}</MenuItem>
+            <MenuItem key={network.id} value={network.name}>
+              {network.name}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>

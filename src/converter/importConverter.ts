@@ -1,36 +1,33 @@
-import { Dependency, EmptyNetwork } from '../store/types';
+import { Dependency } from '../store/types/networks';
 
 export default class ImportConverter {
-  private dependencies: { [id: string]: Dependency };
+  private readonly externalImportIDs: string[];
 
-  private readonly externalImportList: string[];
-
-  private readonly internalImportList: string[];
+  private readonly internalImportIDs: string[];
 
   private result: string;
 
   constructor() {
-    this.dependencies = EmptyNetwork.dependencies;
-    this.externalImportList = [];
-    this.internalImportList = [];
+    this.externalImportIDs = [];
+    this.internalImportIDs = [];
     this.result = '';
   }
 
-  orderedList(dependencies: { [id: string]: Dependency }): void {
-    for (const [, importItem] of Object.entries(dependencies)) {
-      if (importItem.package) {
-        this.internalImportList.push(importItem.id);
+  orderDependencies(dependencies: { [id: string]: Dependency }): void {
+    for (const dependency of Object.values(dependencies)) {
+      if (dependency.package) {
+        this.internalImportIDs.push(dependency.id);
       } else {
-        this.externalImportList.push(importItem.id);
+        this.externalImportIDs.push(dependency.id);
       }
     }
-    this.internalImportList.sort();
-    this.externalImportList.sort();
+    this.internalImportIDs.sort();
+    this.externalImportIDs.sort();
   }
 
   update(dependencies: { [id: string]: Dependency }): void {
-    this.orderedList(dependencies);
-    for (const importItem of this.externalImportList) {
+    this.orderDependencies(dependencies);
+    for (const importItem of this.externalImportIDs) {
       if (dependencies[importItem].package !== undefined) {
         this.result += `from ${dependencies[importItem].package} `;
       }
@@ -40,10 +37,10 @@ export default class ImportConverter {
       }
       this.result += `\n`;
     }
-    if (this.internalImportList) {
+    if (this.internalImportIDs) {
       this.result += `\n`;
     }
-    for (const importItem of this.internalImportList) {
+    for (const importItem of this.internalImportIDs) {
       if (dependencies[importItem].package !== undefined) {
         this.result += `from ${dependencies[importItem].package} `;
       }
