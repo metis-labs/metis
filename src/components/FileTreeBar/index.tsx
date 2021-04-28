@@ -6,8 +6,7 @@ import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 import TreeView from '@material-ui/lab/TreeView';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
-import { PeerInfo } from 'store/types';
-import { Network } from 'store/types/networks';
+import { PeerInfo, Project } from 'store/types';
 import { encodeEventDesc } from 'store/types/events';
 import { createNetwork } from 'store/initialProject';
 import { useAppState } from 'App';
@@ -82,7 +81,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function FileTreeBar() {
   const classes = useStyles();
   const [appState, updateAppState] = useAppState();
-  const project = appState.remote.getRoot().project!;
+  const project = appState.remote.getRoot().project! as Project;
   const { selectedNetworkID } = appState.local;
   const clientID = appState.client.getID();
   const [expanded, setExpanded] = useState<string[]>([]);
@@ -131,7 +130,6 @@ export default function FileTreeBar() {
   }, [appState.remote, clientID]);
 
   // TODO(youngteac.hong): Replace below with type parameter.
-  const networks = Object.values(project.networks) as Array<Network>;
   const peersMapByNetworkID: { [networkID: string]: Array<PeerInfo> } = {};
   const docKey = appState.remote.getKey().toIDString();
   for (const [peerID, peer] of Object.entries(appState.peers[docKey] || {})) {
@@ -166,7 +164,7 @@ export default function FileTreeBar() {
         onNodeSelect={handleNodeSelect}
       >
         <StyledTreeItem nodeId={project.id} label={project.name}>
-          {networks
+          {Object.values(project.networks)
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((network) => (
               <FileTreeItem key={network.id} network={network} peers={peersMapByNetworkID[network.id]} />

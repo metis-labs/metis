@@ -4,9 +4,8 @@ import FormControl from '@material-ui/core/FormControl/FormControl';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { NormalBlock } from 'store/types/blocks';
+import { NormalBlock, getOrderedParamNames } from 'store/types/blocks';
 import { useAppState } from 'App';
-import { getOrderedParamNames } from 'module/initConverter';
 
 import { valueTransition, preserveCaret, stopPropagationOnKeydown } from './utils';
 
@@ -26,7 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function NetworkProperties(props: {block: NormalBlock}) {
+export default function NetworkProperties(props: { block: NormalBlock }) {
   const classes = useStyles();
   const [appState] = useAppState();
   const { selectedNetworkID } = appState.local;

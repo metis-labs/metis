@@ -1,59 +1,9 @@
-import { Block, NormalBlock, IOBlock, BlockType, Parameters } from '../store/types/blocks';
-import { Network, EmptyNetwork } from '../store/types/networks';
-import { Project } from '../store/types';
+import { Block, NormalBlock, IOBlock, BlockType } from 'store/types/blocks';
+import { Network } from 'store/types/networks';
+import { Project } from 'store/types';
+
+import printParamValue from './parameterConverter';
 import operatorMetaInfos from './pytorch-metadata.json';
-
-export function printOptionValue(value: any): string {
-  if (value === 'true' || value === 'True') {
-    return 'True';
-  }
-  if (value === 'false' || value === 'False') {
-    return 'False';
-  }
-  if (typeof value === 'string') {
-    return `${value}`;
-  }
-  return JSON.stringify(value);
-}
-
-export function createNetworkParams(network: Network): Parameters {
-  const parameters = {};
-  for (const block of Object.values(network.blocks)) {
-    if (block.type === BlockType.In) {
-      const ioBlock = block as IOBlock;
-      if (!ioBlock.initVariables) {
-        continue;
-      }
-      for (const variable of ioBlock.initVariables.split(',')) {
-        parameters[variable] = '';
-      }
-    }
-  }
-  return parameters;
-}
-
-// TODO: extract this method
-export function createParams(type: BlockType): Parameters {
-  const parameters = {};
-  const meta = operatorMetaInfos.find((meta) => meta.abbrev === type);
-  for (const parameter of meta.schema.attributes) {
-    parameters[parameter.name] = printOptionValue(parameter.default);
-  }
-  return parameters;
-}
-
-// TODO: extract this method
-export function getOrderedParamNames(type: BlockType): string[] {
-  const operatorMetaInfo = operatorMetaInfos.find((metaInfo) => metaInfo.abbrev === type);
-  const paramNames = [];
-  if (!operatorMetaInfo || !operatorMetaInfo.schema) {
-    return paramNames;
-  }
-  for (const parameter of operatorMetaInfo.schema.attributes) {
-    paramNames.push(parameter.name);
-  }
-  return paramNames;
-}
 
 export default class InitConverter {
   private blocks: { [id: string]: Block };
@@ -70,20 +20,17 @@ export default class InitConverter {
 
   private readonly indentDepth: number;
 
-  private options: string;
-
   constructor() {
-    this.blocks = EmptyNetwork.blocks;
+    this.blocks = {};
     this.bodyBlockIDs = [];
     this.inBlockIDs = [];
     this.outBlockIDs = [];
     this.result = `\n\n`;
     this.indentSize = `    `;
     this.indentDepth = 1;
-    this.options = '';
   }
 
-  orderedBlockList(blocks: { [id: string]: Block }): void {
+  orderBlocks(blocks: { [id: string]: Block }): void {
     for (const [, blockItem] of Object.entries(blocks)) {
       if (blockItem.type === BlockType.In) {
         this.inBlockIDs.push(blockItem.id);
@@ -95,7 +42,7 @@ export default class InitConverter {
     }
   }
 
-  updateInitFront(network: Network): void {
+  updateSignature(network: Network): void {
     this.result = `\n\n`;
     this.result += `class ${network.name}(nn.Module):\n`;
     this.result += this.indentSize;
@@ -115,7 +62,7 @@ export default class InitConverter {
     this.result += `super(${network.name}, self).__init__()\n`;
   }
 
-  updateInitBody(project: Project, blocks: { [id: string]: Block }): void {
+  updateBody(project: Project, blocks: { [id: string]: Block }): void {
     this.result += `\n`;
     for (const blockID of this.bodyBlockIDs) {
       for (let i = 0; i < this.indentDepth + 1; i += 1) {
@@ -136,7 +83,7 @@ export default class InitConverter {
     const options = [];
     if (block.type === BlockType.Network) {
       for (const paramValue of Object.values(block.parameters)) {
-        options.push(`${printOptionValue(paramValue)}`);
+        options.push(`${printParamValue(paramValue)}`);
       }
     } else {
       const normalBlock = block as NormalBlock;
@@ -148,9 +95,9 @@ export default class InitConverter {
           continue;
         }
         if (parameter.visible !== false) {
-          options.push(`${parameter.name}=${printOptionValue(paramValue)}`);
+          options.push(`${parameter.name}=${printParamValue(paramValue)}`);
         } else {
-          options.push(`${printOptionValue(paramValue)}`);
+          options.push(`${printParamValue(paramValue)}`);
         }
       }
     }

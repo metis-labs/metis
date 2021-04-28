@@ -1,4 +1,4 @@
-import { Block } from './blocks';
+import { Block, IOBlock, BlockType, Parameters } from './blocks';
 
 export type Link = {
   id: string;
@@ -21,11 +21,18 @@ export type Network = {
   links: { [id: string]: Link };
 };
 
-export const EmptyNetwork = {
-  id: '',
-  name: '',
-  diagramInfo: {},
-  dependencies: {},
-  blocks: {},
-  links: {},
-};
+export function createNetworkParams(network: Network): Parameters {
+  const parameters = {};
+  for (const block of Object.values(network.blocks)) {
+    if (block.type === BlockType.In) {
+      const ioBlock = block as IOBlock;
+      if (!ioBlock.initVariables) {
+        continue;
+      }
+      for (const variable of ioBlock.initVariables.split(',')) {
+        parameters[variable] = '';
+      }
+    }
+  }
+  return parameters;
+}

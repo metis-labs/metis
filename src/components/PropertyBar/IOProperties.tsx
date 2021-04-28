@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function NetworkProperties(props: {block: IOBlock}) {
+export default function NetworkProperties(props: { block: IOBlock }) {
   const classes = useStyles();
   const [appState] = useAppState();
   const { selectedNetworkID } = appState.local;
@@ -31,7 +31,7 @@ export default function NetworkProperties(props: {block: IOBlock}) {
       appState.remote.update((root) => {
         const { project } = root;
         const model = project.networks[selectedNetworkID];
-        model.blocks[selectedBlockID][key] = valueTransition(event.target.value as string);
+        model.blocks[selectedBlockID][key] = valueTransition(event.target.value);
       });
     },
     [appState.remote, selectedBlockID, selectedNetworkID],

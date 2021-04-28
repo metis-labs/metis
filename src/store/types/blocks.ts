@@ -1,4 +1,30 @@
+import operatorMetaInfos from 'converter/pytorch-metadata.json';
+import printParamValue from 'converter/parameterConverter';
 import { Position } from './base';
+
+export type ParameterValue = string | number | boolean;
+export type Parameters = { [key: string]: ParameterValue };
+
+export function getOrderedParamNames(type: BlockType): string[] {
+  const operatorMetaInfo = operatorMetaInfos.find((metaInfo) => metaInfo.abbrev === type);
+  const paramNames = [];
+  if (!operatorMetaInfo || !operatorMetaInfo.schema) {
+    return paramNames;
+  }
+  for (const parameter of operatorMetaInfo.schema.attributes) {
+    paramNames.push(parameter.name);
+  }
+  return paramNames;
+}
+
+export function createParams(type: BlockType): Parameters {
+  const parameters = {};
+  const meta = operatorMetaInfos.find((meta) => meta.abbrev === type);
+  for (const parameter of meta.schema.attributes) {
+    parameters[parameter.name] = printParamValue(parameter.default);
+  }
+  return parameters;
+}
 
 export enum BlockType {
   In = 'In',
@@ -31,9 +57,6 @@ export function isNetworkBlockType(blockType: BlockType): boolean {
 export function isNormalBlockType(blockType: BlockType): boolean {
   return ![BlockType.In, BlockType.Out, BlockType.Network].includes(blockType);
 }
-
-export type ParameterValue = string | number | boolean;
-export type Parameters = { [key: string]: ParameterValue };
 
 export type Block = NormalBlock | NetworkBlock | IOBlock;
 

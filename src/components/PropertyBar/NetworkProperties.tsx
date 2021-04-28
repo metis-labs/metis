@@ -9,8 +9,8 @@ import Typography from '@material-ui/core/Typography';
 
 import { Project } from 'store/types';
 import { BlockType, NetworkBlock } from 'store/types/blocks';
+import { createNetworkParams } from 'store/types/networks';
 import { useAppState } from 'App';
-import { createNetworkParams } from 'module/initConverter';
 
 import { valueTransition, preserveCaret, stopPropagationOnKeydown } from './utils';
 
@@ -116,9 +116,13 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
           value={refNetwork ? refNetwork.name : ''}
           onChange={onRefNetworkChange}
         >
-          <MenuItem key="none" value=""><em>None</em></MenuItem>
+          <MenuItem key="none" value="">
+            <em>None</em>
+          </MenuItem>
           {otherNetworks.map((network) => (
-            <MenuItem key={network.id} value={network.name}>{network.name}</MenuItem>
+            <MenuItem key={network.id} value={network.name}>
+              {network.name}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>

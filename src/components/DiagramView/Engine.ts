@@ -1,7 +1,7 @@
 import createEngine, { DiagramEngine, DiagramModel } from '@projectstorm/react-diagrams';
 
 import { DiagramInfo } from 'store/types';
-import { EmptyNetwork, Network } from 'store/types/networks';
+import { Network } from 'store/types/networks';
 import { isIOBlockType, BlockType } from 'store/types/blocks';
 import MetisNodeModel from 'components/DiagramView/MetisNodeModel';
 import MetisNodeFactory from 'components/DiagramView/MetisNodeFactory';
@@ -12,15 +12,12 @@ import MetisLinkModel from './MetisLinkModel';
 export default class Engine {
   private engine: DiagramEngine;
 
-  private previousNetwork: Network;
-
   constructor() {
     this.engine = createEngine();
     this.engine.maxNumberPointsPerLink = 0;
     this.engine.getNodeFactories().registerFactory(new MetisNodeFactory());
     this.engine.getLinkFactories().registerFactory(new MetisLinkFactory());
     this.engine.setModel(new DiagramModel());
-    this.previousNetwork = EmptyNetwork;
   }
 
   update(network: Network, networks: { [networkID: string]: Network }, diagramInfo: DiagramInfo) {
@@ -77,7 +74,6 @@ export default class Engine {
 
     diagramModel.addAll(...nodes, ...links);
     this.engine.setModel(diagramModel);
-    this.previousNetwork = network;
   }
 
   public getEngine(): DiagramEngine {

@@ -1,5 +1,5 @@
 import { Block, BlockType } from '../store/types/blocks';
-import { EmptyNetwork, Link } from '../store/types/networks';
+import { Link } from '../store/types/networks';
 
 export default class ForwardConverter {
   private blocks: { [id: string]: Block };
@@ -16,23 +16,19 @@ export default class ForwardConverter {
 
   private readonly indentDepth: number;
 
-  private options: string;
-
   private readonly linkMapByFrom: { [fromId: string]: Link };
 
   constructor() {
-    this.blocks = EmptyNetwork.blocks;
     this.bodyBlockIDs = [];
     this.inBlockIDs = [];
     this.outBlockIDs = [];
     this.result = `\n\n`;
     this.indentSize = `    `;
     this.indentDepth = 1;
-    this.options = '';
     this.linkMapByFrom = {};
   }
 
-  orderedBlockList(blocks: { [id: string]: Block }): void {
+  orderBlocks(blocks: { [id: string]: Block }): void {
     // TODO: Implement block clustering method using links
     // TODO: Employ topological sort for block ordering
     const islandBodyBlockIDs = [];
@@ -56,19 +52,19 @@ export default class ForwardConverter {
     }
   }
 
-  updateForwardFront(links: { [id: string]: Link }, blocks: { [id: string]: Block }): void {
+  updateSignature(links: { [id: string]: Link }, blocks: { [id: string]: Block }): void {
     this.buildLinkMap(links);
-    this.orderedBlockList(blocks);
+    this.orderBlocks(blocks);
     this.result = `\n`;
     this.result += this.indentSize;
     this.result += `def forward(self, ${this.inBlockIDs.map((id) => blocks[id].name).join(', ')}):`;
   }
 
-  updateForwardBody(blocks: { [id: string]: Block }): void {
+  updateBody(blocks: { [id: string]: Block }): void {
     // TODO: implement unifying tensor when inject multi-from-block to the next same to-block
     this.result += `\n`;
     for (const inputBlock of this.inBlockIDs) {
-      for (let i = 0; i < this.indentDepth + 1; i+=1) {
+      for (let i = 0; i < this.indentDepth + 1; i += 1) {
         this.result += this.indentSize;
       }
       const fromNode = this.linkMapByFrom[inputBlock]?.from;
@@ -82,17 +78,17 @@ export default class ForwardConverter {
         returnList.push(fromNode);
         continue;
       }
-      for (let i = 0; i < this.indentDepth + 1; i+=1) {
+      for (let i = 0; i < this.indentDepth + 1; i += 1) {
         this.result += this.indentSize;
       }
 
       this.result += `${blocks[bodyBlock].name}_output = self.${blocks[bodyBlock].name}(${
-        fromNode ? `${blocks[fromNode].name  }_output` : ''
+        fromNode ? `${blocks[fromNode].name}_output` : ''
       })\n`;
     }
 
     this.result += `\n`;
-    for (let i = 0; i < this.indentDepth + 1; i+=1) {
+    for (let i = 0; i < this.indentDepth + 1; i += 1) {
       this.result += this.indentSize;
     }
     this.result += `return `;
