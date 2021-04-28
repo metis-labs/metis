@@ -29,4 +29,3 @@ export function preserveCaret(event: ChangeEvent<HTMLInputElement | HTMLTextArea
 export function stopPropagationOnKeydown(event: any) {
   event.nativeEvent.stopImmediatePropagation();
 }
-

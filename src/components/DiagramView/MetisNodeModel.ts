@@ -104,7 +104,7 @@ export default class MetisNodeModel extends NodeModel {
       if (listener.doubleClicked) {
         listener.doubleClicked({
           function: 'doubleClicked',
-          entity: this
+          entity: this,
         });
       }
     });
