@@ -59,7 +59,6 @@ const useStyles = makeStyles((theme: Theme) =>
       flexShrink: 0,
     },
     drawerPaper: {
-      marginLeft: 60,
       width: drawerWidth,
     },
     toolbar: {

@@ -1,7 +1,5 @@
 import React, { useCallback } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -12,19 +10,17 @@ import AddIcon from '@material-ui/icons/Add';
 import { useAppState } from 'App';
 import { Block, BlockType, createBlock } from 'store/types/blocks';
 
-const drawerWidth = 60;
-
 const useStyles = makeStyles(() =>
   createStyles({
-    drawer: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
-    drawerPaper: {
-      width: drawerWidth,
-    },
-    drawerContainer: {
-      overflow: 'hidden',
+    root: {
+      position: 'absolute',
+      background: 'white',
+      borderRadius: 10,
+      boxShadow: '0 1px 5px 0 #888',
+      width: 56,
+      top: 140,
+      left: 10,
+      zIndex: 1
     },
     button: {
       border: '1px solid gray',
@@ -52,33 +48,24 @@ export default function SideBar() {
   );
 
   return (
-    <Drawer
-      className={classes.drawer}
-      variant="permanent"
-      classes={{
-        paper: classes.drawerPaper,
-      }}
-    >
-      <Toolbar />
-      <div className={classes.drawerContainer}>
-        <List>
-          <ListItem button onClick={() => handleAddBlockClick(BlockType.In)}>
-            <ListItemIcon>
-              <KeyboardArrowDownIcon className={classes.button} />
-            </ListItemIcon>
-          </ListItem>
-          <ListItem button onClick={() => handleAddBlockClick(BlockType.Out)}>
-            <ListItemIcon>
-              <KeyboardArrowUpIcon className={classes.button} />
-            </ListItemIcon>
-          </ListItem>
-          <ListItem button onClick={() => handleAddBlockClick(BlockType.Conv2d)}>
-            <ListItemIcon>
-              <AddIcon className={classes.button} />
-            </ListItemIcon>
-          </ListItem>
-        </List>
-      </div>
-    </Drawer>
+    <div className={classes.root}>
+      <List>
+        <ListItem button onClick={() => handleAddBlockClick(BlockType.In)}>
+          <ListItemIcon>
+            <KeyboardArrowDownIcon className={classes.button} />
+          </ListItemIcon>
+        </ListItem>
+        <ListItem button onClick={() => handleAddBlockClick(BlockType.Out)}>
+          <ListItemIcon>
+            <KeyboardArrowUpIcon className={classes.button} />
+          </ListItemIcon>
+        </ListItem>
+        <ListItem button onClick={() => handleAddBlockClick(BlockType.Conv2d)}>
+          <ListItemIcon>
+            <AddIcon className={classes.button} />
+          </ListItemIcon>
+        </ListItem>
+      </List>
+    </div>
   );
 }

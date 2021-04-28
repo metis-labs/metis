@@ -9,6 +9,7 @@ import { Position } from 'store/types/base';
 import { BlockType } from 'store/types/blocks';
 import { useAppState } from 'App';
 
+import SideBar from './SideBar';
 import MetisNodeModel from './MetisNodeModel';
 import MetisLinkModel from './MetisLinkModel';
 
@@ -215,28 +216,31 @@ export default function DiagramView() {
   }
 
   return (
-    <div
-      role="presentation"
-      ref={rootElement}
-      className={classes.root}
-      onMouseUp={handleMouseUp}
-      onMouseMove={handleMouseMove}
-    >
-      <CanvasWidget className={classes.canvas} engine={engine.getEngine()} />
-      {peers.map((peer) => {
-        const pos = {
-          x: peer.cursor.x * (diagramInfo.zoom / 100) + diagramInfo.offset.x,
-          y: peer.cursor.y * (diagramInfo.zoom / 100) + diagramInfo.offset.y,
-        };
-        return (
-          <div key={peer.id} className={classes.cursor} style={{ left: pos.x, top: pos.y }}>
-            <NearMeIcon className={classes.cursorIcon} style={{ color: peer.color }} />
-            <div className={classes.peerName} style={{ backgroundColor: peer.color }}>
-              {peer.username}
+    <div>
+      <SideBar />
+      <div
+        role="presentation"
+        ref={rootElement}
+        className={classes.root}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+      >
+        <CanvasWidget className={classes.canvas} engine={engine.getEngine()} />
+        {peers.map((peer) => {
+          const pos = {
+            x: peer.cursor.x * (diagramInfo.zoom / 100) + diagramInfo.offset.x,
+            y: peer.cursor.y * (diagramInfo.zoom / 100) + diagramInfo.offset.y,
+          };
+          return (
+            <div key={peer.id} className={classes.cursor} style={{ left: pos.x, top: pos.y }}>
+              <NearMeIcon className={classes.cursorIcon} style={{ color: peer.color }} />
+              <div className={classes.peerName} style={{ backgroundColor: peer.color }}>
+                {peer.username}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }

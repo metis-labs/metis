@@ -6,7 +6,6 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import NavBar from 'components/NavBar';
-import SideBar from 'components/SideBar';
 import FileTreeBar from 'components/FileTreeBar';
 import DiagramView from 'components/DiagramView';
 import CodeView from 'components/CodeView';
@@ -181,7 +180,6 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
   return (
     <div className={classes.root}>
       <NavBar />
-      <SideBar />
       <FileTreeBar />
       {appState.local.selectedNetworkID ? (
         <>
