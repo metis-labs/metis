@@ -1,30 +1,10 @@
+import { v4 as uuidv4 } from 'uuid';
 import operatorMetaInfos from 'converter/pytorch-metadata.json';
 import printParamValue from 'converter/parameterConverter';
 import { Position } from './base';
 
 export type ParameterValue = string | number | boolean;
 export type Parameters = { [key: string]: ParameterValue };
-
-export function getOrderedParamNames(type: BlockType): string[] {
-  const operatorMetaInfo = operatorMetaInfos.find((metaInfo) => metaInfo.abbrev === type);
-  const paramNames = [];
-  if (!operatorMetaInfo || !operatorMetaInfo.schema) {
-    return paramNames;
-  }
-  for (const parameter of operatorMetaInfo.schema.attributes) {
-    paramNames.push(parameter.name);
-  }
-  return paramNames;
-}
-
-export function createParams(type: BlockType): Parameters {
-  const parameters = {};
-  const meta = operatorMetaInfos.find((meta) => meta.abbrev === type);
-  for (const parameter of meta.schema.attributes) {
-    parameters[parameter.name] = printParamValue(parameter.default);
-  }
-  return parameters;
-}
 
 export enum BlockType {
   In = 'In',
@@ -83,4 +63,65 @@ export interface NormalBlock extends BaseBlock {
   type: BlockType.Conv2d | BlockType.BatchNorm2d | BlockType.ReLU | BlockType.MaxPool2d;
   repeats: number;
   parameters: Parameters;
+}
+
+export function getOrderedParamNames(type: BlockType): string[] {
+  const operatorMetaInfo = operatorMetaInfos.find((metaInfo) => metaInfo.abbrev === type);
+  const paramNames = [];
+  if (!operatorMetaInfo || !operatorMetaInfo.schema) {
+    return paramNames;
+  }
+  for (const parameter of operatorMetaInfo.schema.attributes) {
+    paramNames.push(parameter.name);
+  }
+  return paramNames;
+}
+
+export function createParams(type: BlockType): Parameters {
+  const parameters = {};
+  const meta = operatorMetaInfos.find((meta) => meta.abbrev === type);
+  for (const parameter of meta.schema.attributes) {
+    parameters[parameter.name] = printParamValue(parameter.default);
+  }
+  return parameters;
+}
+
+export function createBlock(type: BlockType, position: Position, blockLength: number): Block {
+  switch(type) {
+    case BlockType.In:
+      return {
+        id: uuidv4(),
+        name: `in_${blockLength + 1}`,
+        type: BlockType.In,
+        position,
+        initVariables: ''
+      };
+    case BlockType.Out:
+      return {
+        id: uuidv4(),
+        name: `out_${blockLength + 1}`,
+        type: BlockType.Out,
+        position,
+        initVariables: ''
+      };
+    default:
+      return {
+        id: uuidv4(),
+        name: `${BlockType.Conv2d.toLowerCase()}_${blockLength + 1}`,
+        type: BlockType.Conv2d,
+        position,
+        repeats: 1,
+        parameters: {
+          inChannels: '',
+          outChannels: '',
+          kernelSize: '',
+          stride: 1,
+          padding: 0,
+          paddingMode: 'zeros',
+          dilation: 1,
+          groups: 1,
+          bias: false,
+        },
+      };
+  }
 }

@@ -12,11 +12,11 @@ import DiagramView from 'components/DiagramView';
 import CodeView from 'components/CodeView';
 import StatusBar from 'components/StatusBar';
 import PropertyBar from 'components/PropertyBar';
-import initialProject from 'store/initialProject';
 import templateProjects from 'store/templates';
 import { useAppState } from 'App';
 
 import { decodeEventDesc } from 'store/types/events';
+import { createProject } from 'store/types';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -65,7 +65,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
           if (templateID) {
             root.project = templateProjects[templateID];
           } else {
-            root.project = initialProject;
+            root.project = createProject('untitled');
           }
         }
         if (!root.peers) {
