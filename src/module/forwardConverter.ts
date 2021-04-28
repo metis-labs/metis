@@ -1,4 +1,5 @@
-import { Block, BlockType, EmptyNetwork, Link } from '../store/types';
+import { Block, BlockType } from '../store/types/blocks';
+import { EmptyNetwork, Link } from '../store/types/networks';
 
 export default class ForwardConverter {
   private blocks: { [id: string]: Block };

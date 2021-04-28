@@ -3,7 +3,7 @@ import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl/FormControl';
 import TextField from '@material-ui/core/TextField';
 
-import { BlockType, IOBlock } from 'store/types';
+import { BlockType, IOBlock } from 'store/types/blocks';
 import { useAppState } from 'App';
 
 import { valueTransition, preserveCaret, stopPropagationOnKeydown } from './utils';

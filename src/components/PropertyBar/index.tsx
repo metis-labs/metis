@@ -10,16 +10,8 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import {
-  Project,
-  BlockType,
-  IOBlock,
-  NetworkBlock,
-  NormalBlock,
-  isIOBlockType,
-  isNetworkBlockType,
-  isNormalBlockType,
-} from 'store/types';
+import { Project } from 'store/types';
+import { BlockType, IOBlock, NetworkBlock, NormalBlock, isIOBlockType, isNetworkBlockType, isNormalBlockType } from 'store/types/blocks';
 import { useAppState } from 'App';
 import { createParams } from 'module/initConverter';
 

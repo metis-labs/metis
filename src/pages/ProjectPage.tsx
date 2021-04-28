@@ -16,7 +16,7 @@ import initialProject from 'store/initialProject';
 import templateProjects from 'store/templates';
 import { useAppState } from 'App';
 
-import { decodeEventDesc } from 'store/types';
+import { decodeEventDesc } from 'store/types/events';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -145,7 +145,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
 
           updateAppState((appState) => {
             if (isProjectChanged) {
-              appState.repaintCounter += 1;
+              appState.remoteRepaintCounter += 1;
             }
             if (isPeersChanged) {
               appState.peersRepaintCounter += 1;

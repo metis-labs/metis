@@ -1,7 +1,7 @@
 import { ChangeEvent } from 'react';
-import { PropertyValue } from 'store/types';
+import { ParameterValue } from 'store/types/blocks';
 
-export function valueTransition(value: string): PropertyValue {
+export function valueTransition(value: string): ParameterValue {
   if (value === 'True' || value === 'true') {
     return true;
   }

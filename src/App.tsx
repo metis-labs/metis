@@ -9,7 +9,7 @@ import AppStateInitializer from 'AppStateInitializer';
 import 'App.scss';
 
 const AppStateStore = createStore({
-  repaintCounter: 0,
+  remoteRepaintCounter: 0,
   peersRepaintCounter: 0,
   local: {
     diagramInfos: {},

@@ -5,7 +5,8 @@ import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DiagramModel } from '@projectstorm/react-diagrams';
 
 import Engine from 'components/DiagramView/Engine';
-import { Position, BlockType } from 'store/types';
+import { Position } from 'store/types/base';
+import { BlockType } from 'store/types/blocks';
 import { useAppState } from 'App';
 
 import MetisNodeModel from './MetisNodeModel';
@@ -53,7 +54,7 @@ export default function DiagramView() {
   const [engine] = useState(new Engine());
   const [changeEvents, setChangeEvents] = useState<{ [id: string]: ChangeEvent }>({});
   const { selectedNetworkID } = appState.local;
-  const { repaintCounter } = appState;
+  const { remoteRepaintCounter } = appState;
 
   const handleMouseUp = useCallback(() => {
     for (const event of Object.values(changeEvents)) {
@@ -189,7 +190,7 @@ export default function DiagramView() {
       }
     });
     return () => deregister();
-  }, [engine, appState.remote, repaintCounter, selectedNetworkID, updateAppState, setChangeEvents]);
+  }, [engine, appState.remote, remoteRepaintCounter, selectedNetworkID, updateAppState, setChangeEvents]);
 
   const remotePeers = appState.remote.getRoot().peers;
   const myClientID = appState.client.getID();

@@ -13,7 +13,9 @@ import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
 import { TransitionProps } from '@material-ui/core/transitions';
 import Collapse from '@material-ui/core/Collapse';
 
-import { Network, PeerInfo, encodeEventDesc } from 'store/types';
+import { PeerInfo } from 'store/types';
+import { Network } from 'store/types/networks';
+import { encodeEventDesc } from 'store/types/events';
 import { useAppState } from 'App';
 import RenameDialog from './RenameDialog';
 

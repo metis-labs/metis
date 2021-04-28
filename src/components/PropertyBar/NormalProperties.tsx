@@ -4,7 +4,7 @@ import FormControl from '@material-ui/core/FormControl/FormControl';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { NormalBlock } from 'store/types';
+import { NormalBlock } from 'store/types/blocks';
 import { useAppState } from 'App';
 import { getOrderedParamNames } from 'module/initConverter';
 

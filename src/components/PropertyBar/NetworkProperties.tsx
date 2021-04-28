@@ -7,7 +7,8 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { Project, BlockType, NetworkBlock } from 'store/types';
+import { Project } from 'store/types';
+import { BlockType, NetworkBlock } from 'store/types/blocks';
 import { useAppState } from 'App';
 import { createNetworkParams } from 'module/initConverter';
 

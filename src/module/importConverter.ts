@@ -1,4 +1,4 @@
-import { Dependency, EmptyNetwork } from '../store/types';
+import { Dependency, EmptyNetwork } from '../store/types/networks';
 
 export default class ImportConverter {
   private dependencies: { [id: string]: Dependency };

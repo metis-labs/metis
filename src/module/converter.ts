@@ -1,4 +1,5 @@
-import { EmptyNetwork, Network, Project } from '../store/types';
+import { EmptyNetwork, Network } from '../store/types/networks';
+import { Project } from '../store/types';
 import ImportConverter from './importConverter';
 import InitConverter from './initConverter';
 import ForwardConverter from './forwardConverter';

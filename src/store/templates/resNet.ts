@@ -1,4 +1,6 @@
-import { Block, BlockType, Dependency, Link, Project } from 'store/types';
+import { Project } from 'store/types';
+import { Dependency, Link } from 'store/types/networks';
+import { Block, BlockType } from 'store/types/blocks';
 
 const dependencies: { [id: string]: Dependency } = {
   torch: {

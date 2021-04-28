@@ -1,6 +1,8 @@
 import createEngine, { DiagramEngine, DiagramModel } from '@projectstorm/react-diagrams';
 
-import { EmptyNetwork, Network, DiagramInfo, isIOBlockType, BlockType } from 'store/types';
+import { DiagramInfo } from 'store/types';
+import { EmptyNetwork, Network } from 'store/types/networks';
+import { isIOBlockType, BlockType } from 'store/types/blocks';
 import MetisNodeModel from 'components/DiagramView/MetisNodeModel';
 import MetisNodeFactory from 'components/DiagramView/MetisNodeFactory';
 

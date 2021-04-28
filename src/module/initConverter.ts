@@ -1,13 +1,6 @@
-import {
-  Block,
-  NormalBlock,
-  IOBlock,
-  BlockType,
-  Network,
-  EmptyNetwork,
-  Properties,
-  Project,
-} from '../store/types';
+import { Block, NormalBlock, IOBlock, BlockType, Parameters } from '../store/types/blocks';
+import { Network, EmptyNetwork } from '../store/types/networks';
+import { Project } from '../store/types';
 import operatorMetaInfos from './pytorch-metadata.json';
 
 export function printOptionValue(value: any): string {
@@ -23,7 +16,7 @@ export function printOptionValue(value: any): string {
   return JSON.stringify(value);
 }
 
-export function createNetworkParams(network: Network): Properties {
+export function createNetworkParams(network: Network): Parameters {
   const parameters = {};
   for (const block of Object.values(network.blocks)) {
     if (block.type === BlockType.In) {
@@ -40,7 +33,7 @@ export function createNetworkParams(network: Network): Properties {
 }
 
 // TODO: extract this method
-export function createParams(type: BlockType): Properties {
+export function createParams(type: BlockType): Parameters {
   const parameters = {};
   const meta = operatorMetaInfos.find((meta) => meta.abbrev === type);
   for (const parameter of meta.schema.attributes) {
