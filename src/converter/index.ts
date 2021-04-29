@@ -12,20 +12,21 @@ export default class Converter {
 
     const network = project.networks[selectedNetworkID];
 
-    const refNetBlockList = [];
+    // Update Dependencies
+    const refNetworkBlockNameList = [];
     (Object.values(network.blocks).filter((block) => block.type === BlockType.Network) as NetworkBlock[]).map((block) =>
-      block.refNetwork ? refNetBlockList.push(project.networks[block.refNetwork].name) : '',
+      block.refNetwork ? refNetworkBlockNameList.push(project.networks[block.refNetwork].name) : '',
     );
-    refNetBlockList.push.apply(refNetBlockList, ['torch', 'torchNN']);
-    const notInRefs = Object.keys(network.dependencies).filter((dep) => !refNetBlockList.includes(dep));
-    notInRefs.map((notInRef) => delete network.dependencies[notInRef]);
-    refNetBlockList
-      .filter((refNetBlock) => !Object.keys(network.dependencies).includes(refNetBlock))
-      .forEach((inRef) => {
-        network.dependencies[inRef] = {
-          id: inRef,
-          name: inRef,
-          package: inRef,
+    refNetworkBlockNameList.push.apply(refNetworkBlockNameList, ['torch', 'torchNN']);
+    const noNeedDeps = Object.keys(network.dependencies).filter((dep) => !refNetworkBlockNameList.includes(dep));
+    noNeedDeps.map((noNeedDep) => delete network.dependencies[noNeedDep]);
+    refNetworkBlockNameList
+      .filter((refNetBlockName) => !Object.keys(network.dependencies).includes(refNetBlockName))
+      .forEach((includingRef) => {
+        network.dependencies[includingRef] = {
+          id: includingRef,
+          name: includingRef,
+          package: includingRef,
         };
       });
 
