@@ -7,10 +7,16 @@
 // GENERATED CODE -- DO NOT EDIT!
 
 
+/* eslint-disable */
+// @ts-nocheck
+
+
 
 const grpc = {};
 grpc.web = require('grpc-web');
 
+
+var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js')
 const proto = {};
 proto.api = require('./metis_pb.js');
 
@@ -134,7 +140,7 @@ proto.api.MetisClient.prototype.createProject =
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.api.CreateProjectResponse>}
- *     A native promise that resolves to the response
+ *     Promise that resolves to the response
  */
 proto.api.MetisPromiseClient.prototype.createProject =
     function(request, metadata) {
@@ -214,7 +220,7 @@ proto.api.MetisClient.prototype.listProjects =
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.api.ListProjectsResponse>}
- *     A native promise that resolves to the response
+ *     Promise that resolves to the response
  */
 proto.api.MetisPromiseClient.prototype.listProjects =
     function(request, metadata) {
@@ -294,7 +300,7 @@ proto.api.MetisClient.prototype.updateProject =
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.api.UpdateProjectResponse>}
- *     A native promise that resolves to the response
+ *     Promise that resolves to the response
  */
 proto.api.MetisPromiseClient.prototype.updateProject =
     function(request, metadata) {
@@ -374,7 +380,7 @@ proto.api.MetisClient.prototype.deleteProject =
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.api.DeleteProjectResponse>}
- *     A native promise that resolves to the response
+ *     Promise that resolves to the response
  */
 proto.api.MetisPromiseClient.prototype.deleteProject =
     function(request, metadata) {

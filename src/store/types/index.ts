@@ -11,6 +11,7 @@ export type Project = {
 export type ProjectInfo = {
   id: string;
   name: string;
+  createdAt: Date;
 };
 
 export type DiagramInfo = {

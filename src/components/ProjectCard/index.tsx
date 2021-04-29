@@ -182,7 +182,7 @@ export default function ProjectCard(props: ProjectItemProps) {
           </>
         }
         title={<Link to={`/${project.id}`}>{project.name}</Link>}
-        subheader="September 14, 2021"
+        subheader={project.createdAt.toLocaleString()}
       />
       <CardMedia className={classes.media} image="/static/images/cards/contemplative-reptile.jpg" />
     </Card>

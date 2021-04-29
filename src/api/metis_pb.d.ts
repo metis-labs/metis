@@ -1,11 +1,14 @@
-import * as jspb from "google-protobuf"
+import * as jspb from 'google-protobuf'
+
+import * as google_protobuf_timestamp_pb from 'google-protobuf/google/protobuf/timestamp_pb';
+
 
 export class CreateProjectRequest extends jspb.Message {
   getProjectName(): string;
-  setProjectName(value: string): void;
+  setProjectName(value: string): CreateProjectRequest;
 
   getTemplateId(): string;
-  setTemplateId(value: string): void;
+  setTemplateId(value: string): CreateProjectRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateProjectRequest.AsObject;
@@ -24,9 +27,9 @@ export namespace CreateProjectRequest {
 
 export class CreateProjectResponse extends jspb.Message {
   getProject(): Project | undefined;
-  setProject(value?: Project): void;
+  setProject(value?: Project): CreateProjectResponse;
   hasProject(): boolean;
-  clearProject(): void;
+  clearProject(): CreateProjectResponse;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CreateProjectResponse.AsObject;
@@ -44,10 +47,10 @@ export namespace CreateProjectResponse {
 
 export class UpdateProjectRequest extends jspb.Message {
   getProjectId(): string;
-  setProjectId(value: string): void;
+  setProjectId(value: string): UpdateProjectRequest;
 
   getProjectName(): string;
-  setProjectName(value: string): void;
+  setProjectName(value: string): UpdateProjectRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateProjectRequest.AsObject;
@@ -80,7 +83,7 @@ export namespace UpdateProjectResponse {
 
 export class DeleteProjectRequest extends jspb.Message {
   getProjectId(): string;
-  setProjectId(value: string): void;
+  setProjectId(value: string): DeleteProjectRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): DeleteProjectRequest.AsObject;
@@ -126,8 +129,8 @@ export namespace ListProjectsRequest {
 
 export class ListProjectsResponse extends jspb.Message {
   getProjectsList(): Array<Project>;
-  setProjectsList(value: Array<Project>): void;
-  clearProjectsList(): void;
+  setProjectsList(value: Array<Project>): ListProjectsResponse;
+  clearProjectsList(): ListProjectsResponse;
   addProjects(value?: Project, index?: number): Project;
 
   serializeBinary(): Uint8Array;
@@ -146,10 +149,15 @@ export namespace ListProjectsResponse {
 
 export class Project extends jspb.Message {
   getId(): string;
-  setId(value: string): void;
+  setId(value: string): Project;
 
   getName(): string;
-  setName(value: string): void;
+  setName(value: string): Project;
+
+  getCreatedAt(): google_protobuf_timestamp_pb.Timestamp | undefined;
+  setCreatedAt(value?: google_protobuf_timestamp_pb.Timestamp): Project;
+  hasCreatedAt(): boolean;
+  clearCreatedAt(): Project;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Project.AsObject;
@@ -163,6 +171,7 @@ export namespace Project {
   export type AsObject = {
     id: string,
     name: string,
+    createdAt?: google_protobuf_timestamp_pb.Timestamp.AsObject,
   }
 }
 

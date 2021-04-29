@@ -5,6 +5,7 @@ export function fromProject(pbProject: PbProject): ProjectInfo {
   return {
     id: pbProject.getId(),
     name: pbProject.getName(),
+    createdAt: pbProject.getCreatedAt().toDate(),
   };
 }
 

@@ -55,24 +55,6 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
           block.refNetwork = targetNetwork ? targetNetwork.id : '';
           block.parameters = targetNetwork ? createNetworkParams(targetNetwork) : {};
         }
-
-        // Update dependencies
-        // const refNetBlockList = [];
-        // (Object.values(network.blocks).filter(
-        //   (block) => block.type === BlockType.Network,
-        // ) as NetworkBlock[]).map((block) =>
-        //   block.refNetwork ? refNetBlockList.push(project.networks[block.refNetwork].name) : '',
-        // );
-        // refNetBlockList.push.apply(refNetBlockList, ['torch', 'torchNN']);
-        // const notInRefs = Object.keys(network.dependencies).filter((dep) => !refNetBlockList.includes(dep));
-        // notInRefs.map((notInRef) => delete network.dependencies[notInRef]);
-        // if (networkName) {
-        //   network.dependencies[networkName] = {
-        //     id: networkName,
-        //     name: networkName,
-        //     package: networkName,
-        //   };
-        // }
       });
     },
     [appState.remote, selectedBlockID, selectedNetworkID],
