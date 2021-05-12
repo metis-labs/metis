@@ -17,9 +17,16 @@ const peerInfoSlice = createSlice({
   name: 'peerInfo',
   initialState: initialPeerInfoState,
   reducers: {
-    syncPeer(state, action: PayloadAction<any>) {
+    syncPeer(
+      state,
+      action: PayloadAction<{
+        myClientID: string;
+        changedPeers: { [id: string]: PeerInfo };
+      }>,
+    ) {
       const { myClientID, changedPeers } = action.payload;
       const { peers } = state;
+
       for (const clientID of Object.keys(peers)) {
         if (!changedPeers[clientID]) {
           peers[clientID].status = ConnectionStatus.Disconnected;
@@ -28,7 +35,7 @@ const peerInfoSlice = createSlice({
 
       for (const [clientID, peerInfoData] of Object.entries(changedPeers || {})) {
         if (!peers[clientID] || peers[clientID].status === ConnectionStatus.Disconnected) {
-          const peerInfo = peerInfoData as PeerInfo;
+          const peerInfo = peerInfoData;
           const peer = {
             id: clientID,
             status: ConnectionStatus.Connected,
@@ -43,7 +50,13 @@ const peerInfoSlice = createSlice({
         }
       }
     },
-    syncSelectedNetwork(state, action: PayloadAction<any>) {
+    syncSelectedNetwork(
+      state,
+      action: PayloadAction<{
+        myClientID: string;
+        networkID: string;
+      }>,
+    ) {
       const { myClientID, networkID } = action.payload;
       const { peers } = state;
       peers[myClientID].selectedNetworkID = networkID;
