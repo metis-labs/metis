@@ -10,6 +10,8 @@ import { PeerInfo, Project } from 'store/types';
 import { encodeEventDesc } from 'store/types/events';
 import { createNetwork } from 'store/types/networks';
 import { useAppState } from 'App';
+import { useDispatch } from 'react-redux';
+import { syncSelectedNetwork } from 'features/peerInfoSlices';
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 
 function MinusSquare(props: SvgIconProps) {
@@ -78,6 +80,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export default function FileTreeBar() {
+  const dispatch = useDispatch();
   const classes = useStyles();
   const [appState, updateAppState] = useAppState();
   const project = appState.remote.getRoot().project! as Project;
@@ -105,6 +108,12 @@ export default function FileTreeBar() {
 
       appState.remote.update((root) => {
         root.peers[clientID].selectedNetworkID = networkID;
+        dispatch(
+          syncSelectedNetwork({
+            myClientID: clientID,
+            networkID,
+          }),
+        );
       });
     },
     [appState.remote, updateAppState, clientID],
@@ -125,6 +134,12 @@ export default function FileTreeBar() {
 
     appState.remote.update((root) => {
       root.peers[clientID].selectedNetworkID = network.id;
+      dispatch(
+        syncSelectedNetwork({
+          myClientID: clientID,
+          networkID: network.id,
+        }),
+      );
     });
   }, [appState.remote, clientID]);
 

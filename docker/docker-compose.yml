@@ -29,7 +29,7 @@ services:
     depends_on:
       - mongo
   metis-server:
-    image: 'reg.navercorp.com/metis/metis-server:0.0.2'
+    image: 'reg.navercorp.com/metis/metis-server:0.0.3'
     container_name: 'metis-server'
     command: [
       'server',

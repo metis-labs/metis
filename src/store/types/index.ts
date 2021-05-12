@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Position } from './base';
+import { ConnectionStatus, Position } from './base';
 import { Network, createNetwork } from './networks';
 
 export type Project = {
@@ -30,8 +30,10 @@ export type PeerInfo = {
   color: string;
   image: string;
   username: string;
+  status: ConnectionStatus;
   selectedNetworkID?: string;
   cursor: Position;
+  isMine: boolean;
 };
 
 export type AppState = {
@@ -57,5 +59,5 @@ export function createProject(name: string): Project {
     networks: {
       [network.id]: network,
     },
-  }
+  };
 }

@@ -4,8 +4,11 @@ import anonymous from 'anonymous-animals-gen';
 import randomColor from 'randomcolor';
 
 import { useAppState } from 'App';
+import { useDispatch } from 'react-redux';
+import { syncPeer } from 'features/peerInfoSlices';
 
 function AppStateInitializer() {
+  const dispatch = useDispatch();
   const [, updateAppState] = useAppState();
 
   useEffect(() => {
@@ -23,6 +26,17 @@ function AppStateInitializer() {
         if (event.type === 'peers-changed') {
           updateAppState((appState) => {
             appState.peers = event.value;
+
+            // Add Peer Redux ---
+            const documentKey = appState.remote.getKey();
+            const changedPeers = event.value[`projects$${documentKey.document}`];
+            dispatch(
+              syncPeer({
+                myClientID: client.getID(),
+                changedPeers,
+              }),
+            );
+            // ---
             return appState;
           });
         }
@@ -43,6 +57,6 @@ function AppStateInitializer() {
   }, [updateAppState]);
 
   return <></>;
- }
+}
 
 export default AppStateInitializer;
