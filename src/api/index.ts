@@ -10,7 +10,29 @@ import {
   DeleteProjectResponse,
 } from 'api/metis_pb';
 
-const client = new MetisPromiseClient(`${process.env.REACT_APP_METIS_RPC_ADDR}`);
+const testUserID = 'KR18401';
+
+class UnaryInterceptor {
+  userID: string;
+
+  constructor(userID: string) {
+    this.userID = userID;
+  }
+
+  intercept (request, invoker) {
+    const metadata = request.getMetadata();
+    metadata.Authorization = `${this.userID}`;
+    return invoker(request);
+  }
+}
+
+const client = new MetisPromiseClient(
+  `${process.env.REACT_APP_METIS_RPC_ADDR}`,
+  null,
+  {
+    unaryInterceptors: [new UnaryInterceptor(testUserID)]
+  }
+);
 
 const api = {
   createProject(name: string): Promise<CreateProjectResponse> {
