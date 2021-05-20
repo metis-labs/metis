@@ -25,10 +25,10 @@ function AppStateInitializer() {
       const unsubscribe = client.subscribe((event) => {
         if (event.type === 'peers-changed') {
           updateAppState((appState) => {
-            appState.peers = event.value;
+            appState.peers = event.value as any;
             const myClientID = client.getID();
-            const docKey = appState.remote.getKey().toIDString();
-            const changedPeers = event.value[docKey];
+            const docKey = appState.remote.getKey();
+            const changedPeers = event.value[docKey] as any;
             dispatch(
               syncPeer({
                 myClientID,

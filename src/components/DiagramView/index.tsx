@@ -217,7 +217,7 @@ export default function DiagramView() {
   const myClientID = appState.client.getID();
 
   const peers = [];
-  const docKey = appState.remote.getKey().toIDString();
+  const docKey = appState.remote.getKey();
   for (const [peerID, peer] of Object.entries(appState.peers[docKey] || {})) {
     if (
       myClientID === peerID ||

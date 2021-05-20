@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router';
-import yorkie, { Client, Document } from 'yorkie-js-sdk';
+import yorkie, { Client, DocumentReplica } from 'yorkie-js-sdk';
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -46,7 +46,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
   const [viewMode, setViewMode] = useState('diagram');
 
   useEffect(() => {
-    let doc: Document;
+    let doc: DocumentReplica;
     const unsubscribes: Array<Function> = [];
     (async () => {
       if (!appState.client) {
@@ -154,8 +154,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         }),
       );
     })();
-
-    return async () => {
+    const clear = async () => {
       for (const unsubscribe of unsubscribes) {
         unsubscribe();
       }
@@ -166,6 +165,10 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         appState.remote = null;
         return appState;
       });
+    };
+
+    return () => {
+      clear();
     };
   }, [appState.client, updateAppState, projectID, search]);
 

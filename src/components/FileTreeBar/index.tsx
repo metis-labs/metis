@@ -145,7 +145,7 @@ export default function FileTreeBar() {
 
   // TODO(youngteac.hong): Replace below with type parameter.
   const peersMapByNetworkID: { [networkID: string]: Array<PeerInfo> } = {};
-  const docKey = appState.remote.getKey().toIDString();
+  const docKey = appState.remote.getKey();
   for (const [peerID, peer] of Object.entries(appState.peers[docKey] || {})) {
     const peerInRemote = appState.remote.getRoot().peers[peerID];
     if (!peerInRemote) {

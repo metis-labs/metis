@@ -12,7 +12,7 @@ export default function PeerGroup() {
     return null;
   }
 
-  const docKey = appState.remote.getKey().toIDString();
+  const docKey = appState.remote.getKey();
   const myID = appState.client.getID();
   return (
     <AvatarGroup max={4}>
