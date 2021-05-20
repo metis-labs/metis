@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import NearMeIcon from '@material-ui/icons/NearMe';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
@@ -11,6 +11,7 @@ import { BlockType } from 'store/types/blocks';
 import { useAppState } from 'App';
 
 import { syncCursor, syncSelectedNetwork } from 'features/peerInfoSlices';
+import { AppState } from 'app/rootReducer';
 import SideBar from './SideBar';
 import MetisNodeModel from './MetisNodeModel';
 import MetisLinkModel from './MetisLinkModel';
@@ -52,6 +53,7 @@ interface ChangeEvent {
 export default function DiagramView() {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const peersState = useSelector((state: AppState) => state.peerState.peers);
 
   const rootElement = useRef(null);
   const [appState, updateAppState] = useAppState();
@@ -96,18 +98,9 @@ export default function DiagramView() {
           x: (event.nativeEvent.clientX - rect.x - diagramInfo.offset.x) / (diagramInfo.zoom / 100),
           y: (event.nativeEvent.clientY - rect.y - diagramInfo.offset.y) / (diagramInfo.zoom / 100),
         };
-        // redux
-        dispatch(
-          syncCursor({
-            myClientID: clientID,
-            x: (event.nativeEvent.clientX - rect.x - diagramInfo.offset.x) / (diagramInfo.zoom / 100),
-            y: (event.nativeEvent.clientY - rect.y - diagramInfo.offset.y) / (diagramInfo.zoom / 100),
-          }),
-        );
-        //
       });
     },
-    [clientID, appState.remote, rect, diagramInfo],
+    [clientID, appState.remote, rect, diagramInfo, syncCursor],
   );
 
   useEffect(() => {
@@ -151,14 +144,6 @@ export default function DiagramView() {
 
           appState.remote.update((root) => {
             root.peers[clientID].selectedNetworkID = networkID;
-            // redux
-            dispatch(
-              syncSelectedNetwork({
-                myClientID: clientID,
-                networkID,
-              }),
-            );
-            //
           });
         }
       } else if (entity instanceof MetisLinkModel) {
@@ -213,17 +198,39 @@ export default function DiagramView() {
     return () => deregister();
   }, [engine, appState.remote, remoteRepaintCounter, selectedNetworkID, updateAppState, setChangeEvents]);
 
-  const remotePeers = appState.remote.getRoot().peers;
+  // redux
+  useEffect(() => {
+    const remoteDoc = appState.remote.getRoot();
+    Object.keys(peersState).forEach((clientID) =>
+      remoteDoc.peers[clientID]?.cursor
+        ? (dispatch(
+            syncCursor({
+              myClientID: clientID,
+              x: remoteDoc.peers[clientID].cursor.x,
+              y: remoteDoc.peers[clientID].cursor.y,
+            }),
+          ),
+          dispatch(
+            syncSelectedNetwork({
+              myClientID: clientID,
+              networkID: remoteDoc.peers[clientID].selectedNetworkID,
+            }),
+          ))
+        : '',
+    );
+  });
+  //
+
   const myClientID = appState.client.getID();
 
   const peers = [];
-  const docKey = appState.remote.getKey();
-  for (const [peerID, peer] of Object.entries(appState.peers[docKey] || {})) {
+  for (const [peerID, peer] of Object.entries(peersState || {})) {
     if (
       myClientID === peerID ||
-      !remotePeers[peerID] ||
-      !remotePeers[peerID].cursor ||
-      remotePeers[peerID].selectedNetworkID !== selectedNetworkID
+      !peersState[peerID] ||
+      !peersState[peerID].cursor ||
+      peersState[peerID].status === 'disconnected' ||
+      peersState[peerID].selectedNetworkID !== selectedNetworkID
     ) {
       continue;
     }
@@ -231,10 +238,9 @@ export default function DiagramView() {
       id: peerID,
       username: peer.username,
       color: peer.color,
-      cursor: remotePeers[peerID].cursor,
+      cursor: peersState[peerID].cursor,
     });
   }
-
   return (
     <div>
       <SideBar />

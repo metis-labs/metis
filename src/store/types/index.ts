@@ -27,6 +27,7 @@ export type LocalState = {
 };
 
 export type PeerInfo = {
+  id: string;
   color: string;
   image: string;
   username: string;

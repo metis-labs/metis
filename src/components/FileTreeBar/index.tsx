@@ -80,8 +80,8 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export default function FileTreeBar() {
-  const dispatch = useDispatch();
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [appState, updateAppState] = useAppState();
   const project = appState.remote.getRoot().project! as Project;
   const { selectedNetworkID } = appState.local;
