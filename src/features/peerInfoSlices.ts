@@ -46,7 +46,7 @@ const peerInfoSlice = createSlice({
             cursor: peerInfo.cursor,
             isMine: myClientID === clientID,
           };
-          state.peers[clientID] = peer;
+          peers[clientID] = peer;
         }
       }
     },
@@ -57,13 +57,27 @@ const peerInfoSlice = createSlice({
         networkID: string;
       }>,
     ) {
-      const { myClientID, networkID } = action.payload;
       const { peers } = state;
+      const { myClientID, networkID } = action.payload;
       peers[myClientID].selectedNetworkID = networkID;
+    },
+    syncCursor(
+      state,
+      action: PayloadAction<{
+        myClientID: string;
+        x: number;
+        y: number;
+      }>,
+    ) {
+      const { peers } = state;
+      const { myClientID, x, y } = action.payload;
+      peers[myClientID].cursor = {
+        x,
+        y,
+      };
     },
   },
 });
 
-export const { syncPeer } = peerInfoSlice.actions;
-export const { syncSelectedNetwork } = peerInfoSlice.actions;
+export const { syncPeer, syncSelectedNetwork, syncCursor } = peerInfoSlice.actions;
 export default peerInfoSlice.reducer;

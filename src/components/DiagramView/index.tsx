@@ -1,4 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import NearMeIcon from '@material-ui/icons/NearMe';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
@@ -9,6 +10,7 @@ import { Position } from 'store/types/base';
 import { BlockType } from 'store/types/blocks';
 import { useAppState } from 'App';
 
+import { syncCursor, syncSelectedNetwork } from 'features/peerInfoSlices';
 import SideBar from './SideBar';
 import MetisNodeModel from './MetisNodeModel';
 import MetisLinkModel from './MetisLinkModel';
@@ -49,6 +51,7 @@ interface ChangeEvent {
 
 export default function DiagramView() {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const rootElement = useRef(null);
   const [appState, updateAppState] = useAppState();
@@ -93,6 +96,15 @@ export default function DiagramView() {
           x: (event.nativeEvent.clientX - rect.x - diagramInfo.offset.x) / (diagramInfo.zoom / 100),
           y: (event.nativeEvent.clientY - rect.y - diagramInfo.offset.y) / (diagramInfo.zoom / 100),
         };
+        // redux
+        dispatch(
+          syncCursor({
+            myClientID: clientID,
+            x: (event.nativeEvent.clientX - rect.x - diagramInfo.offset.x) / (diagramInfo.zoom / 100),
+            y: (event.nativeEvent.clientY - rect.y - diagramInfo.offset.y) / (diagramInfo.zoom / 100),
+          }),
+        );
+        //
       });
     },
     [clientID, appState.remote, rect, diagramInfo],
@@ -139,6 +151,14 @@ export default function DiagramView() {
 
           appState.remote.update((root) => {
             root.peers[clientID].selectedNetworkID = networkID;
+            // redux
+            dispatch(
+              syncSelectedNetwork({
+                myClientID: clientID,
+                networkID,
+              }),
+            );
+            //
           });
         }
       } else if (entity instanceof MetisLinkModel) {

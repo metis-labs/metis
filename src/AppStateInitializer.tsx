@@ -26,17 +26,15 @@ function AppStateInitializer() {
         if (event.type === 'peers-changed') {
           updateAppState((appState) => {
             appState.peers = event.value;
-
-            // Add Peer Redux ---
-            const documentKey = appState.remote.getKey();
-            const changedPeers = event.value[`projects$${documentKey.document}`];
+            const myClientID = client.getID();
+            const docKey = appState.remote.getKey().toIDString();
+            const changedPeers = event.value[docKey];
             dispatch(
               syncPeer({
-                myClientID: client.getID(),
+                myClientID,
                 changedPeers,
               }),
             );
-            // ---
             return appState;
           });
         }
