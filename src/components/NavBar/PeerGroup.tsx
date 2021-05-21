@@ -5,25 +5,29 @@ import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import { useAppState } from 'App';
+import { useSelector } from 'react-redux';
+import { AppState } from 'app/rootReducer';
 
 export default function PeerGroup() {
   const [appState] = useAppState();
+  const peersState = useSelector((state: AppState) => state.peerState.peers);
   if (!appState.remote) {
     return null;
   }
 
-  const docKey = appState.remote.getKey();
+  const onlinePeersState = Object.values(peersState).filter((peer) => peer.status === 'connected');
   const myID = appState.client.getID();
+
   return (
     <AvatarGroup max={4}>
-      {Object.entries(appState.peers[docKey] || {}).map(([peerID, peer]) => (
-        <Tooltip key={peerID} title={peer.username} data-id={peerID} arrow>
+      {onlinePeersState.map((peer) => (
+        <Tooltip key={peer.id} title={peer.username} data-id={peer.id} arrow>
           <Avatar
-            key={peerID}
+            key={peer.id}
             alt="Peer Image"
             style={{
               backgroundColor: peer.color,
-              border: peerID === myID ? '2px solid black' : '',
+              border: peer.id === myID ? '2px solid black' : '',
             }}
             src={anonymous.getImage(peer.image)}
           />

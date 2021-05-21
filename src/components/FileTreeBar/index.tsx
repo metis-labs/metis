@@ -10,7 +10,8 @@ import { PeerInfo, Project } from 'store/types';
 import { encodeEventDesc } from 'store/types/events';
 import { createNetwork } from 'store/types/networks';
 import { useAppState } from 'App';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from 'app/rootReducer';
 import { syncSelectedNetwork } from 'features/peerInfoSlices';
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 
@@ -82,6 +83,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function FileTreeBar() {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const peersState = useSelector((state: AppState) => state.peerState.peers);
   const [appState, updateAppState] = useAppState();
   const project = appState.remote.getRoot().project! as Project;
   const { selectedNetworkID } = appState.local;
@@ -108,12 +110,6 @@ export default function FileTreeBar() {
 
       appState.remote.update((root) => {
         root.peers[clientID].selectedNetworkID = networkID;
-        dispatch(
-          syncSelectedNetwork({
-            myClientID: clientID,
-            networkID,
-          }),
-        );
       });
     },
     [appState.remote, updateAppState, clientID],
@@ -134,21 +130,28 @@ export default function FileTreeBar() {
 
     appState.remote.update((root) => {
       root.peers[clientID].selectedNetworkID = network.id;
-      dispatch(
-        syncSelectedNetwork({
-          myClientID: clientID,
-          networkID: network.id,
-        }),
-      );
     });
   }, [appState.remote, clientID]);
 
+  // redux
+  useEffect(() => {
+    const remoteDoc = appState.remote.getRoot();
+    Object.keys(peersState).forEach((clientID) =>
+      dispatch(
+        syncSelectedNetwork({
+          myClientID: clientID,
+          networkID: remoteDoc.peers[clientID]?.selectedNetworkID,
+        }),
+      ),
+    );
+  }, [appState.remote]);
+  //
+
   // TODO(youngteac.hong): Replace below with type parameter.
   const peersMapByNetworkID: { [networkID: string]: Array<PeerInfo> } = {};
-  const docKey = appState.remote.getKey();
-  for (const [peerID, peer] of Object.entries(appState.peers[docKey] || {})) {
-    const peerInRemote = appState.remote.getRoot().peers[peerID];
-    if (!peerInRemote) {
+  for (const [peerID, peer] of Object.entries(peersState || {})) {
+    const peerInRemote = peersState[peerID];
+    if (!peerInRemote || peerInRemote.status === 'disconnected' || peerInRemote.id === clientID) {
       continue;
     }
 
