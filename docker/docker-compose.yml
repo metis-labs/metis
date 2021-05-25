@@ -16,12 +16,14 @@ services:
       - yorkie
       - metis-server
   yorkie:
-    image: 'yorkieteam/yorkie:latest'
+    image: 'yorkieteam/yorkie:webhook'
     container_name: 'yorkie'
     command: [
       'agent',
       '--mongo-connection-uri',
       'mongodb://mongo:27017',
+      '--authorization-webhook',
+      'http://host.docker.internal:10119/auth',
     ]
     restart: always
     ports:

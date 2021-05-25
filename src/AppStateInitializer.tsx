@@ -7,6 +7,8 @@ import { useAppState } from 'App';
 import { useDispatch } from 'react-redux';
 import { syncPeer } from 'features/peerInfoSlices';
 
+const testUserID = 'KR18401';
+
 function AppStateInitializer() {
   const dispatch = useDispatch();
   const [, updateAppState] = useAppState();
@@ -15,6 +17,7 @@ function AppStateInitializer() {
     (async () => {
       const { name, animal } = anonymous.generate();
       const client = yorkie.createClient(`${process.env.REACT_APP_YORKIE_RPC_ADDR}`, {
+        token: testUserID,
         metadata: {
           username: name,
           image: animal,
