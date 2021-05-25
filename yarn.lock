@@ -13508,10 +13508,9 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-yorkie-js-sdk@authz-webhook:
+"yorkie-js-sdk@https://github.com/yorkie-team/yorkie-js-sdk#authz-webhook":
   version "0.1.4"
-  resolved "https://registry.yarnpkg.com/yorkie-js-sdk/-/yorkie-js-sdk-0.1.4.tgz#838e83a833131828e5c085d9e3efcf64daa50c7f"
-  integrity sha512-i2a5PBgvDYfCm/lC7VwBHZiDuxxBCRtvtZlSKOKW3IK+uCrHI7FKsFl04BjeqamyfHZesXZM7V5Ftkcejphsug==
+  resolved "https://github.com/yorkie-team/yorkie-js-sdk#8e160f97e4b0995eb26c4b6d466a7a390cc2fb8c"
   dependencies:
     "@types/google-protobuf" "^3.7.4"
     "@types/long" "^4.0.1"

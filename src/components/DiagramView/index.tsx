@@ -218,7 +218,7 @@ export default function DiagramView() {
           ))
         : '',
     );
-  });
+  }, [syncCursor]);
   //
 
   const myClientID = appState.client.getID();
