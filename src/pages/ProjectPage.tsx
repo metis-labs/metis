@@ -11,10 +11,10 @@ import DiagramView from 'components/DiagramView';
 import CodeView from 'components/CodeView';
 import StatusBar from 'components/StatusBar';
 import PropertyBar from 'components/PropertyBar';
-import templateProjects from 'store/templates';
 import { useAppState } from 'App';
 
 import { decodeEventDesc } from 'store/types/events';
+import templateProjects from 'store/templates';
 import { createProject } from 'store/types';
 
 const useStyles = makeStyles(() =>
@@ -57,6 +57,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       doc = yorkie.createDocument('projects', projectID);
       await client.attach(doc);
 
+      // TODO(youngteac.hong): Move below initialization to server.
       doc.update((root) => {
         const params = new URLSearchParams(search);
         const templateID = params.get('template_id');
