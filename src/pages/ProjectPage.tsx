@@ -14,8 +14,6 @@ import PropertyBar from 'components/PropertyBar';
 import { useAppState } from 'App';
 
 import { decodeEventDesc } from 'store/types/events';
-import templateProjects from 'store/templates';
-import { createProject } from 'store/types';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -59,15 +57,6 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
 
       // TODO(youngteac.hong): Move below initialization to server.
       doc.update((root) => {
-        const params = new URLSearchParams(search);
-        const templateID = params.get('template_id');
-        if (!root.project) {
-          if (templateID) {
-            root.project = templateProjects[templateID];
-          } else {
-            root.project = createProject('untitled');
-          }
-        }
         if (!root.peers) {
           root.peers = {};
         }

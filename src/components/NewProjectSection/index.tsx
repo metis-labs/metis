@@ -32,10 +32,9 @@ export default function CreateProjectSection() {
   const classes = useStyles();
   const history = useHistory();
 
-  const handleNewProject = useCallback((templateID?: string) => {
+  const handleNewProject = useCallback(() => {
     api.createProject('Undefined').then((res) => {
-      const querystring = templateID ? `?template_id=${templateID}` : '';
-      history.push(`/${res.getProject().getId()}${querystring}`);
+      history.push(`/${res.getProject().getId()}`);
     })
   }, [history]);
 
@@ -54,7 +53,7 @@ export default function CreateProjectSection() {
       {Object.values(templateProjects).map((template) => (
         <Grid key={template.id} item>
           <Card className={classes.card}>
-            <CardActionArea className={classes.cardActionArea} onClick={() => handleNewProject(template.id)}>
+            <CardActionArea className={classes.cardActionArea} onClick={() => handleNewProject()}>
               <CardContent><Typography variant="h6" component="h6">{template.name}</Typography></CardContent>
             </CardActionArea>
           </Card>
