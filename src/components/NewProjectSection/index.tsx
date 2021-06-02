@@ -32,11 +32,10 @@ export default function CreateProjectSection() {
   const classes = useStyles();
   const history = useHistory();
 
-  const handleNewProject = useCallback((templateID?: string) => {
+  const handleNewProject = useCallback(() => {
     api.createProject('Undefined').then((res) => {
-      const querystring = templateID ? `?template_id=${templateID}` : '';
-      history.push(`/${res.getProject().getId()}${querystring}`);
-    })
+      history.push(`/${res.getProject().getId()}`);
+    });
   }, [history]);
 
   return (
@@ -46,7 +45,9 @@ export default function CreateProjectSection() {
           <CardActionArea className={classes.cardActionArea} onClick={() => handleNewProject()}>
             <CardContent>
               <AddIcon fontSize="large" />
-              <Typography variant="h6" component="h6">New Project</Typography>
+              <Typography variant="h6" component="h6">
+                New Project
+              </Typography>
             </CardContent>
           </CardActionArea>
         </Card>
@@ -54,8 +55,12 @@ export default function CreateProjectSection() {
       {Object.values(templateProjects).map((template) => (
         <Grid key={template.id} item>
           <Card className={classes.card}>
-            <CardActionArea className={classes.cardActionArea} onClick={() => handleNewProject(template.id)}>
-              <CardContent><Typography variant="h6" component="h6">{template.name}</Typography></CardContent>
+            <CardActionArea className={classes.cardActionArea} onClick={() => handleNewProject()}>
+              <CardContent>
+                <Typography variant="h6" component="h6">
+                  {template.name}
+                </Typography>
+              </CardContent>
             </CardActionArea>
           </Card>
         </Grid>
@@ -63,7 +68,11 @@ export default function CreateProjectSection() {
       <Grid item>
         <Card className={classes.card}>
           <CardActionArea className={classes.cardActionArea}>
-            <CardContent><Typography variant="h6" component="h6">Show all</Typography></CardContent>
+            <CardContent>
+              <Typography variant="h6" component="h6">
+                Show all
+              </Typography>
+            </CardContent>
           </CardActionArea>
         </Card>
       </Grid>

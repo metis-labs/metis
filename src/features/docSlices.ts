@@ -2,8 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import anonymous from 'anonymous-animals-gen';
 import yorkie, { Client, DocumentReplica } from 'yorkie-js-sdk';
 import randomColor from 'randomcolor';
-import { createProject, Project } from 'store/types';
-import templateProjects from 'store/templates';
+import { Project } from 'store/types';
 import { createNetworkParams, Network } from 'store/types/networks';
 import { encodeEventDesc } from 'store/types/events';
 import { Position } from 'store/types/base';
@@ -62,20 +61,11 @@ export const activateClient = createAsyncThunk<ActivateClientResult, undefined, 
 
 export const attachDoc = createAsyncThunk<AttachDocResult, AttachDocArgs, { rejectValue: string }>(
   'doc/attach',
-  async ({ client, doc, templateID }, thunkApi) => {
+  async ({ client, doc }, thunkApi) => {
     try {
       await client.attach(doc);
 
       doc.update((root) => {
-        if (!root.project) {
-          if (templateID) {
-            // TODO: Need to implement templateProjects API
-            root.project = templateProjects[templateID];
-          } else {
-            // TODO: Need to avoid duplicate titles in the same project
-            root.project = createProject('untitled');
-          }
-        }
         if (!root.peers) {
           root.peers = {} as PeerInfoState;
         }
@@ -495,7 +485,7 @@ export const { deactivateClient, createDocument, detachDocument, attachDocLoadin
 export default docSlice.reducer;
 
 type ActivateClientResult = { client: Client };
-type AttachDocArgs = { doc: DocumentReplica<MetisDoc>; client: Client; templateID: string };
+type AttachDocArgs = { doc: DocumentReplica<MetisDoc>; client: Client };
 type AttachDocResult = { doc: DocumentReplica<MetisDoc>; client: Client };
 type UpdateNetworkIDArgs = { doc: DocumentReplica<MetisDoc>; client: Client; networkID: string };
 type UpdateNetworkIDResult = { doc: DocumentReplica<MetisDoc> };

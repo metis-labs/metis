@@ -63,10 +63,8 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       if (!client || !doc) {
         return;
       }
-      const params = new URLSearchParams(search);
-      const templateID = params.get('template_id');
       dispatch(attachDocLoading(true));
-      await dispatch(attachDoc({ client, doc, templateID }));
+      await dispatch(attachDoc({ client, doc }));
       const networkIDs = Object.keys(doc.getRoot().project.networks);
       dispatch(initDiagramInfos({ networkIDs }));
       dispatch(syncSelfSelectedNetwork({ networkID: networkIDs[0] }));
