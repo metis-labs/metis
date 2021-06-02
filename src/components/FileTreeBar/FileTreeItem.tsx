@@ -14,9 +14,10 @@ import { TransitionProps } from '@material-ui/core/transitions';
 import Collapse from '@material-ui/core/Collapse';
 
 import { PeerInfo } from 'store/types';
+import { useDispatch, useSelector } from 'react-redux';
 import { Network } from 'store/types/networks';
-import { encodeEventDesc } from 'store/types/events';
-import { useAppState } from 'App';
+import { AppState } from 'app/rootReducer';
+import { updateDeletedNetwork, updateRenamedNetwork } from 'features/docSlices';
 import RenameDialog from './RenameDialog';
 
 function TransitionComponent(props: TransitionProps) {
@@ -94,8 +95,9 @@ const useStyles = makeStyles(() =>
 
 export default function FileTreeItem(props: { network: Network; peers: Array<PeerInfo> }) {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const docState = useSelector((state: AppState) => state.docState.doc);
   const { network, peers } = props;
-  const [appState] = useAppState();
   const [menuOpen, setMenuOpen] = useState(false);
   const [moreButtonOpen, setMoreButtonOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
@@ -151,30 +153,19 @@ export default function FileTreeItem(props: { network: Network; peers: Array<Pee
   }, [setRenameDialogOpen]);
 
   const handleDeleteButtonClick = useCallback(() => {
-    appState.remote.update(
-      (root) => {
-        delete root.project.networks[network.id];
-      },
-      encodeEventDesc({
-        id: network.id,
-        entityType: 'network',
-        actionType: 'delete',
-      }),
-    );
-  }, [appState.remote, network.id]);
+    dispatch(updateDeletedNetwork({ doc: docState, network }));
+  }, [docState, network.id]);
 
   const handleRenameDialogClose = useCallback(
     (modelName: string | undefined) => {
       if (modelName) {
-        appState.remote.update((root) => {
-          root.project.networks[network.id].name = modelName;
-        });
+        dispatch(updateRenamedNetwork({ doc: docState, network, modelName }));
       }
       setRenameDialogOpen(false);
       setMoreButtonOpen(false);
       setMenuOpen(false);
     },
-    [setRenameDialogOpen, setMoreButtonOpen, setMenuOpen, appState.remote, network.id],
+    [setRenameDialogOpen, setMoreButtonOpen, setMenuOpen, docState, network.id],
   );
 
   return (

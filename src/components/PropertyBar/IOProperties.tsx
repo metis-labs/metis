@@ -4,9 +4,11 @@ import FormControl from '@material-ui/core/FormControl/FormControl';
 import TextField from '@material-ui/core/TextField';
 
 import { BlockType, IOBlock } from 'store/types/blocks';
-import { useAppState } from 'App';
 
-import { valueTransition, preserveCaret, stopPropagationOnKeydown } from './utils';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from 'app/rootReducer';
+import { changeProperty } from 'features/docSlices';
+import { preserveCaret, stopPropagationOnKeydown } from './utils';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -20,21 +22,19 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function NetworkProperties(props: { block: IOBlock }) {
   const classes = useStyles();
-  const [appState] = useAppState();
-  const { selectedNetworkID } = appState.local;
-  const { selectedBlockID } = appState.local.diagramInfos[selectedNetworkID];
+  const dispatch = useDispatch();
+  const docState = useSelector((state: AppState) => state.docState.doc);
+  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
+  const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
+  const { selectedBlockID } = diagramInfos[selectedNetworkID];
   const { block: selectedBlock } = props;
 
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      appState.remote.update((root) => {
-        const { project } = root;
-        const model = project.networks[selectedNetworkID];
-        model.blocks[selectedBlockID][key] = valueTransition(event.target.value);
-      });
+      dispatch(changeProperty({ doc: docState, event, selectedNetworkID, selectedBlockID, key }));
     },
-    [appState.remote, selectedBlockID, selectedNetworkID],
+    [docState, selectedBlockID, selectedNetworkID],
   );
 
   return (

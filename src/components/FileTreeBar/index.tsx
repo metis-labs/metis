@@ -6,13 +6,13 @@ import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 import TreeView from '@material-ui/lab/TreeView';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
-import { PeerInfo, Project } from 'store/types';
-import { encodeEventDesc } from 'store/types/events';
+import { PeerInfo } from 'store/types';
 import { createNetwork } from 'store/types/networks';
-import { useAppState } from 'App';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
 import { syncSelectedNetwork } from 'features/peerInfoSlices';
+import { syncSelfSelectedNetwork } from 'features/localSlices';
+import { updateCreatedNetwork, updateSelectedNetworkID } from 'features/docSlices';
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 
 function MinusSquare(props: SvgIconProps) {
@@ -84,10 +84,11 @@ export default function FileTreeBar() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const peersState = useSelector((state: AppState) => state.peerState.peers);
-  const [appState, updateAppState] = useAppState();
-  const project = appState.remote.getRoot().project! as Project;
-  const { selectedNetworkID } = appState.local;
-  const clientID = appState.client.getID();
+  const client = useSelector((state: AppState) => state.docState.client);
+  const doc = useSelector((state: AppState) => state.docState.doc);
+  const project = doc.getRoot().project!;
+  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
+  const clientID = client.getID();
   const [expanded, setExpanded] = useState<string[]>([]);
 
   useEffect(() => {
@@ -100,42 +101,23 @@ export default function FileTreeBar() {
 
   const handleNodeSelect = useCallback(
     (event: ChangeEvent, networkID: any) => {
-      updateAppState((appState) => {
-        const { project } = appState.remote.getRoot();
-        if (project.networks[networkID]) {
-          appState.local.selectedNetworkID = networkID;
-        }
-        return appState;
-      });
-
-      appState.remote.update((root) => {
-        root.peers[clientID].selectedNetworkID = networkID;
-      });
+      if (project.networks[networkID]) {
+        dispatch(syncSelfSelectedNetwork(networkID));
+      }
+      dispatch(updateSelectedNetworkID({ client, doc, networkID }));
     },
-    [appState.remote, updateAppState, clientID],
+    [doc, clientID],
   );
 
-  const handleAddNetwork = useCallback(() => {
+  const handleAddNetwork = useCallback(async () => {
     const network = createNetwork('Untitled');
-    appState.remote.update(
-      (root) => {
-        root.project.networks[network.id] = network;
-      },
-      encodeEventDesc({
-        id: network.id,
-        entityType: 'network',
-        actionType: 'create',
-      }),
-    );
 
-    appState.remote.update((root) => {
-      root.peers[clientID].selectedNetworkID = network.id;
-    });
-  }, [appState.remote, clientID]);
+    dispatch(updateCreatedNetwork({ client, doc, network }));
+    dispatch(updateSelectedNetworkID({ client, doc, networkID: network.id }));
+  }, [doc, clientID]);
 
-  // redux
   useEffect(() => {
-    const remoteDoc = appState.remote.getRoot();
+    const remoteDoc = doc.getRoot();
     Object.keys(peersState).forEach((clientID) =>
       dispatch(
         syncSelectedNetwork({
@@ -144,8 +126,7 @@ export default function FileTreeBar() {
         }),
       ),
     );
-  }, [appState.remote]);
-  //
+  }, [doc]);
 
   // TODO(youngteac.hong): Replace below with type parameter.
   const peersMapByNetworkID: { [networkID: string]: Array<PeerInfo> } = {};

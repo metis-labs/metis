@@ -15,10 +15,10 @@ import List from '@material-ui/core/List';
 import MenuItem from '@material-ui/core/MenuItem';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
-
 import api from 'api';
 import { ProjectInfo } from 'store/types';
-import { useAppState } from 'App';
+import { deleteProject, renameProject } from 'features/localSlices';
+import { useDispatch } from 'react-redux';
 import RenameDialog from './RenameDialog';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -59,7 +59,7 @@ type ProjectItemProps = {
 export default function ProjectCard(props: ProjectItemProps) {
   const { project } = props;
   const classes = useStyles();
-  const [, updateAppState] = useAppState();
+  const dispatch = useDispatch();
   const anchorRef = useRef<HTMLButtonElement>(null);
   const [popperOpen, setPopperOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
@@ -97,41 +97,29 @@ export default function ProjectCard(props: ProjectItemProps) {
     [anchorRef, setPopperOpen],
   );
 
-  const handleRenameButtonClick = useCallback(
-    () => {
-      setRenameDialogOpen(true);
-    },
-    [setRenameDialogOpen],
-  );
+  const handleRenameButtonClick = useCallback(() => {
+    setRenameDialogOpen(true);
+  }, [setRenameDialogOpen]);
 
   const handleRenameDialogClose = useCallback(
     (projectName: string | undefined) => {
       if (projectName) {
         api.updateProject(project.id, projectName).then(() => {
-          updateAppState((appState) => {
-            appState.local.projectInfos[project.id].name = projectName;
-            return appState;
-          });
+          dispatch(renameProject({ projectID: project.id, projectName }));
         });
       }
 
       setRenameDialogOpen(false);
       setPopperOpen(false);
     },
-    [setRenameDialogOpen, project.id, updateAppState],
+    [setRenameDialogOpen, project.id],
   );
 
-  const handleDeleteButtonClick = useCallback(
-    () => {
-      api.deleteProject(project.id).then(() => {
-        updateAppState((appState) => {
-          delete appState.local.projectInfos[project.id];
-          return appState;
-        });
-      });
-    },
-    [updateAppState, project.id],
-  );
+  const handleDeleteButtonClick = useCallback(() => {
+    api.deleteProject(project.id).then(() => {
+      dispatch(deleteProject({ projectID: project.id }));
+    });
+  }, [project.id]);
 
   return (
     <Card className={classes.projectCard}>
@@ -165,11 +153,7 @@ export default function ProjectCard(props: ProjectItemProps) {
                         <MenuItem className={classes.menuItem} onClick={handleRenameButtonClick}>
                           Rename
                         </MenuItem>
-                        <RenameDialog
-                          name={project.name}
-                          open={renameDialogOpen}
-                          onClose={handleRenameDialogClose}
-                         />
+                        <RenameDialog name={project.name} open={renameDialogOpen} onClose={handleRenameDialogClose} />
                         <MenuItem className={classes.menuItem} onClick={handleDeleteButtonClick}>
                           Delete
                         </MenuItem>

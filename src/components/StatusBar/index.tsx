@@ -6,7 +6,8 @@ import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-import { useAppState } from 'App';
+import { useSelector } from 'react-redux';
+import { AppState } from 'app/rootReducer';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -31,9 +32,9 @@ const useStyles = makeStyles(() =>
 export default function StatusBar(props: { viewMode: string; setViewMode: Function }) {
   const { viewMode, setViewMode } = props;
   const classes = useStyles();
-  const [appState] = useAppState();
-  const { project } = appState.remote.getRoot();
-  const { selectedNetworkID } = appState.local;
+  const docState = useSelector((state: AppState) => state.docState.doc);
+  const { project } = docState.getRoot();
+  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
 
   const handleClick = useCallback(() => {
     setViewMode(viewMode === 'diagram' ? 'code' : 'diagram');

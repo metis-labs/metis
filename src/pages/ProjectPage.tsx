@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router';
-import yorkie, { Client, DocumentReplica } from 'yorkie-js-sdk';
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -11,11 +10,13 @@ import DiagramView from 'components/DiagramView';
 import CodeView from 'components/CodeView';
 import StatusBar from 'components/StatusBar';
 import PropertyBar from 'components/PropertyBar';
-import templateProjects from 'store/templates';
-import { useAppState } from 'App';
 
 import { decodeEventDesc } from 'store/types/events';
-import { createProject } from 'store/types';
+import { useDispatch, useSelector } from 'react-redux';
+import { attachDoc, attachDocLoading, createDocument, detachDocument, setRepaintCounter } from 'features/docSlices';
+import { AppState } from 'app/rootReducer';
+import { deleteNetwork, initDiagramInfos, syncSelfSelectedNetwork } from 'features/localSlices';
+import { syncCursor, syncSelectedNetwork } from 'features/peerInfoSlices';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -42,137 +43,93 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
     },
     location: { search },
   } = props;
-  const [appState, updateAppState] = useAppState();
   const [viewMode, setViewMode] = useState('diagram');
+  const dispatch = useDispatch();
+  const client = useSelector((state: AppState) => state.docState.client);
+  const doc = useSelector((state: AppState) => state.docState.doc);
+  const localInfoState = useSelector((state: AppState) => state.localInfoState);
+  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
 
   useEffect(() => {
-    let doc: DocumentReplica;
-    const unsubscribes: Array<Function> = [];
-    (async () => {
-      if (!appState.client) {
+    dispatch(createDocument(projectID));
+
+    return () => {
+      dispatch(detachDocument());
+    };
+  }, [projectID]);
+
+  useEffect(() => {
+    async function attachDocAsync() {
+      if (!client || !doc) {
         return;
       }
-      const client = appState.client as Client;
-
-      doc = yorkie.createDocument('projects', projectID);
-      await client.attach(doc);
-
-      doc.update((root) => {
-        const params = new URLSearchParams(search);
-        const templateID = params.get('template_id');
-        if (!root.project) {
-          if (templateID) {
-            root.project = templateProjects[templateID];
-          } else {
-            root.project = createProject('untitled');
-          }
-        }
-        if (!root.peers) {
-          root.peers = {};
-        }
-        const networkIDs = Object.keys(root.project.networks);
-        if (!root.peers[client.getID()]) {
-          root.peers[client.getID()] = {
-            selectedNetworkID: networkIDs[0],
-          };
-        }
-      });
-
+      const params = new URLSearchParams(search);
+      const templateID = params.get('template_id');
+      dispatch(attachDocLoading(true));
+      await dispatch(attachDoc({ client, doc, templateID }));
       const networkIDs = Object.keys(doc.getRoot().project.networks);
-      // TODO(youngteac.hong): Until Yorkie supports metadata-update, we use remote temporarily.
-      // client.updateMetadata('selectedNetworkID', networkIDs[0]);
-      updateAppState((appState) => {
-        appState.remote = doc;
-        appState.local.selectedNetworkID = networkIDs[0];
-        for (const networkID of networkIDs) {
-          appState.local.diagramInfos[networkID] = {
-            offset: { x: 0, y: 0 },
-            zoom: 100,
-          };
-        }
-        return appState;
-      });
+      dispatch(initDiagramInfos({ networkIDs }));
+      dispatch(syncSelfSelectedNetwork({ networkID: networkIDs[0] }));
 
       function handleEvent(event) {
-        let isPeersChanged = false;
-        let isProjectChanged = false;
         if (event.type === 'local-change' || event.type === 'remote-change') {
           for (const changeInfo of event.value) {
-            for (const path of changeInfo.paths) {
-              if (path.startsWith('$.project')) {
-                isProjectChanged = true;
-              } else if (path.startsWith('$.peers')) {
-                isPeersChanged = true;
-              }
-              if (isProjectChanged && isPeersChanged) {
-                return [isProjectChanged, isPeersChanged];
-              }
+            if (changeInfo.paths[0].startsWith('$.project')) {
+              dispatch(setRepaintCounter(1));
             }
             if (changeInfo.change.getMessage()) {
               const desc = decodeEventDesc(changeInfo.change.getMessage());
               if (desc.actionType === 'create' && desc.entityType === 'network') {
-                updateAppState((appState) => {
-                  appState.local.diagramInfos[desc.id] = {
-                    offset: { x: 0, y: 0 },
-                    zoom: 100,
-                  };
-
-                  if (event.type === 'local-change') {
-                    appState.local.selectedNetworkID = desc.id;
-                  }
-                  return appState;
-                });
+                dispatch(initDiagramInfos({ networkIDs: [desc.id] }));
+                if (event.type === 'local-change') {
+                  dispatch(syncSelfSelectedNetwork({ networkID: desc.id }));
+                }
               } else if (desc.actionType === 'delete' && desc.entityType === 'network') {
-                updateAppState((appState) => {
-                  delete appState.local.diagramInfos[desc.id];
-                  if (desc.id === appState.local.selectedNetworkID) {
-                    appState.local.selectedNetworkID = null;
-                  }
-                  return appState;
-                });
+                dispatch(deleteNetwork({ networkID: desc.id }));
+                if (desc.id === selectedNetworkID) {
+                  dispatch(syncSelfSelectedNetwork({ networkID: null }));
+                }
               }
+            }
+            if (changeInfo.change.getOperations()[0].key === 'selectedNetworkID') {
+              const clientID = changeInfo.change.getID().actor;
+              if (clientID === client.getID()) {
+                dispatch(syncSelfSelectedNetwork({ networkID: changeInfo.change.getOperations()[0].value.value }));
+              } else
+                dispatch(
+                  syncSelectedNetwork({
+                    myClientID: clientID,
+                    networkID: changeInfo.change.getOperations()[1].value.value,
+                  }),
+                );
+            } else if (changeInfo.change.getOperations()[0].key === 'cursor') {
+              const clientID = changeInfo.change.getID().actor;
+              const x = changeInfo.change.getOperations()[1].value.value;
+              const y = changeInfo.change.getOperations()[2].value.value;
+              dispatch(
+                syncCursor({
+                  myClientID: clientID,
+                  x,
+                  y,
+                }),
+              );
             }
           }
         }
-        return [isProjectChanged, isPeersChanged];
       }
-
-      // Trigger repaint using change events
-      unsubscribes.push(
-        doc.subscribe((event) => {
-          const [isProjectChanged, isPeersChanged] = handleEvent(event);
-
-          updateAppState((appState) => {
-            if (isProjectChanged) {
-              appState.remoteRepaintCounter += 1;
-            }
-            if (isPeersChanged) {
-              appState.peersRepaintCounter += 1;
-            }
-            return appState;
-          });
-        }),
-      );
-    })();
-    const clear = async () => {
-      for (const unsubscribe of unsubscribes) {
-        unsubscribe();
-      }
-      if (appState.client && doc) {
-        await appState.client.detach(doc);
-      }
-      updateAppState((appState) => {
-        appState.remote = null;
-        return appState;
+      doc.subscribe((event) => {
+        console.log('event type', event.type);
+        console.log('event value', event.value);
+        handleEvent(event);
       });
-    };
-
+    }
+    attachDocAsync();
     return () => {
-      clear();
+      dispatch(attachDocLoading(true));
     };
-  }, [appState.client, updateAppState, projectID, search]);
+  }, [projectID, client, doc, search, initDiagramInfos]);
 
-  if (!appState.remote?.getRoot().project) {
+  if (!doc?.getRoot().project) {
     return (
       <div className={classes.root}>
         <CircularProgress />
@@ -184,10 +141,11 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
     <div className={classes.root}>
       <NavBar />
       <FileTreeBar />
-      {appState.local.selectedNetworkID ? (
+      {localInfoState.selectedNetworkID ? (
         <>
           <main className={classes.content}>
             {viewMode === 'diagram' ? <DiagramView /> : <CodeView />}
+            <DiagramView />
             <StatusBar viewMode={viewMode} setViewMode={setViewMode} />
           </main>
           <PropertyBar />

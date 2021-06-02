@@ -16,17 +16,18 @@ import {
   IOBlock,
   NetworkBlock,
   NormalBlock,
-  createParams,
   isIOBlockType,
   isNetworkBlockType,
   isNormalBlockType,
 } from 'store/types/blocks';
-import { useAppState } from 'App';
 
-import { valueTransition, preserveCaret, stopPropagationOnKeydown } from './utils';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from 'app/rootReducer';
+import { changeBlockType, changeProperty } from 'features/docSlices';
 import IOProperties from './IOProperties';
 import NetworkProperties from './NetworkProperties';
 import NormalProperties from './NormalProperties';
+import { preserveCaret, stopPropagationOnKeydown } from './utils';
 
 const drawerWidth = 240;
 
@@ -54,39 +55,27 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function PropertyBar() {
   const classes = useStyles();
-  const [appState] = useAppState();
-  const project = appState.remote.getRoot().project as Project;
-  const { selectedNetworkID } = appState.local;
-  const { selectedBlockID } = appState.local.diagramInfos[selectedNetworkID];
+  const dispatch = useDispatch();
+  const docState = useSelector((state: AppState) => state.docState.doc);
+  const project = docState.getRoot().project as Project;
+  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
+  const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
+  const { selectedBlockID } = diagramInfos[selectedNetworkID];
   const network = project.networks[selectedNetworkID];
 
   const onTypeChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      appState.remote.update((root) => {
-        const { project } = root;
-        const model = project.networks[selectedNetworkID];
-        const type = event.target.value as BlockType;
-        model.blocks[selectedBlockID].type = type;
-        if (isNormalBlockType(type)) {
-          model.blocks[selectedBlockID].parameters = createParams(type);
-        } else {
-          model.blocks[selectedBlockID].parameters = {};
-        }
-      });
+      dispatch(changeBlockType({ doc: docState, event, selectedNetworkID, selectedBlockID }));
     },
-    [appState.remote, selectedBlockID, selectedNetworkID],
+    [docState, selectedBlockID, selectedNetworkID],
   );
 
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      appState.remote.update((root) => {
-        const { project } = root;
-        const model = project.networks[selectedNetworkID];
-        model.blocks[selectedBlockID][key] = valueTransition(event.target.value as string);
-      });
+      dispatch(changeProperty({ doc: docState, event, selectedNetworkID, selectedBlockID, key }));
     },
-    [appState.remote, selectedBlockID, selectedNetworkID],
+    [docState, selectedBlockID, selectedNetworkID],
   );
 
   if (!selectedBlockID || !network.blocks[selectedBlockID]) {

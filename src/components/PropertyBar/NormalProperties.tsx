@@ -5,9 +5,11 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
 import { NormalBlock, getOrderedParamNames } from 'store/types/blocks';
-import { useAppState } from 'App';
 
-import { valueTransition, preserveCaret, stopPropagationOnKeydown } from './utils';
+import { changePrameter, changeProperty } from 'features/docSlices';
+import { AppState } from 'app/rootReducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { preserveCaret, stopPropagationOnKeydown } from './utils';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,33 +29,27 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function NetworkProperties(props: { block: NormalBlock }) {
   const classes = useStyles();
-  const [appState] = useAppState();
-  const { selectedNetworkID } = appState.local;
-  const { selectedBlockID } = appState.local.diagramInfos[selectedNetworkID];
+  const dispatch = useDispatch();
+  const doc = useSelector((state: AppState) => state.docState.doc);
+  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
+  const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
+  const { selectedBlockID } = diagramInfos[selectedNetworkID];
   const { block: selectedBlock } = props;
 
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      appState.remote.update((root) => {
-        const { project } = root;
-        const model = project.networks[selectedNetworkID];
-        model.blocks[selectedBlockID][key] = valueTransition(event.target.value as string);
-      });
+      dispatch(changeProperty({ doc, selectedNetworkID, selectedBlockID, event, key }));
     },
-    [appState.remote, selectedBlockID, selectedNetworkID],
+    [doc, selectedBlockID, selectedNetworkID],
   );
 
   const handleParameterChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      appState.remote.update((root) => {
-        const { project } = root;
-        const model = project.networks[selectedNetworkID];
-        model.blocks[selectedBlockID].parameters[key] = valueTransition(event.target.value as string);
-      });
+      dispatch(changePrameter({ doc, selectedNetworkID, selectedBlockID, event, key }));
     },
-    [appState.remote, selectedBlockID, selectedNetworkID],
+    [doc, selectedBlockID, selectedNetworkID],
   );
 
   const paramNames = getOrderedParamNames(selectedBlock.type);

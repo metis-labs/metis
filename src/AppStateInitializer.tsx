@@ -1,61 +1,61 @@
 import React, { useEffect } from 'react';
-import yorkie from 'yorkie-js-sdk';
-import anonymous from 'anonymous-animals-gen';
-import randomColor from 'randomcolor';
-
-import { useAppState } from 'App';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { activateClient, deactivateClient, DocStatus, setStatus } from 'features/docSlices';
+import { AppState } from 'app/rootReducer';
 import { syncPeer } from 'features/peerInfoSlices';
-
-const testUserID = 'KR18401';
 
 function AppStateInitializer() {
   const dispatch = useDispatch();
-  const [, updateAppState] = useAppState();
+  const client = useSelector((state: AppState) => state.docState.client);
+  const doc = useSelector((state: AppState) => state.docState.doc);
+  const status = useSelector((state: AppState) => state.docState.status);
+  const Peers = useSelector((state: AppState) => state.peerState.peers);
 
   useEffect(() => {
-    (async () => {
-      const { name, animal } = anonymous.generate();
-      const client = yorkie.createClient(`${process.env.REACT_APP_YORKIE_RPC_ADDR}`, {
-        token: testUserID,
-        metadata: {
-          username: name,
-          image: animal,
-          color: randomColor(),
-        },
-      });
+    dispatch(activateClient());
+    return () => {
+      dispatch(deactivateClient());
+    };
+  }, []);
 
-      const unsubscribe = client.subscribe((event) => {
-        if (event.type === 'peers-changed') {
-          updateAppState((appState) => {
-            appState.peers = event.value as any;
-            const myClientID = client.getID();
-            const docKey = appState.remote.getKey();
-            const changedPeers = event.value[docKey] as any;
-            dispatch(
-              syncPeer({
-                myClientID,
-                changedPeers,
-              }),
-            );
-            return appState;
-          });
-        }
-      });
+  useEffect(() => {
+    if (!client) {
+      return () => {};
+    }
+    const unsubscribe = client.subscribe((event) => {
+      if (event.type === 'peers-changed') {
+        const documentKey = doc.getKey();
+        const changedPeers = event.value[documentKey] as any;
+        dispatch(
+          syncPeer({
+            myClientID: client.getID(),
+            changedPeers,
+          }),
+        );
+      }
+      if (
+        status === DocStatus.Connect &&
+        ((event.type === 'status-changed' && event.value === 'deactivated') ||
+          (event.type === 'stream-connection-status-changed' && event.value === 'disconnected') ||
+          (event.type === 'document-synced' && event.value === 'sync-failed'))
+      ) {
+        dispatch(setStatus(DocStatus.Disconnect));
+      } else if (
+        status === DocStatus.Disconnect &&
+        (event.type === 'peers-changed' ||
+          event.type === 'documents-changed' ||
+          (event.type === 'status-changed' && event.value === 'activated') ||
+          (event.type === 'stream-connection-status-changed' && event.value === 'connected') ||
+          (event.type === 'document-synced' && event.value === 'synced'))
+      ) {
+        dispatch(setStatus(DocStatus.Connect));
+      }
+    });
 
-      await client.activate();
-
-      updateAppState((appState) => {
-        appState.client = client;
-        return appState;
-      });
-
-      return async () => {
-        unsubscribe();
-        await client.deactivate();
-      };
-    })();
-  }, [updateAppState]);
+    return () => {
+      unsubscribe();
+    };
+  }, [client, doc, status, Peers]);
 
   return <></>;
 }

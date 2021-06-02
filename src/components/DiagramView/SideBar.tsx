@@ -7,8 +7,10 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import AddIcon from '@material-ui/icons/Add';
 
-import { useAppState } from 'App';
-import { Block, BlockType, createBlock } from 'store/types/blocks';
+import { BlockType } from 'store/types/blocks';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from 'app/rootReducer';
+import { updateAddedBlock } from 'features/docSlices';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -20,7 +22,7 @@ const useStyles = makeStyles(() =>
       width: 56,
       top: 140,
       left: 10,
-      zIndex: 1
+      zIndex: 1,
     },
     button: {
       border: '1px solid gray',
@@ -31,20 +33,16 @@ const useStyles = makeStyles(() =>
 
 export default function SideBar() {
   const classes = useStyles();
-  const [appState] = useAppState();
-  const { selectedNetworkID } = appState.local;
+  const dispatch = useDispatch();
+  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
+  const docState = useSelector((state: AppState) => state.docState.doc);
+  const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
   const handleAddBlockClick = useCallback(
     (type: BlockType) => {
-      appState.remote.update((root) => {
-        const network = root.project.networks[selectedNetworkID];
-        const blockLength = Object.values(network.blocks).filter((block: Block) => block.type === type).length;
-        const diagramOffset = appState.local.diagramInfos[selectedNetworkID].offset;
-        const position = { x: 200 + 10 * blockLength - diagramOffset.x, y: 200 + 10 * blockLength - diagramOffset.y };
-        const block = createBlock(type, position, blockLength);
-        network.blocks[block.id] = block;
-      });
+      const diagramOffset = diagramInfos[selectedNetworkID].offset;
+      dispatch(updateAddedBlock({ doc: docState, networkID: selectedNetworkID, type, diagramOffset }));
     },
-    [appState.remote, selectedNetworkID, appState.local.diagramInfos],
+    [docState, selectedNetworkID, diagramInfos],
   );
 
   return (

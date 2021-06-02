@@ -9,10 +9,11 @@ import Typography from '@material-ui/core/Typography';
 
 import { Project } from 'store/types';
 import { BlockType, NetworkBlock } from 'store/types/blocks';
-import { createNetworkParams } from 'store/types/networks';
-import { useAppState } from 'App';
 
-import { valueTransition, preserveCaret, stopPropagationOnKeydown } from './utils';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from 'app/rootReducer';
+import { changePrameter, changeProperty, changeRefNetwork } from 'features/docSlices';
+import { preserveCaret, stopPropagationOnKeydown } from './utils';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,56 +33,38 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function NetworkProperties(props: { block: NetworkBlock }) {
   const classes = useStyles();
-  const [appState] = useAppState();
-  const remoteState = appState.remote.getRoot();
+  const dispatch = useDispatch();
+  const doc = useSelector((state: AppState) => state.docState.doc);
+  const remoteState = doc.getRoot();
   const project = remoteState.project as Project;
-  const { selectedNetworkID } = appState.local;
-  const { selectedBlockID } = appState.local.diagramInfos[selectedNetworkID];
+  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
+  const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
+  const { selectedBlockID } = diagramInfos[selectedNetworkID];
   const { block: selectedBlock } = props;
 
   const otherNetworks = Object.values(project.networks).filter((network: any) => network.id !== selectedNetworkID);
 
   const onRefNetworkChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      appState.remote.update((root) => {
-        const networkName = event.target.value;
-        const project = root.project as Project;
-        const network = project.networks[selectedNetworkID];
-
-        // Update network block
-        const targetNetwork = Object.values(project.networks).find((network) => network.name === networkName);
-        const block = network.blocks[selectedBlockID];
-        if (block.type === BlockType.Network) {
-          block.refNetwork = targetNetwork ? targetNetwork.id : '';
-          block.parameters = targetNetwork ? createNetworkParams(targetNetwork) : {};
-        }
-      });
+      dispatch(changeRefNetwork({ doc, event, selectedNetworkID, selectedBlockID }));
     },
-    [appState.remote, selectedBlockID, selectedNetworkID],
+    [doc, selectedBlockID, selectedNetworkID],
   );
 
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      appState.remote.update((root) => {
-        const { project } = root;
-        const model = project.networks[selectedNetworkID];
-        model.blocks[selectedBlockID][key] = valueTransition(event.target.value as string);
-      });
+      dispatch(changeProperty({ doc, event, selectedNetworkID, selectedBlockID, key }));
     },
-    [appState.remote, selectedBlockID, selectedNetworkID],
+    [doc, selectedBlockID, selectedNetworkID],
   );
 
   const handleParameterChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      appState.remote.update((root) => {
-        const { project } = root;
-        const model = project.networks[selectedNetworkID];
-        model.blocks[selectedBlockID].parameters[key] = valueTransition(event.target.value as string);
-      });
+      dispatch(changePrameter({ doc, event, selectedNetworkID, selectedBlockID, key }));
     },
-    [appState.remote, selectedBlockID, selectedNetworkID],
+    [doc, selectedBlockID, selectedNetworkID],
   );
 
   const paramNames = Object.keys(selectedBlock.parameters);

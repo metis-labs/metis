@@ -8,9 +8,9 @@ import NavBar from 'components/NavBar';
 import ProjectCard from 'components/ProjectCard';
 import NewProjectSection from 'components/NewProjectSection';
 
-import api from 'api';
-import { fromProjects } from 'api/converter';
-import { useAppState } from 'App';
+import { useDispatch, useSelector } from 'react-redux';
+import { syncProjectInfos } from 'features/localSlices';
+import { AppState } from 'app/rootReducer';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -34,16 +34,12 @@ const useStyles = makeStyles(() =>
 
 export default function ProjectIntroPage() {
   const classes = useStyles();
-  const [appState, updateAppState] = useAppState();
+  const dispatch = useDispatch();
+  const projectInfos = useSelector((state: AppState) => state.localInfoState.projectInfos);
 
   useEffect(() => {
-    api.listProjects().then((res) => {
-      updateAppState((appState) => {
-        appState.local.projectInfos = fromProjects(res.getProjectsList());
-        return appState;
-      });
-    });
-  }, [updateAppState]);
+    dispatch(syncProjectInfos());
+  }, []);
 
   return (
     <div className={classes.root}>
@@ -57,7 +53,7 @@ export default function ProjectIntroPage() {
           All projects
         </Typography>
         <Grid container spacing={2}>
-          {Object.values(appState.local.projectInfos).map((project) => (
+          {Object.values(projectInfos).map((project) => (
             <Grid key={project.id} item>
               <ProjectCard project={project} />
             </Grid>

@@ -4,7 +4,8 @@ import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Converter from 'converter';
-import { useAppState } from 'App';
+import { useSelector } from 'react-redux';
+import { AppState } from 'app/rootReducer';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -19,17 +20,16 @@ const useStyles = makeStyles(() =>
 
 export default function CodeView() {
   const classes = useStyles();
-  const [appState] = useAppState();
+  const doc = useSelector((state: AppState) => state.docState.doc);
+  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
   const [converter] = useState(new Converter());
   const [codeString, setCodeString] = useState('');
-  const project = appState.remote.getRoot().project!;
-  const { selectedNetworkID } = appState.local;
-  const { remoteRepaintCounter } = appState;
+  const project = doc.getRoot().project!;
 
   useEffect(() => {
     converter.update(project, selectedNetworkID);
     setCodeString(converter.getResult());
-  }, [remoteRepaintCounter, appState.remote, setCodeString, selectedNetworkID]);
+  }, [doc, setCodeString, selectedNetworkID]);
 
   return (
     <div className={classes.root}>

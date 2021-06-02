@@ -4,19 +4,19 @@ import Avatar from '@material-ui/core/Avatar';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import { useAppState } from 'App';
 import { useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
 
 export default function PeerGroup() {
-  const [appState] = useAppState();
   const peersState = useSelector((state: AppState) => state.peerState.peers);
-  if (!appState.remote) {
+  const docState = useSelector((state: AppState) => state.docState.doc);
+  const client = useSelector((state: AppState) => state.docState.client);
+  if (!docState) {
     return null;
   }
 
   const onlinePeersState = Object.values(peersState).filter((peer) => peer.status === 'connected');
-  const myID = appState.client.getID();
+  const myID = client.getID();
 
   return (
     <AvatarGroup max={4}>
