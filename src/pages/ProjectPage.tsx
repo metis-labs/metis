@@ -116,8 +116,6 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         }
       }
       doc.subscribe((event) => {
-        console.log('event type', event.type);
-        console.log('event value', event.value);
         handleEvent(event);
       });
     }

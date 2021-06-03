@@ -134,7 +134,7 @@ export default function FileTreeBar() {
   const peersMapByNetworkID: { [networkID: string]: Array<PeerInfo> } = {};
   for (const [peerID, peer] of Object.entries(peersState || {})) {
     const peerInRemote = peersState[peerID];
-    if (!peerInRemote || peerInRemote.status === 'disconnected' || peerInRemote.id === clientID) {
+    if (!peerInRemote || peerInRemote.status === 'disconnected') {
       continue;
     }
 

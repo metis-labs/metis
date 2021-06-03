@@ -23,6 +23,7 @@ import {
 
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
+// import { changeBlockType, changeProperty } from 'features/docSlices';
 import { changeBlockType, changeProperty } from 'features/docSlices';
 import IOProperties from './IOProperties';
 import NetworkProperties from './NetworkProperties';
@@ -56,8 +57,8 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function PropertyBar() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const docState = useSelector((state: AppState) => state.docState.doc);
-  const project = docState.getRoot().project as Project;
+  const doc = useSelector((state: AppState) => state.docState.doc);
+  const project = doc.getRoot().project as Project;
   const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
   const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
   const { selectedBlockID } = diagramInfos[selectedNetworkID];
@@ -65,23 +66,22 @@ export default function PropertyBar() {
 
   const onTypeChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      dispatch(changeBlockType({ doc: docState, event, selectedNetworkID, selectedBlockID }));
+      dispatch(changeBlockType({ doc, event, selectedNetworkID, selectedBlockID }));
     },
-    [docState, selectedBlockID, selectedNetworkID],
+    [doc, selectedBlockID, selectedNetworkID],
   );
 
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(changeProperty({ doc: docState, event, selectedNetworkID, selectedBlockID, key }));
+      dispatch(changeProperty({ doc, event, selectedNetworkID, selectedBlockID, key }));
     },
-    [docState, selectedBlockID, selectedNetworkID],
+    [doc, selectedBlockID, selectedNetworkID, changeProperty],
   );
 
   if (!selectedBlockID || !network.blocks[selectedBlockID]) {
     return null;
   }
-
   const selectedBlock = network.blocks[selectedBlockID];
 
   return (
