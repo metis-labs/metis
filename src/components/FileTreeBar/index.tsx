@@ -101,9 +101,11 @@ export default function FileTreeBar() {
 
   const handleNodeSelect = useCallback(
     (event: ChangeEvent, networkID: any) => {
-      if (project.networks[networkID]) {
-        dispatch(syncSelfSelectedNetwork(networkID));
+      if (!project.networks[networkID]) {
+        return;
       }
+
+      dispatch(syncSelfSelectedNetwork(networkID));
       dispatch(updateSelectedNetworkID({ client, doc, networkID }));
     },
     [doc, clientID],
