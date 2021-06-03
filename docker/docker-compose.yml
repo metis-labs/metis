@@ -15,6 +15,23 @@ services:
     depends_on:
       - yorkie
       - metis-server
+  metis-server:
+    image: 'reg.navercorp.com/metis/metis-server:latest'
+    container_name: 'metis-server'
+    command: [
+      'server',
+      '--mongo-connection-uri',
+      'mongodb://mongo:27017',
+      '--yorkie-rpc-addr',
+      'yorkie:11101',
+    ]
+    restart: always
+    ports:
+      - '10118:10118'
+      - '10119:10119'
+    depends_on:
+      - mongo
+      - yorkie
   yorkie:
     image: 'yorkieteam/yorkie:latest'
     container_name: 'yorkie'
@@ -28,20 +45,6 @@ services:
     restart: always
     ports:
       - '11101:11101'
-    depends_on:
-      - mongo
-  metis-server:
-    image: 'reg.navercorp.com/metis/metis-server:latest'
-    container_name: 'metis-server'
-    command: [
-      'server',
-      '--mongo-connection-uri',
-      'mongodb://mongo:27017',
-    ]
-    restart: always
-    ports:
-      - '10118:10118'
-      - '10119:10119'
     depends_on:
       - mongo
   mongo:
