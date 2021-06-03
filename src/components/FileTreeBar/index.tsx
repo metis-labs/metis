@@ -83,12 +83,12 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function FileTreeBar() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const peersState = useSelector((state: AppState) => state.peerState.peers);
   const client = useSelector((state: AppState) => state.docState.client);
   const doc = useSelector((state: AppState) => state.docState.doc);
-  const project = doc.getRoot().project!;
+  const peersState = useSelector((state: AppState) => state.peerState.peers);
   const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
   const clientID = client.getID();
+  const project = doc.getRoot().project!;
   const [expanded, setExpanded] = useState<string[]>([]);
 
   useEffect(() => {
@@ -119,12 +119,11 @@ export default function FileTreeBar() {
   }, [doc, clientID]);
 
   useEffect(() => {
-    const remoteDoc = doc.getRoot();
     Object.keys(peersState).forEach((clientID) =>
       dispatch(
         syncSelectedNetwork({
           myClientID: clientID,
-          networkID: remoteDoc.peers[clientID]?.selectedNetworkID,
+          networkID: doc.getRoot().peers[clientID]?.selectedNetworkID,
         }),
       ),
     );

@@ -25,11 +25,12 @@ export default function CodeView() {
   const [converter] = useState(new Converter());
   const [codeString, setCodeString] = useState('');
   const project = doc.getRoot().project!;
+  const repaintCounter = useSelector((state: AppState) => state.docState.repaintingCounter);
 
   useEffect(() => {
     converter.update(project, selectedNetworkID);
     setCodeString(converter.getResult());
-  }, [doc, setCodeString, selectedNetworkID]);
+  }, [doc, setCodeString, selectedNetworkID, repaintCounter]);
 
   return (
     <div className={classes.root}>

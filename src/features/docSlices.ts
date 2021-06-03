@@ -22,6 +22,7 @@ export enum DocStatus {
 export interface DocState {
   client?: Client;
   doc?: DocumentReplica<MetisDoc>;
+  docLoca?: MetisDoc;
   loading: boolean;
   errorMessage: string;
   status: DocStatus;
@@ -324,7 +325,7 @@ export const changeProperty = createAsyncThunk<ChangePropertyResult, ChangePrope
   'doc/changeProperty',
   async ({ doc, event, selectedNetworkID, selectedBlockID, key }, thunkApi) => {
     try {
-      doc.update((root) => {
+      await doc.update((root) => {
         const { project } = root;
         const model = project.networks[selectedNetworkID];
         model.blocks[selectedBlockID][key] = valueTransition(event.target.value as string);

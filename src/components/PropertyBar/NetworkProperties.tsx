@@ -35,10 +35,10 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const doc = useSelector((state: AppState) => state.docState.doc);
-  const remoteState = doc.getRoot();
-  const project = remoteState.project as Project;
-  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
+  const repaintCounter = useSelector((state: AppState) => state.docState.repaintingCounter);
   const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
+  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
+  const project = doc.getRoot().project as Project;
   const { selectedBlockID } = diagramInfos[selectedNetworkID];
   const { block: selectedBlock } = props;
 
@@ -48,7 +48,7 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
     (event: ChangeEvent<HTMLSelectElement>) => {
       dispatch(changeRefNetwork({ doc, event, selectedNetworkID, selectedBlockID }));
     },
-    [doc, selectedBlockID, selectedNetworkID],
+    [doc, selectedBlockID, selectedNetworkID, repaintCounter],
   );
 
   const handlePropertyChange = useCallback(
@@ -56,7 +56,7 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
       preserveCaret(event);
       dispatch(changeProperty({ doc, event, selectedNetworkID, selectedBlockID, key }));
     },
-    [doc, selectedBlockID, selectedNetworkID],
+    [doc, selectedBlockID, selectedNetworkID, repaintCounter],
   );
 
   const handleParameterChange = useCallback(
@@ -64,7 +64,7 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
       preserveCaret(event);
       dispatch(changePrameter({ doc, event, selectedNetworkID, selectedBlockID, key }));
     },
-    [doc, selectedBlockID, selectedNetworkID],
+    [doc, selectedBlockID, selectedNetworkID, repaintCounter],
   );
 
   const paramNames = Object.keys(selectedBlock.parameters);

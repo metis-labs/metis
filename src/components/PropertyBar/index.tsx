@@ -23,7 +23,6 @@ import {
 
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
-// import { changeBlockType, changeProperty } from 'features/docSlices';
 import { changeBlockType, changeProperty } from 'features/docSlices';
 import IOProperties from './IOProperties';
 import NetworkProperties from './NetworkProperties';
@@ -58,17 +57,18 @@ export default function PropertyBar() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const doc = useSelector((state: AppState) => state.docState.doc);
-  const project = doc.getRoot().project as Project;
-  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
+  const repaintCounter = useSelector((state: AppState) => state.docState.repaintingCounter);
   const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
-  const { selectedBlockID } = diagramInfos[selectedNetworkID];
+  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
+  const project = doc.getRoot().project as Project;
   const network = project.networks[selectedNetworkID];
+  const { selectedBlockID } = diagramInfos[selectedNetworkID];
 
   const onTypeChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       dispatch(changeBlockType({ doc, event, selectedNetworkID, selectedBlockID }));
     },
-    [doc, selectedBlockID, selectedNetworkID],
+    [doc, selectedBlockID, selectedNetworkID, repaintCounter],
   );
 
   const handlePropertyChange = useCallback(
@@ -76,7 +76,7 @@ export default function PropertyBar() {
       preserveCaret(event);
       dispatch(changeProperty({ doc, event, selectedNetworkID, selectedBlockID, key }));
     },
-    [doc, selectedBlockID, selectedNetworkID, changeProperty],
+    [doc, selectedBlockID, selectedNetworkID, repaintCounter],
   );
 
   if (!selectedBlockID || !network.blocks[selectedBlockID]) {
