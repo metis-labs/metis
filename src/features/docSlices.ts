@@ -9,6 +9,9 @@ import { Position } from 'store/types/base';
 import { Block, BlockType, createBlock, createParams, isNormalBlockType } from 'store/types/blocks';
 import { valueTransition } from 'components/PropertyBar/utils';
 import { PeerInfoState } from './peerInfoSlices';
+// import MetisLinkModel from 'components/DiagramView/MetisLinkModel';
+// import { DefaultLinkModel } from '@projectstorm/react-diagrams-defaults';
+// import { LinkModel } from '@projectstorm/react-diagrams-core';
 
 export type MetisDoc = {
   project: Project;
@@ -164,23 +167,23 @@ export const updateDeletedNetwork = createAsyncThunk<
 
 export const updatePortChange = createAsyncThunk<UpdatePortChangeResult, UpdatePortChangeArgs, { rejectValue: string }>(
   'doc/updatePortChange',
-  async ({ doc, networkID, event }, thunkApi) => {
+  async ({ doc, networkID, entity }, thunkApi) => {
     try {
       doc.update((root) => {
         const network = root.project.networks[networkID];
         let from;
         let to;
-        if (event.entity.sourcePort.getName() === 'in') {
-          from = event.entity.targetPort.parent;
-          to = event.entity.sourcePort.parent;
-        } else if (event.entity.sourcePort.getName() === 'out') {
-          from = event.entity.sourcePort.parent;
-          to = event.entity.targetPort.parent;
+        if (entity.sourcePort.getName() === 'in') {
+          from = entity.targetPort.parent;
+          to = entity.sourcePort.parent;
+        } else if (entity.sourcePort.getName() === 'out') {
+          from = entity.sourcePort.parent;
+          to = entity.targetPort.parent;
         } else {
           return;
         }
-        network.links[event.entity.getID()] = {
-          id: event.enitity.getID(),
+        network.links[entity.getID()] = {
+          id: entity.getID(),
           from: from.getBlockID(),
           to: to.getBlockID(),
         };
@@ -496,7 +499,7 @@ type UpdateRenamedNetworkArgs = { doc: DocumentReplica<MetisDoc>; network: Netwo
 type UpdateRenamedNetworkResult = { doc: DocumentReplica<MetisDoc> };
 type UpdateDeletedNetworkArgs = { doc: DocumentReplica<MetisDoc>; network: Network };
 type UpdateDeletedNetworkResult = { doc: DocumentReplica<MetisDoc> };
-type UpdatePortChangeArgs = { doc: DocumentReplica<MetisDoc>; networkID: string; event: any };
+type UpdatePortChangeArgs = { doc: DocumentReplica<MetisDoc>; networkID: string; entity: any };
 type UpdatePortChangeResult = { doc: DocumentReplica<MetisDoc> };
 type UpdateAddedBlockArgs = {
   doc: DocumentReplica<MetisDoc>;

@@ -144,7 +144,7 @@ export default function DiagramView() {
         }
       } else if (entity instanceof MetisLinkModel) {
         if (event.function === 'targetPortChanged') {
-          dispatch(updatePortChange({ doc, networkID: selectedNetworkID, event }));
+          dispatch(updatePortChange({ doc, networkID: selectedNetworkID, entity: event.entity }));
         } else if (event.function === 'entityRemoved') {
           dispatch(updateDeletedLink({ doc, networkID: selectedNetworkID, linkID: entity.getLinkID() }));
         }
