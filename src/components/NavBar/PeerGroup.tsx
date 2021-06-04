@@ -9,9 +9,8 @@ import { AppState } from 'app/rootReducer';
 
 export default function PeerGroup() {
   const peersState = useSelector((state: AppState) => state.peerState.peers);
-  const docState = useSelector((state: AppState) => state.docState.doc);
   const client = useSelector((state: AppState) => state.docState.client);
-  if (!docState) {
+  if (!client) {
     return null;
   }
 

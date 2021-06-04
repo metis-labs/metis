@@ -9,9 +9,6 @@ import { Position } from 'store/types/base';
 import { Block, BlockType, createBlock, createParams, isNormalBlockType } from 'store/types/blocks';
 import { valueTransition } from 'components/PropertyBar/utils';
 import { PeerInfoState } from './peerInfoSlices';
-// import MetisLinkModel from 'components/DiagramView/MetisLinkModel';
-// import { DefaultLinkModel } from '@projectstorm/react-diagrams-defaults';
-// import { LinkModel } from '@projectstorm/react-diagrams-core';
 
 export type MetisDoc = {
   project: Project;
@@ -25,7 +22,7 @@ export enum DocStatus {
 export interface DocState {
   client?: Client;
   doc?: DocumentReplica<MetisDoc>;
-  docLoca?: MetisDoc;
+  docLocal?: MetisDoc;
   loading: boolean;
   errorMessage: string;
   status: DocStatus;
@@ -37,6 +34,7 @@ const initialDocState: DocState = {
   errorMessage: '',
   status: DocStatus.Connect,
   repaintingCounter: 0,
+  docLocal: {} as MetisDoc,
 };
 
 const testUserID = 'KR18401';
@@ -65,10 +63,9 @@ export const activateClient = createAsyncThunk<ActivateClientResult, undefined, 
 
 export const attachDoc = createAsyncThunk<AttachDocResult, AttachDocArgs, { rejectValue: string }>(
   'doc/attach',
-  async ({ client, doc }, thunkApi) => {
+  async ({ client, doc, docLocal }, thunkApi) => {
     try {
       await client.attach(doc);
-
       doc.update((root) => {
         if (!root.peers) {
           root.peers = {} as PeerInfoState;
@@ -79,11 +76,12 @@ export const attachDoc = createAsyncThunk<AttachDocResult, AttachDocArgs, { reje
             selectedNetworkID: networkIDs[0],
           };
         }
+        docLocal = { ...docLocal, ...JSON.parse(root.toJSON()) };
       });
 
       await client.sync();
 
-      return { doc, client };
+      return { doc, client, docLocal };
     } catch (err) {
       return thunkApi.rejectWithValue(err.message);
     }
@@ -100,6 +98,7 @@ export const updateSelectedNetworkID = createAsyncThunk<
     doc.update((root) => {
       root.peers[clientID].selectedNetworkID = networkID;
     });
+
     return { doc };
   } catch (err) {
     return thunkApi.rejectWithValue(err.message);
@@ -393,6 +392,7 @@ const docSlice = createSlice({
     builder.addCase(attachDoc.fulfilled, (state, { payload }) => {
       state.doc = payload.doc;
       state.client = payload.client;
+      state.docLocal = payload.docLocal;
     });
     builder.addCase(attachDoc.rejected, (state, { payload }) => {
       state.errorMessage = payload!;
@@ -489,8 +489,8 @@ export const { deactivateClient, createDocument, detachDocument, attachDocLoadin
 export default docSlice.reducer;
 
 type ActivateClientResult = { client: Client };
-type AttachDocArgs = { doc: DocumentReplica<MetisDoc>; client: Client };
-type AttachDocResult = { doc: DocumentReplica<MetisDoc>; client: Client };
+type AttachDocArgs = { doc: DocumentReplica<MetisDoc>; client: Client; docLocal: MetisDoc };
+type AttachDocResult = { doc: DocumentReplica<MetisDoc>; client: Client; docLocal: MetisDoc };
 type UpdateNetworkIDArgs = { doc: DocumentReplica<MetisDoc>; client: Client; networkID: string };
 type UpdateNetworkIDResult = { doc: DocumentReplica<MetisDoc> };
 type UpdateCreatedNetworkArgs = { doc: DocumentReplica<MetisDoc>; client: Client; network: Network };

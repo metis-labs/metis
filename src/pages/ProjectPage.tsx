@@ -47,6 +47,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
   const dispatch = useDispatch();
   const client = useSelector((state: AppState) => state.docState.client);
   const doc = useSelector((state: AppState) => state.docState.doc);
+  const docLocal = useSelector((state: AppState) => state.docState.docLocal);
   const localInfoState = useSelector((state: AppState) => state.localInfoState);
   const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
 
@@ -64,15 +65,17 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         return;
       }
       dispatch(attachDocLoading(true));
-      await dispatch(attachDoc({ client, doc }));
+      await dispatch(attachDoc({ client, doc, docLocal }));
       const networkIDs = Object.keys(doc.getRoot().project.networks);
       dispatch(initDiagramInfos({ networkIDs }));
-      dispatch(syncSelfSelectedNetwork({ networkID: networkIDs[0] }));
+      const networkID = doc.getRoot().peers[client.getID()].selectedNetworkID;
+      dispatch(syncSelfSelectedNetwork({ networkID }));
+      dispatch(syncSelectedNetwork({ myClientID: client.getID(), networkID }));
 
       function handleEvent(event) {
         if (event.type === 'local-change' || event.type === 'remote-change') {
           for (const changeInfo of event.value) {
-            if (changeInfo.paths[0].startsWith('$.project')) {
+            if (changeInfo.paths[0].startsWith('$.project') || changeInfo.paths[0].startsWith('$.peers')) {
               dispatch(setRepaintCounter(1));
             }
             if (changeInfo.change.getMessage()) {

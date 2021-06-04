@@ -85,6 +85,8 @@ export default function FileTreeBar() {
   const dispatch = useDispatch();
   const client = useSelector((state: AppState) => state.docState.client);
   const doc = useSelector((state: AppState) => state.docState.doc);
+  const docState = useSelector((state: AppState) => state.docState);
+  const repaintCounter = useSelector((state: AppState) => state.docState.repaintingCounter);
   const peersState = useSelector((state: AppState) => state.peerState.peers);
   const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
   const clientID = client.getID();
@@ -104,11 +106,10 @@ export default function FileTreeBar() {
       if (!project.networks[networkID]) {
         return;
       }
-
-      dispatch(syncSelfSelectedNetwork(networkID));
+      dispatch(syncSelfSelectedNetwork({ networkID }));
       dispatch(updateSelectedNetworkID({ client, doc, networkID }));
     },
-    [doc, clientID],
+    [doc, clientID, repaintCounter],
   );
 
   const handleAddNetwork = useCallback(async () => {
@@ -127,7 +128,7 @@ export default function FileTreeBar() {
         }),
       ),
     );
-  }, [doc]);
+  }, [docState]);
 
   // TODO(youngteac.hong): Replace below with type parameter.
   const peersMapByNetworkID: { [networkID: string]: Array<PeerInfo> } = {};

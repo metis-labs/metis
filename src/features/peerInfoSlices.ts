@@ -17,6 +17,28 @@ const peerInfoSlice = createSlice({
   name: 'peerInfo',
   initialState: initialPeerInfoState,
   reducers: {
+    registerPeer(
+      state,
+      action: PayloadAction<{
+        myClientID: string;
+        peerMeta: any;
+        peerStatus: string;
+      }>,
+    ) {
+      const { myClientID, peerMeta, peerStatus } = action.payload;
+      const { peers } = state;
+      if (!peers[myClientID]) {
+        peers[myClientID] = {} as PeerInfo;
+      }
+      const peer = {
+        id: myClientID,
+        color: peerMeta.color,
+        image: peerMeta.image,
+        username: peerMeta.username,
+        status: peerStatus === 'activated' ? ConnectionStatus.Connected : ConnectionStatus.Disconnected,
+      };
+      peers[myClientID] = { ...peers[myClientID], ...peer };
+    },
     syncPeer(
       state,
       action: PayloadAction<{
@@ -79,5 +101,5 @@ const peerInfoSlice = createSlice({
   },
 });
 
-export const { syncPeer, syncSelectedNetwork, syncCursor } = peerInfoSlice.actions;
+export const { registerPeer, syncPeer, syncSelectedNetwork, syncCursor } = peerInfoSlice.actions;
 export default peerInfoSlice.reducer;
