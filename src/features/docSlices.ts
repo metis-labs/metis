@@ -22,7 +22,6 @@ export enum DocStatus {
 export interface DocState {
   client?: Client;
   doc?: DocumentReplica<MetisDoc>;
-  docLocal?: MetisDoc;
   loading: boolean;
   errorMessage: string;
   status: DocStatus;
@@ -34,7 +33,6 @@ const initialDocState: DocState = {
   errorMessage: '',
   status: DocStatus.Connect,
   repaintingCounter: 0,
-  docLocal: {} as MetisDoc,
 };
 
 const testUserID = 'KR18401';
@@ -63,7 +61,7 @@ export const activateClient = createAsyncThunk<ActivateClientResult, undefined, 
 
 export const attachDoc = createAsyncThunk<AttachDocResult, AttachDocArgs, { rejectValue: string }>(
   'doc/attach',
-  async ({ client, doc, docLocal }, thunkApi) => {
+  async ({ client, doc }, thunkApi) => {
     try {
       await client.attach(doc);
       doc.update((root) => {
@@ -76,12 +74,11 @@ export const attachDoc = createAsyncThunk<AttachDocResult, AttachDocArgs, { reje
             selectedNetworkID: networkIDs[0],
           };
         }
-        docLocal = { ...docLocal, ...JSON.parse(root.toJSON()) };
       });
 
       await client.sync();
 
-      return { doc, client, docLocal };
+      return { doc, client };
     } catch (err) {
       return thunkApi.rejectWithValue(err.message);
     }
@@ -392,7 +389,6 @@ const docSlice = createSlice({
     builder.addCase(attachDoc.fulfilled, (state, { payload }) => {
       state.doc = payload.doc;
       state.client = payload.client;
-      state.docLocal = payload.docLocal;
     });
     builder.addCase(attachDoc.rejected, (state, { payload }) => {
       state.errorMessage = payload!;
@@ -489,8 +485,8 @@ export const { deactivateClient, createDocument, detachDocument, attachDocLoadin
 export default docSlice.reducer;
 
 type ActivateClientResult = { client: Client };
-type AttachDocArgs = { doc: DocumentReplica<MetisDoc>; client: Client; docLocal: MetisDoc };
-type AttachDocResult = { doc: DocumentReplica<MetisDoc>; client: Client; docLocal: MetisDoc };
+type AttachDocArgs = { doc: DocumentReplica<MetisDoc>; client: Client };
+type AttachDocResult = { doc: DocumentReplica<MetisDoc>; client: Client };
 type UpdateNetworkIDArgs = { doc: DocumentReplica<MetisDoc>; client: Client; networkID: string };
 type UpdateNetworkIDResult = { doc: DocumentReplica<MetisDoc> };
 type UpdateCreatedNetworkArgs = { doc: DocumentReplica<MetisDoc>; client: Client; network: Network };

@@ -47,7 +47,6 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
   const dispatch = useDispatch();
   const client = useSelector((state: AppState) => state.docState.client);
   const doc = useSelector((state: AppState) => state.docState.doc);
-  const docLocal = useSelector((state: AppState) => state.docState.docLocal);
   const localInfoState = useSelector((state: AppState) => state.localInfoState);
   const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
 
@@ -65,7 +64,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         return;
       }
       dispatch(attachDocLoading(true));
-      await dispatch(attachDoc({ client, doc, docLocal }));
+      await dispatch(attachDoc({ client, doc }));
       const networkIDs = Object.keys(doc.getRoot().project.networks);
       dispatch(initDiagramInfos({ networkIDs }));
       const networkID = doc.getRoot().peers[client.getID()].selectedNetworkID;
