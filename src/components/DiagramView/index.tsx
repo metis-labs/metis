@@ -10,7 +10,7 @@ import { Position } from 'store/types/base';
 import { BlockType } from 'store/types/blocks';
 
 import { syncCursor, syncSelectedNetwork } from 'features/peersSlice';
-import { syncSelfSelectedBlock, syncSelfSelectedNetwork, syncOffset, syncZoom } from 'features/localSlice';
+import { syncSelfSelectedBlock, syncOffset, syncZoom } from 'features/localSlice';
 import { AppState } from 'app/rootReducer';
 import {
   updateBlockPosition,
@@ -61,7 +61,7 @@ interface ChangeEvent {
 export default function DiagramView() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const peersState = useSelector((state: AppState) => state.peerState.peers);
+  const peers = useSelector((state: AppState) => state.peerState.peers);
   const doc = useSelector((state: AppState) => state.docState.doc);
   const diagramInfoState = useSelector((state: AppState) => state.localInfoState.diagramInfos);
   const client = useSelector((state: AppState) => state.docState.client);
@@ -71,7 +71,7 @@ export default function DiagramView() {
   const rootElement = useRef(null);
   const [engine] = useState(new Engine());
   const [changeEvents, setChangeEvents] = useState<{ [id: string]: ChangeEvent }>({});
-  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
+  const selectedNetworkID = peers[clientID].selectedNetworkID;
 
   const handleMouseUp = useCallback(() => {
     for (const event of Object.values(changeEvents)) {
@@ -137,9 +137,6 @@ export default function DiagramView() {
             return;
           }
           const networkID = block.refNetwork;
-          if (project.networks[networkID]) {
-            dispatch(syncSelfSelectedNetwork({ networkID }));
-          }
           dispatch(updateSelectedNetworkID({ client, doc, networkID }));
         }
       } else if (entity instanceof MetisLinkModel) {
@@ -174,7 +171,7 @@ export default function DiagramView() {
 
   useEffect(() => {
     const remoteDoc = doc.getRoot();
-    Object.keys(peersState).forEach((clientID) =>
+    Object.keys(peers).forEach((clientID) =>
       remoteDoc.peers[clientID]?.cursor
         ? (dispatch(
             syncCursor({
@@ -193,22 +190,22 @@ export default function DiagramView() {
     );
   }, [doc, syncCursor, syncSelectedNetwork]);
 
-  const peers = [];
-  for (const [peerID, peer] of Object.entries(peersState || {})) {
+  const peerCursors = [];
+  for (const [peerID, peer] of Object.entries(peers || {})) {
     if (
       clientID === peerID ||
-      !peersState[peerID] ||
-      !peersState[peerID].cursor ||
-      peersState[peerID].status === 'disconnected' ||
-      peersState[peerID].selectedNetworkID !== selectedNetworkID
+      !peers[peerID] ||
+      !peers[peerID].cursor ||
+      peers[peerID].status === 'disconnected' ||
+      peers[peerID].selectedNetworkID !== selectedNetworkID
     ) {
       continue;
     }
-    peers.push({
+    peerCursors.push({
       id: peerID,
       username: peer.username,
       color: peer.color,
-      cursor: peersState[peerID].cursor,
+      cursor: peers[peerID].cursor,
     });
   }
   return (
@@ -222,16 +219,16 @@ export default function DiagramView() {
         onMouseMove={handleMouseMove}
       >
         <CanvasWidget className={classes.canvas} engine={engine.getEngine()} />
-        {peers.map((peer) => {
+        {peerCursors.map((peerCursor) => {
           const pos = {
-            x: peer.cursor.x * (diagramInfo.zoom / 100) + diagramInfo.offset.x,
-            y: peer.cursor.y * (diagramInfo.zoom / 100) + diagramInfo.offset.y,
+            x: peerCursor.cursor.x * (diagramInfo.zoom / 100) + diagramInfo.offset.x,
+            y: peerCursor.cursor.y * (diagramInfo.zoom / 100) + diagramInfo.offset.y,
           };
           return (
-            <div key={peer.id} className={classes.cursor} style={{ left: pos.x, top: pos.y }}>
-              <NearMeIcon className={classes.cursorIcon} style={{ color: peer.color }} />
-              <div className={classes.peerName} style={{ backgroundColor: peer.color }}>
-                {peer.username}
+            <div key={peerCursor.id} className={classes.cursor} style={{ left: pos.x, top: pos.y }}>
+              <NearMeIcon className={classes.cursorIcon} style={{ color: peerCursor.color }} />
+              <div className={classes.peerName} style={{ backgroundColor: peerCursor.color }}>
+                {peerCursor.username}
               </div>
             </div>
           );

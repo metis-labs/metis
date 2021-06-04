@@ -37,7 +37,9 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
   const doc = useSelector((state: AppState) => state.docState.doc);
   const repaintCounter = useSelector((state: AppState) => state.docState.repaintingCounter);
   const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
-  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
+  const client = useSelector((state: AppState) => state.docState.client);
+  const peers = useSelector((state: AppState) => state.peerState.peers);
+  const selectedNetworkID = peers[client.getID()].selectedNetworkID;
   const project = doc.getRoot().project as Project;
   const { selectedBlockID } = diagramInfos[selectedNetworkID];
   const { block: selectedBlock } = props;

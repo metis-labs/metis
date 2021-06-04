@@ -21,7 +21,9 @@ const useStyles = makeStyles(() =>
 export default function CodeView() {
   const classes = useStyles();
   const doc = useSelector((state: AppState) => state.docState.doc);
-  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
+  const client = useSelector((state: AppState) => state.docState.client);
+  const peers = useSelector((state: AppState) => state.peerState.peers);
+  const selectedNetworkID = peers[client.getID()].selectedNetworkID;
   const [converter] = useState(new Converter());
   const [codeString, setCodeString] = useState('');
   const project = doc.getRoot().project!;

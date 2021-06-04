@@ -34,15 +34,17 @@ const useStyles = makeStyles(() =>
 export default function SideBar() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
-  const docState = useSelector((state: AppState) => state.docState.doc);
+  const client = useSelector((state: AppState) => state.docState.client);
+  const doc = useSelector((state: AppState) => state.docState.doc);
+  const peers = useSelector((state: AppState) => state.peerState.peers);
+  const selectedNetworkID = peers[client.getID()].selectedNetworkID;
   const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
   const handleAddBlockClick = useCallback(
     (type: BlockType) => {
       const diagramOffset = diagramInfos[selectedNetworkID].offset;
-      dispatch(updateAddedBlock({ doc: docState, networkID: selectedNetworkID, type, diagramOffset }));
+      dispatch(updateAddedBlock({ doc, networkID: selectedNetworkID, type, diagramOffset }));
     },
-    [docState, selectedNetworkID, diagramInfos],
+    [doc, selectedNetworkID, diagramInfos],
   );
 
   return (

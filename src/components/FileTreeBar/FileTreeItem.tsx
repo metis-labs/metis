@@ -96,7 +96,8 @@ const useStyles = makeStyles(() =>
 export default function FileTreeItem(props: { network: Network; peers: Array<Peer> }) {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const docState = useSelector((state: AppState) => state.docState.doc);
+  const doc = useSelector((state: AppState) => state.docState.doc);
+  const client = useSelector((state: AppState) => state.docState.client);
   const { network, peers } = props;
   const [menuOpen, setMenuOpen] = useState(false);
   const [moreButtonOpen, setMoreButtonOpen] = useState(false);
@@ -153,19 +154,19 @@ export default function FileTreeItem(props: { network: Network; peers: Array<Pee
   }, [setRenameDialogOpen]);
 
   const handleDeleteButtonClick = useCallback(() => {
-    dispatch(updateDeletedNetwork({ doc: docState, network }));
-  }, [docState, network.id]);
+    dispatch(updateDeletedNetwork({ doc, network, client }));
+  }, [doc, network.id]);
 
   const handleRenameDialogClose = useCallback(
     (modelName: string | undefined) => {
       if (modelName) {
-        dispatch(updateRenamedNetwork({ doc: docState, network, modelName }));
+        dispatch(updateRenamedNetwork({ doc, network, modelName }));
       }
       setRenameDialogOpen(false);
       setMoreButtonOpen(false);
       setMenuOpen(false);
     },
-    [setRenameDialogOpen, setMoreButtonOpen, setMenuOpen, docState, network.id],
+    [setRenameDialogOpen, setMoreButtonOpen, setMenuOpen, doc, network.id],
   );
 
   return (

@@ -15,7 +15,7 @@ import { decodeEventDesc } from 'store/types/events';
 import { useDispatch, useSelector } from 'react-redux';
 import { attachDoc, attachDocLoading, createDocument, detachDocument, setRepaintCounter } from 'features/docSlice';
 import { AppState } from 'app/rootReducer';
-import { deleteNetwork, initDiagramInfos, syncSelfSelectedNetwork } from 'features/localSlice';
+import { deleteNetwork, initDiagramInfos } from 'features/localSlice';
 import { syncCursor, syncSelectedNetwork } from 'features/peersSlice';
 
 const useStyles = makeStyles(() =>
@@ -45,10 +45,10 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
   } = props;
   const [viewMode, setViewMode] = useState('diagram');
   const dispatch = useDispatch();
-  const client = useSelector((state: AppState) => state.docState.client);
   const doc = useSelector((state: AppState) => state.docState.doc);
-  const localInfoState = useSelector((state: AppState) => state.localInfoState);
-  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
+  const client = useSelector((state: AppState) => state.docState.client);
+  const peers = useSelector((state: AppState) => state.peerState.peers);
+  const selectedNetworkID = peers[client.getID()].selectedNetworkID;
 
   useEffect(() => {
     dispatch(createDocument(projectID));
@@ -68,7 +68,6 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       const networkIDs = Object.keys(doc.getRoot().project.networks);
       dispatch(initDiagramInfos({ networkIDs }));
       const networkID = doc.getRoot().peers[client.getID()].selectedNetworkID;
-      dispatch(syncSelfSelectedNetwork({ networkID }));
       dispatch(syncSelectedNetwork({ myClientID: client.getID(), networkID }));
 
       function handleEvent(event) {
@@ -81,27 +80,20 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
               const desc = decodeEventDesc(changeInfo.change.getMessage());
               if (desc.actionType === 'create' && desc.entityType === 'network') {
                 dispatch(initDiagramInfos({ networkIDs: [desc.id] }));
-                if (event.type === 'local-change') {
-                  dispatch(syncSelfSelectedNetwork({ networkID: desc.id }));
-                }
               } else if (desc.actionType === 'delete' && desc.entityType === 'network') {
                 dispatch(deleteNetwork({ networkID: desc.id }));
-                if (desc.id === selectedNetworkID) {
-                  dispatch(syncSelfSelectedNetwork({ networkID: null }));
-                }
               }
             }
             if (changeInfo.change.getOperations()[0].key === 'selectedNetworkID') {
               const clientID = changeInfo.change.getID().actor;
-              if (clientID === client.getID()) {
-                dispatch(syncSelfSelectedNetwork({ networkID: changeInfo.change.getOperations()[0].value.value }));
-              } else
+              if (clientID !== client.getID()) {
                 dispatch(
                   syncSelectedNetwork({
                     myClientID: clientID,
                     networkID: changeInfo.change.getOperations()[1].value.value,
                   }),
                 );
+              }
             } else if (changeInfo.change.getOperations()[0].key === 'cursor') {
               const clientID = changeInfo.change.getID().actor;
               const x = changeInfo.change.getOperations()[1].value.value;
@@ -139,7 +131,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
     <div className={classes.root}>
       <NavBar />
       <FileTreeBar />
-      {localInfoState.selectedNetworkID ? (
+      {selectedNetworkID ? (
         <>
           <main className={classes.content}>
             {viewMode === 'diagram' ? <DiagramView /> : <CodeView />}

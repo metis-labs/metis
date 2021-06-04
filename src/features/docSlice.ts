@@ -106,11 +106,12 @@ export const updateCreatedNetwork = createAsyncThunk<
   UpdateCreatedNetworkResult,
   UpdateCreatedNetworkArgs,
   { rejectValue: string }
->('doc/updateCreatedNetwork', async ({ doc, network }, thunkApi) => {
+>('doc/updateCreatedNetwork', async ({ doc, client, network }, thunkApi) => {
   try {
     doc.update(
       (root) => {
         root.project.networks[network.id] = network;
+        root.peers[client.getID()].selectedNetworkID = network.id;
       },
       encodeEventDesc({
         id: network.id,
@@ -143,11 +144,14 @@ export const updateDeletedNetwork = createAsyncThunk<
   UpdateDeletedNetworkResult,
   UpdateDeletedNetworkArgs,
   { rejectValue: string }
->('doc/updateDeletedNetwork', async ({ doc, network }, thunkApi) => {
+>('doc/updateDeletedNetwork', async ({ doc, client, network }, thunkApi) => {
   try {
     doc.update(
       (root) => {
         delete root.project.networks[network.id];
+        if (root.peers[client.getID()].selectedNetworkID === network.id) {
+          root.peers[client.getID()].selectedNetworkID = null;
+        }
       },
       encodeEventDesc({
         id: network.id,
@@ -493,7 +497,7 @@ type UpdateCreatedNetworkArgs = { doc: DocumentReplica<MetisDoc>; client: Client
 type UpdateCreatedNetworkResult = { doc: DocumentReplica<MetisDoc> };
 type UpdateRenamedNetworkArgs = { doc: DocumentReplica<MetisDoc>; network: Network; modelName: string };
 type UpdateRenamedNetworkResult = { doc: DocumentReplica<MetisDoc> };
-type UpdateDeletedNetworkArgs = { doc: DocumentReplica<MetisDoc>; network: Network };
+type UpdateDeletedNetworkArgs = { doc: DocumentReplica<MetisDoc>; client: Client; network: Network };
 type UpdateDeletedNetworkResult = { doc: DocumentReplica<MetisDoc> };
 type UpdatePortChangeArgs = { doc: DocumentReplica<MetisDoc>; networkID: string; entity: any };
 type UpdatePortChangeResult = { doc: DocumentReplica<MetisDoc> };

@@ -34,7 +34,9 @@ export default function StatusBar(props: { viewMode: string; setViewMode: Functi
   const classes = useStyles();
   const docState = useSelector((state: AppState) => state.docState.doc);
   const { project } = docState.getRoot();
-  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
+  const client = useSelector((state: AppState) => state.docState.client);
+  const peers = useSelector((state: AppState) => state.peerState.peers);
+  const selectedNetworkID = peers[client.getID()].selectedNetworkID;
 
   const handleClick = useCallback(() => {
     setViewMode(viewMode === 'diagram' ? 'code' : 'diagram');

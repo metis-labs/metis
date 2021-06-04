@@ -11,7 +11,6 @@ import { createNetwork } from 'store/types/networks';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
 import { syncSelectedNetwork } from 'features/peersSlice';
-import { syncSelfSelectedNetwork } from 'features/localSlice';
 import { updateCreatedNetwork, updateSelectedNetworkID } from 'features/docSlice';
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 
@@ -87,9 +86,9 @@ export default function FileTreeBar() {
   const doc = useSelector((state: AppState) => state.docState.doc);
   const docState = useSelector((state: AppState) => state.docState);
   const repaintCounter = useSelector((state: AppState) => state.docState.repaintingCounter);
-  const peersState = useSelector((state: AppState) => state.peerState.peers);
-  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
+  const peers = useSelector((state: AppState) => state.peerState.peers);
   const clientID = client.getID();
+  const selectedNetworkID = peers[clientID].selectedNetworkID;
   const project = doc.getRoot().project!;
   const [expanded, setExpanded] = useState<string[]>([]);
 
@@ -106,7 +105,6 @@ export default function FileTreeBar() {
       if (!project.networks[networkID]) {
         return;
       }
-      dispatch(syncSelfSelectedNetwork({ networkID }));
       dispatch(updateSelectedNetworkID({ client, doc, networkID }));
     },
     [doc, clientID, repaintCounter],
@@ -120,7 +118,7 @@ export default function FileTreeBar() {
   }, [doc, clientID]);
 
   useEffect(() => {
-    Object.keys(peersState).forEach((clientID) =>
+    Object.keys(peers).forEach((clientID) =>
       dispatch(
         syncSelectedNetwork({
           myClientID: clientID,
@@ -132,8 +130,8 @@ export default function FileTreeBar() {
 
   // TODO(youngteac.hong): Replace below with type parameter.
   const peersMapByNetworkID: { [networkID: string]: Array<Peer> } = {};
-  for (const [peerID, peer] of Object.entries(peersState || {})) {
-    const peerInRemote = peersState[peerID];
+  for (const [peerID, peer] of Object.entries(peers || {})) {
+    const peerInRemote = peers[peerID];
     if (!peerInRemote || peerInRemote.status === 'disconnected') {
       continue;
     }

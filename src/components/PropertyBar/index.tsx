@@ -10,7 +10,6 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import { Project } from 'store/types';
 import {
   BlockType,
   IOBlock,
@@ -59,8 +58,10 @@ export default function PropertyBar() {
   const doc = useSelector((state: AppState) => state.docState.doc);
   const repaintCounter = useSelector((state: AppState) => state.docState.repaintingCounter);
   const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
-  const selectedNetworkID = useSelector((state: AppState) => state.localInfoState.selectedNetworkID);
-  const project = doc.getRoot().project as Project;
+  const client = useSelector((state: AppState) => state.docState.client);
+  const peers = useSelector((state: AppState) => state.peerState.peers);
+  const selectedNetworkID = peers[client.getID()].selectedNetworkID;
+  const project = doc.getRoot().project;
   const network = project.networks[selectedNetworkID];
   const { selectedBlockID } = diagramInfos[selectedNetworkID];
 

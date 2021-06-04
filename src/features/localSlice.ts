@@ -5,7 +5,6 @@ import { Position } from 'store/types/base';
 
 type LocalInfoState = {
   diagramInfos: { [networkID: string]: DiagramInfo };
-  selectedNetworkID?: string;
   errorMessage: string;
 };
 
@@ -32,15 +31,6 @@ const localInfoSlice = createSlice({
         };
       }
     },
-    syncSelfSelectedNetwork(
-      state,
-      action: PayloadAction<{
-        networkID: string;
-      }>,
-    ) {
-      const { networkID } = action.payload;
-      state.selectedNetworkID = networkID;
-    },
     deleteNetwork(
       state,
       action: PayloadAction<{
@@ -49,10 +39,6 @@ const localInfoSlice = createSlice({
     ) {
       const { networkID } = action.payload;
       delete state.diagramInfos[networkID];
-      if (networkID === state.selectedNetworkID) {
-        delete state.selectedNetworkID;
-        state.selectedNetworkID = null;
-      }
     },
     syncSelfSelectedBlock(
       state,
@@ -90,6 +76,5 @@ const localInfoSlice = createSlice({
   },
 });
 
-export const { initDiagramInfos, syncSelfSelectedNetwork, syncSelfSelectedBlock, deleteNetwork, syncOffset, syncZoom } =
-  localInfoSlice.actions;
+export const { initDiagramInfos, syncSelfSelectedBlock, deleteNetwork, syncOffset, syncZoom } = localInfoSlice.actions;
 export default localInfoSlice.reducer;
