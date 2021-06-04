@@ -6,11 +6,11 @@ import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 import TreeView from '@material-ui/lab/TreeView';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
-import { PeerInfo } from 'store/types';
+import { Peer } from 'store/types';
 import { createNetwork } from 'store/types/networks';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
-import { syncSelectedNetwork } from 'features/peerInfoSlices';
+import { syncSelectedNetwork } from 'features/peersSlice';
 import { syncSelfSelectedNetwork } from 'features/localSlices';
 import { updateCreatedNetwork, updateSelectedNetworkID } from 'features/docSlices';
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
@@ -131,7 +131,7 @@ export default function FileTreeBar() {
   }, [docState]);
 
   // TODO(youngteac.hong): Replace below with type parameter.
-  const peersMapByNetworkID: { [networkID: string]: Array<PeerInfo> } = {};
+  const peersMapByNetworkID: { [networkID: string]: Array<Peer> } = {};
   for (const [peerID, peer] of Object.entries(peersState || {})) {
     const peerInRemote = peersState[peerID];
     if (!peerInRemote || peerInRemote.status === 'disconnected') {

@@ -9,7 +9,7 @@ import Engine from 'components/DiagramView/Engine';
 import { Position } from 'store/types/base';
 import { BlockType } from 'store/types/blocks';
 
-import { syncCursor, syncSelectedNetwork } from 'features/peerInfoSlices';
+import { syncCursor, syncSelectedNetwork } from 'features/peersSlice';
 import { syncSelfSelectedBlock, syncSelfSelectedNetwork, syncOffset, syncZoom } from 'features/localSlices';
 import { AppState } from 'app/rootReducer';
 import {

@@ -13,7 +13,7 @@ import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
 import { TransitionProps } from '@material-ui/core/transitions';
 import Collapse from '@material-ui/core/Collapse';
 
-import { PeerInfo } from 'store/types';
+import { Peer } from 'store/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Network } from 'store/types/networks';
 import { AppState } from 'app/rootReducer';
@@ -93,7 +93,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-export default function FileTreeItem(props: { network: Network; peers: Array<PeerInfo> }) {
+export default function FileTreeItem(props: { network: Network; peers: Array<Peer> }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const docState = useSelector((state: AppState) => state.docState.doc);

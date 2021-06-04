@@ -1,21 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { PeerInfo } from 'store/types';
+import { Peer } from 'store/types';
 import { ConnectionStatus } from 'store/types/base';
 
-export interface PeerInfoState {
+export interface PeersState {
   peers: {
-    [id: string]: PeerInfo;
+    [id: string]: Peer;
   };
 }
 
-const initialPeerInfoState: PeerInfoState = {
-  peers: {},
-};
-
-const peerInfoSlice = createSlice({
-  name: 'peerInfo',
-  initialState: initialPeerInfoState,
+const peersSlice = createSlice({
+  name: 'peers',
+  initialState: { peers: {} } as PeersState,
   reducers: {
     registerPeer(
       state,
@@ -28,7 +24,7 @@ const peerInfoSlice = createSlice({
       const { myClientID, peerMeta, peerStatus } = action.payload;
       const { peers } = state;
       if (!peers[myClientID]) {
-        peers[myClientID] = {} as PeerInfo;
+        peers[myClientID] = {} as Peer;
       }
       const peer = {
         id: myClientID,
@@ -43,7 +39,7 @@ const peerInfoSlice = createSlice({
       state,
       action: PayloadAction<{
         myClientID: string;
-        changedPeers: { [id: string]: PeerInfo };
+        changedPeers: { [id: string]: Peer };
       }>,
     ) {
       const { myClientID, changedPeers } = action.payload;
@@ -55,20 +51,18 @@ const peerInfoSlice = createSlice({
         }
       }
 
-      for (const [clientID, peerInfoData] of Object.entries(changedPeers || {})) {
+      for (const [clientID, peer] of Object.entries(changedPeers || {})) {
         if (!peers[clientID] || peers[clientID].status === ConnectionStatus.Disconnected) {
-          const peerInfo = peerInfoData;
-          const peer = {
+          peers[clientID] = {
             id: clientID,
             status: ConnectionStatus.Connected,
-            color: peerInfo.color,
-            image: peerInfo.image,
-            username: peerInfo.username,
-            selectedNetworkID: peerInfo.selectedNetworkID,
-            cursor: peerInfo.cursor,
+            color: peer.color,
+            image: peer.image,
+            username: peer.username,
+            selectedNetworkID: peer.selectedNetworkID,
+            cursor: peer.cursor,
             isMine: myClientID === clientID,
           };
-          peers[clientID] = peer;
         }
       }
     },
@@ -101,5 +95,5 @@ const peerInfoSlice = createSlice({
   },
 });
 
-export const { registerPeer, syncPeer, syncSelectedNetwork, syncCursor } = peerInfoSlice.actions;
-export default peerInfoSlice.reducer;
+export const { registerPeer, syncPeer, syncSelectedNetwork, syncCursor } = peersSlice.actions;
+export default peersSlice.reducer;

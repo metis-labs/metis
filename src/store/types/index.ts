@@ -26,7 +26,7 @@ export type LocalState = {
   selectedNetworkID?: string;
 };
 
-export type PeerInfo = {
+export type Peer = {
   id: string;
   color: string;
   image: string;
@@ -39,7 +39,7 @@ export type PeerInfo = {
 
 export type AppState = {
   local: LocalState;
-  peers: { [docID: string]: { [peerID: string]: PeerInfo } };
+  peers: { [docID: string]: { [peerID: string]: Peer } };
   remoteRepaintCounter: number;
   peersRepaintCounter: number;
 

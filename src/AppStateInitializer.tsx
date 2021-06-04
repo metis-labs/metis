@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { activateClient, deactivateClient, DocStatus, setStatus } from 'features/docSlices';
 import { AppState } from 'app/rootReducer';
-import { registerPeer, syncPeer } from 'features/peerInfoSlices';
+import { registerPeer, syncPeer } from 'features/peersSlice';
 
 function AppStateInitializer() {
   const dispatch = useDispatch();

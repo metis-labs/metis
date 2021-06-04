@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { attachDoc, attachDocLoading, createDocument, detachDocument, setRepaintCounter } from 'features/docSlices';
 import { AppState } from 'app/rootReducer';
 import { deleteNetwork, initDiagramInfos, syncSelfSelectedNetwork } from 'features/localSlices';
-import { syncCursor, syncSelectedNetwork } from 'features/peerInfoSlices';
+import { syncCursor, syncSelectedNetwork } from 'features/peersSlice';
 
 const useStyles = makeStyles(() =>
   createStyles({

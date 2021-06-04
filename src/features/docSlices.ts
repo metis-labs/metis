@@ -8,11 +8,11 @@ import { encodeEventDesc } from 'store/types/events';
 import { Position } from 'store/types/base';
 import { Block, BlockType, createBlock, createParams, isNormalBlockType } from 'store/types/blocks';
 import { valueTransition } from 'components/PropertyBar/utils';
-import { PeerInfoState } from './peerInfoSlices';
+import { PeersState } from './peersSlice';
 
 export type MetisDoc = {
   project: Project;
-  peers: PeerInfoState;
+  peers: PeersState;
 };
 export enum DocStatus {
   Disconnect = 'disconnect',
@@ -68,7 +68,7 @@ export const attachDoc = createAsyncThunk<AttachDocResult, AttachDocArgs, { reje
       await client.attach(doc);
       doc.update((root) => {
         if (!root.peers) {
-          root.peers = {} as PeerInfoState;
+          root.peers = {} as PeersState;
         }
         const networkIDs = Object.keys(root.project.networks);
         if (!root.peers[client.getID()]) {

@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 
 import docReducer from 'features/docSlices';
-import peerReducer from 'features/peerInfoSlices';
+import peerReducer from 'features/peersSlice';
 import localInfoReducer from 'features/localSlices';
 
 const rootReducer = combineReducers({
