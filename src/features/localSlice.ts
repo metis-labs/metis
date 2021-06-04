@@ -1,37 +1,18 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import api from 'api';
-import { fromProjects } from 'api/converter';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { ProjectInfo, DiagramInfo } from 'store/types';
+import { DiagramInfo } from 'store/types';
 import { Position } from 'store/types/base';
 
 type LocalInfoState = {
   diagramInfos: { [networkID: string]: DiagramInfo };
-  projectInfos: { [projectID: string]: ProjectInfo };
   selectedNetworkID?: string;
   errorMessage: string;
 };
 
 const initialLocalInfoState: LocalInfoState = {
   diagramInfos: {},
-  projectInfos: {},
   errorMessage: '',
 };
-
-export const syncProjectInfos = createAsyncThunk<SyncProjectInfosResult, undefined, { rejectValue: string }>(
-  'projectInfos/sync',
-  async (_: undefined, thunkApi) => {
-    try {
-      let projectInfos = {};
-      await api.listProjects().then((res) => {
-        projectInfos = fromProjects(res.getProjectsList());
-      });
-      return { projectInfos };
-    } catch (err) {
-      return thunkApi.rejectWithValue(err.message);
-    }
-  },
-);
 
 const localInfoSlice = createSlice({
   name: 'localInfo',
@@ -50,25 +31,6 @@ const localInfoSlice = createSlice({
           zoom: 100,
         };
       }
-    },
-    renameProject(
-      state,
-      action: PayloadAction<{
-        projectID: string;
-        projectName: string;
-      }>,
-    ) {
-      const { projectID, projectName } = action.payload;
-      state.projectInfos[projectID].name = projectName;
-    },
-    deleteProject(
-      state,
-      action: PayloadAction<{
-        projectID: string;
-      }>,
-    ) {
-      const { projectID } = action.payload;
-      delete state.projectInfos[projectID];
     },
     syncSelfSelectedNetwork(
       state,
@@ -126,26 +88,8 @@ const localInfoSlice = createSlice({
       state.diagramInfos[networkID].zoom = zoom;
     },
   },
-  extraReducers: (builder) => {
-    builder.addCase(syncProjectInfos.fulfilled, (state, { payload }) => {
-      state.projectInfos = payload.projectInfos;
-    });
-    builder.addCase(syncProjectInfos.rejected, (state, { payload }) => {
-      state.errorMessage = payload!;
-    });
-  },
 });
 
-export const {
-  initDiagramInfos,
-  renameProject,
-  deleteProject,
-  syncSelfSelectedNetwork,
-  syncSelfSelectedBlock,
-  deleteNetwork,
-  syncOffset,
-  syncZoom,
-} = localInfoSlice.actions;
+export const { initDiagramInfos, syncSelfSelectedNetwork, syncSelfSelectedBlock, deleteNetwork, syncOffset, syncZoom } =
+  localInfoSlice.actions;
 export default localInfoSlice.reducer;
-
-type SyncProjectInfosResult = { projectInfos: { [projectID: string]: ProjectInfo } };

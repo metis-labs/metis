@@ -17,7 +17,7 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 import api from 'api';
 import { ProjectInfo } from 'store/types';
-import { deleteProject, renameProject } from 'features/localSlice';
+import { deleteProject, renameProject } from 'features/projectInfosSlice';
 import { useDispatch } from 'react-redux';
 import RenameDialog from './RenameDialog';
 

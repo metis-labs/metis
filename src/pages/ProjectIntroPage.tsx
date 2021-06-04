@@ -9,7 +9,7 @@ import ProjectCard from 'components/ProjectCard';
 import NewProjectSection from 'components/NewProjectSection';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { syncProjectInfos } from 'features/localSlice';
+import { syncProjectInfos } from 'features/projectInfosSlice';
 import { AppState } from 'app/rootReducer';
 
 const useStyles = makeStyles(() =>
@@ -35,7 +35,7 @@ const useStyles = makeStyles(() =>
 export default function ProjectIntroPage() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const projectInfos = useSelector((state: AppState) => state.localInfoState.projectInfos);
+  const projectInfos = useSelector((state: AppState) => state.projectInfosState.projectInfos);
 
   useEffect(() => {
     dispatch(syncProjectInfos());
