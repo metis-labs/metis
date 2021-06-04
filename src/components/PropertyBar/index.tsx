@@ -23,7 +23,7 @@ import {
 
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
-import { changeBlockType, changeProperty } from 'features/docSlices';
+import { changeBlockType, changeProperty } from 'features/docSlice';
 import IOProperties from './IOProperties';
 import NetworkProperties from './NetworkProperties';
 import NormalProperties from './NormalProperties';

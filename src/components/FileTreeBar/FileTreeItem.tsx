@@ -17,7 +17,7 @@ import { Peer } from 'store/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Network } from 'store/types/networks';
 import { AppState } from 'app/rootReducer';
-import { updateDeletedNetwork, updateRenamedNetwork } from 'features/docSlices';
+import { updateDeletedNetwork, updateRenamedNetwork } from 'features/docSlice';
 import RenameDialog from './RenameDialog';
 
 function TransitionComponent(props: TransitionProps) {

@@ -9,7 +9,7 @@ import ProjectCard from 'components/ProjectCard';
 import NewProjectSection from 'components/NewProjectSection';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { syncProjectInfos } from 'features/localSlices';
+import { syncProjectInfos } from 'features/localSlice';
 import { AppState } from 'app/rootReducer';
 
 const useStyles = makeStyles(() =>

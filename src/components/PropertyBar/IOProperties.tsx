@@ -7,7 +7,7 @@ import { BlockType, IOBlock } from 'store/types/blocks';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
-import { changeProperty } from 'features/docSlices';
+import { changeProperty } from 'features/docSlice';
 import { preserveCaret, stopPropagationOnKeydown } from './utils';
 
 const useStyles = makeStyles((theme: Theme) =>

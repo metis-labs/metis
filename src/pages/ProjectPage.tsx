@@ -13,9 +13,9 @@ import PropertyBar from 'components/PropertyBar';
 
 import { decodeEventDesc } from 'store/types/events';
 import { useDispatch, useSelector } from 'react-redux';
-import { attachDoc, attachDocLoading, createDocument, detachDocument, setRepaintCounter } from 'features/docSlices';
+import { attachDoc, attachDocLoading, createDocument, detachDocument, setRepaintCounter } from 'features/docSlice';
 import { AppState } from 'app/rootReducer';
-import { deleteNetwork, initDiagramInfos, syncSelfSelectedNetwork } from 'features/localSlices';
+import { deleteNetwork, initDiagramInfos, syncSelfSelectedNetwork } from 'features/localSlice';
 import { syncCursor, syncSelectedNetwork } from 'features/peersSlice';
 
 const useStyles = makeStyles(() =>

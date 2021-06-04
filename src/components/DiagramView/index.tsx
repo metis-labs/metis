@@ -10,7 +10,7 @@ import { Position } from 'store/types/base';
 import { BlockType } from 'store/types/blocks';
 
 import { syncCursor, syncSelectedNetwork } from 'features/peersSlice';
-import { syncSelfSelectedBlock, syncSelfSelectedNetwork, syncOffset, syncZoom } from 'features/localSlices';
+import { syncSelfSelectedBlock, syncSelfSelectedNetwork, syncOffset, syncZoom } from 'features/localSlice';
 import { AppState } from 'app/rootReducer';
 import {
   updateBlockPosition,
@@ -19,7 +19,7 @@ import {
   updateDeletedLink,
   updatePortChange,
   updateSelectedNetworkID,
-} from 'features/docSlices';
+} from 'features/docSlice';
 import SideBar from './SideBar';
 import MetisNodeModel from './MetisNodeModel';
 import MetisLinkModel from './MetisLinkModel';

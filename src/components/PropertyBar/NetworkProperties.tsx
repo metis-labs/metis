@@ -12,7 +12,7 @@ import { BlockType, NetworkBlock } from 'store/types/blocks';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
-import { changePrameter, changeProperty, changeRefNetwork } from 'features/docSlices';
+import { changePrameter, changeProperty, changeRefNetwork } from 'features/docSlice';
 import { preserveCaret, stopPropagationOnKeydown } from './utils';
 
 const useStyles = makeStyles((theme: Theme) =>

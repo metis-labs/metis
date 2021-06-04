@@ -11,8 +11,8 @@ import { createNetwork } from 'store/types/networks';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
 import { syncSelectedNetwork } from 'features/peersSlice';
-import { syncSelfSelectedNetwork } from 'features/localSlices';
-import { updateCreatedNetwork, updateSelectedNetworkID } from 'features/docSlices';
+import { syncSelfSelectedNetwork } from 'features/localSlice';
+import { updateCreatedNetwork, updateSelectedNetworkID } from 'features/docSlice';
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 
 function MinusSquare(props: SvgIconProps) {

@@ -10,7 +10,7 @@ import AddIcon from '@material-ui/icons/Add';
 import { BlockType } from 'store/types/blocks';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
-import { updateAddedBlock } from 'features/docSlices';
+import { updateAddedBlock } from 'features/docSlice';
 
 const useStyles = makeStyles(() =>
   createStyles({

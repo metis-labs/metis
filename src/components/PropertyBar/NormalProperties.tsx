@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { NormalBlock, getOrderedParamNames } from 'store/types/blocks';
 
-import { changePrameter, changeProperty } from 'features/docSlices';
+import { changePrameter, changeProperty } from 'features/docSlice';
 import { AppState } from 'app/rootReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { preserveCaret, stopPropagationOnKeydown } from './utils';
