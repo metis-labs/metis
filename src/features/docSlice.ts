@@ -61,8 +61,9 @@ export const activateClient = createAsyncThunk<ActivateClientResult, undefined, 
 
 export const attachDoc = createAsyncThunk<AttachDocResult, AttachDocArgs, { rejectValue: string }>(
   'doc/attach',
-  async ({ client, doc }, thunkApi) => {
+  async ({ client, projectID }, thunkApi) => {
     try {
+      const doc = yorkie.createDocument<MetisDoc>('projects', projectID);
       await client.attach(doc);
       doc.update((root) => {
         if (!root.peers) {
@@ -365,9 +366,6 @@ const docSlice = createSlice({
       state.client = undefined;
       client.deactivate();
     },
-    createDocument(state, action: PayloadAction<string>) {
-      state.doc = yorkie.createDocument<MetisDoc>('projects', action.payload);
-    },
     detachDocument(state) {
       const { doc, client } = state;
       state.doc = undefined;
@@ -484,12 +482,11 @@ const docSlice = createSlice({
   },
 });
 
-export const { deactivateClient, createDocument, detachDocument, attachDocLoading, setStatus, setRepaintCounter } =
-  docSlice.actions;
+export const { deactivateClient, detachDocument, attachDocLoading, setStatus, setRepaintCounter } = docSlice.actions;
 export default docSlice.reducer;
 
 type ActivateClientResult = { client: Client };
-type AttachDocArgs = { doc: DocumentReplica<MetisDoc>; client: Client };
+type AttachDocArgs = { client: Client; projectID: string };
 type AttachDocResult = { doc: DocumentReplica<MetisDoc>; client: Client };
 type UpdateNetworkIDArgs = { doc: DocumentReplica<MetisDoc>; client: Client; networkID: string };
 type UpdateNetworkIDResult = { doc: DocumentReplica<MetisDoc> };
