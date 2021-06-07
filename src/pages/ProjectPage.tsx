@@ -76,7 +76,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
             dispatch(setRepaintCounter(1));
           } else if (changeInfo.paths[0].startsWith('$.peers')) {
             const peers = JSON.parse(doc.toJSON()).peers;
-            dispatch(updatePeers({ peers }));
+            dispatch(updatePeers({ client, peers }));
           }
           if (changeInfo.change.getMessage()) {
             const desc = decodeEventDesc(changeInfo.change.getMessage());

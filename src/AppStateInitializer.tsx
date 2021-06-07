@@ -9,7 +9,6 @@ function AppStateInitializer() {
   const client = useSelector((state: AppState) => state.docState.client);
   const doc = useSelector((state: AppState) => state.docState.doc);
   const status = useSelector((state: AppState) => state.docState.status);
-  const Peers = useSelector((state: AppState) => state.peerState.peers);
 
   useEffect(() => {
     dispatch(activateClient());
@@ -68,7 +67,7 @@ function AppStateInitializer() {
         unsubscribe();
       };
     })();
-  }, [doc, client, Peers]);
+  }, [doc, client]);
 
   return <></>;
 }

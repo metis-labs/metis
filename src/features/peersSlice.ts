@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Peer } from 'store/types';
 import { ConnectionStatus } from 'store/types/base';
+import { Client } from 'yorkie-js-sdk';
 
 export interface PeersState {
   peers: {
@@ -16,11 +17,12 @@ const peersSlice = createSlice({
     updatePeers(
       state,
       action: PayloadAction<{
+        client: Client;
         peers: { [id: string]: Peer };
       }>,
     ) {
-      for (const id of Object.keys(action.payload.peers)) {
-        state.peers[id] = action.payload.peers[id];
+      for (const id of Object.keys(state.peers)) {
+        state.peers[id] = { ...state.peers[id], ...action.payload.peers[id] };
       }
     },
     registerPeer(
