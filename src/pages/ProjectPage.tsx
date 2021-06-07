@@ -13,9 +13,10 @@ import PropertyBar from 'components/PropertyBar';
 
 import { decodeEventDesc } from 'store/types/events';
 import { useDispatch, useSelector } from 'react-redux';
-import { attachDoc, attachDocLoading, detachDocument, setRepaintCounter } from 'features/docSlice';
+import { attachDoc, attachDocLoading, detachDocument, selectFirstNetwork, setRepaintCounter } from 'features/docSlice';
 import { AppState } from 'app/rootReducer';
 import { deleteNetwork, initDiagramInfos } from 'features/localSlice';
+import { updatePeers } from 'features/peersSlice';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -71,8 +72,11 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
     function handleEvent(event) {
       if (event.type === 'local-change' || event.type === 'remote-change') {
         for (const changeInfo of event.value) {
-          if (changeInfo.paths[0].startsWith('$.project') || changeInfo.paths[0].startsWith('$.peers')) {
+          if (changeInfo.paths[0].startsWith('$.project')) {
             dispatch(setRepaintCounter(1));
+          } else if (changeInfo.paths[0].startsWith('$.peers')) {
+            const peers = JSON.parse(doc.toJSON()).peers;
+            dispatch(updatePeers({ peers }));
           }
           if (changeInfo.change.getMessage()) {
             const desc = decodeEventDesc(changeInfo.change.getMessage());
@@ -88,6 +92,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
     doc.subscribe((event) => {
       handleEvent(event);
     });
+    dispatch(selectFirstNetwork());
     return () => {
       if (doc) {
         dispatch(detachDocument());

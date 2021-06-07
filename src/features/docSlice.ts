@@ -2,17 +2,16 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import anonymous from 'anonymous-animals-gen';
 import yorkie, { Client, DocumentReplica } from 'yorkie-js-sdk';
 import randomColor from 'randomcolor';
-import { Project } from 'store/types';
+import { Peer, Project } from 'store/types';
 import { createNetworkParams, Network } from 'store/types/networks';
 import { encodeEventDesc } from 'store/types/events';
 import { Position } from 'store/types/base';
 import { Block, BlockType, createBlock, createParams, isNormalBlockType } from 'store/types/blocks';
 import { valueTransition } from 'components/PropertyBar/utils';
-import { PeersState } from './peersSlice';
 
 export type MetisDoc = {
   project: Project;
-  peers: PeersState;
+  peers: { [id: string]: Peer };
 };
 export enum DocStatus {
   Disconnect = 'disconnect',
@@ -67,13 +66,7 @@ export const attachDoc = createAsyncThunk<AttachDocResult, AttachDocArgs, { reje
       await client.attach(doc);
       doc.update((root) => {
         if (!root.peers) {
-          root.peers = {} as PeersState;
-        }
-        const networkIDs = Object.keys(root.project.networks);
-        if (!root.peers[client.getID()]) {
-          root.peers[client.getID()] = {
-            selectedNetworkID: networkIDs[0],
-          };
+          root.peers = {};
         }
       });
 
@@ -361,6 +354,17 @@ const docSlice = createSlice({
   name: 'doc',
   initialState: initialDocState,
   reducers: {
+    selectFirstNetwork(state) {
+      const { client } = state;
+      state.doc.update((root) => {
+        const networkIDs = Object.keys(root.project.networks);
+        const selectedNetworkID = networkIDs[0];
+        root.peers[client.getID()] = {
+          ...root.peers[client.getID()],
+          ...{ selectedNetworkID },
+        };
+      });
+    },
     deactivateClient(state) {
       const { client } = state;
       state.client = undefined;
@@ -482,7 +486,8 @@ const docSlice = createSlice({
   },
 });
 
-export const { deactivateClient, detachDocument, attachDocLoading, setStatus, setRepaintCounter } = docSlice.actions;
+export const { deactivateClient, detachDocument, attachDocLoading, setStatus, setRepaintCounter, selectFirstNetwork } =
+  docSlice.actions;
 export default docSlice.reducer;
 
 type ActivateClientResult = { client: Client };

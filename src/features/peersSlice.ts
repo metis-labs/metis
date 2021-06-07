@@ -13,6 +13,16 @@ const peersSlice = createSlice({
   name: 'peers',
   initialState: { peers: {} } as PeersState,
   reducers: {
+    updatePeers(
+      state,
+      action: PayloadAction<{
+        peers: { [id: string]: Peer };
+      }>,
+    ) {
+      for (const id of Object.keys(action.payload.peers)) {
+        state.peers[id] = action.payload.peers[id];
+      }
+    },
     registerPeer(
       state,
       action: PayloadAction<{
@@ -95,5 +105,5 @@ const peersSlice = createSlice({
   },
 });
 
-export const { registerPeer, syncPeer, syncSelectedNetwork, syncCursor } = peersSlice.actions;
+export const { registerPeer, syncPeer, syncSelectedNetwork, syncCursor, updatePeers } = peersSlice.actions;
 export default peersSlice.reducer;

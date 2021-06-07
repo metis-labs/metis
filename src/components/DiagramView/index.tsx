@@ -66,7 +66,6 @@ export default function DiagramView() {
   const diagramInfoState = useSelector((state: AppState) => state.localInfoState.diagramInfos);
   const client = useSelector((state: AppState) => state.docState.client);
   const clientID = client.getID();
-  const repaintingCounter = useSelector((state: AppState) => state.docState.repaintingCounter);
 
   const rootElement = useRef(null);
   const [engine] = useState(new Engine());
@@ -167,7 +166,7 @@ export default function DiagramView() {
       }
     });
     return () => deregister();
-  }, [engine, doc, diagramInfoState, setChangeEvents, repaintingCounter]);
+  }, [engine, doc, diagramInfoState, setChangeEvents]);
 
   useEffect(() => {
     const remoteDoc = doc.getRoot();
