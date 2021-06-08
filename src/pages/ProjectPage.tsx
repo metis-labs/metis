@@ -13,7 +13,15 @@ import PropertyBar from 'components/PropertyBar';
 
 import { decodeEventDesc } from 'store/types/events';
 import { useDispatch, useSelector } from 'react-redux';
-import { attachDoc, attachDocLoading, detachDocument, selectFirstNetwork, setRepaintCounter } from 'features/docSlice';
+import {
+  DocStatus,
+  createDocument,
+  attachDocument,
+  attachDocLoading,
+  detachDocument,
+  selectFirstNetwork,
+  setRepaintCounter,
+} from 'features/docSlice';
 import { AppState } from 'app/rootReducer';
 import { deleteNetwork, initDiagramInfos } from 'features/localSlice';
 import { updatePeers } from 'features/peersSlice';
@@ -42,14 +50,19 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
     match: {
       params: { projectID },
     },
-    location: { search },
   } = props;
   const [viewMode, setViewMode] = useState('diagram');
   const dispatch = useDispatch();
   const doc = useSelector((state: AppState) => state.docState.doc);
   const client = useSelector((state: AppState) => state.docState.client);
+  const status = useSelector((state: AppState) => state.docState.status);
   const peers = useSelector((state: AppState) => state.peerState.peers);
   const project = useSelector((state: AppState) => state.projectState);
+
+  useEffect(() => {
+    dispatch(createDocument(projectID));
+  }, [projectID]);
+
 
   useEffect(() => {
     async function attachDocAsync() {
@@ -57,22 +70,26 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         return;
       }
       dispatch(attachDocLoading(true));
-      await dispatch(attachDoc({ client, projectID }));
+      dispatch(attachDocument({ client, doc }));
+      dispatch(attachDocLoading(false));
     }
+
     attachDocAsync();
+
     return () => {
-      dispatch(attachDocLoading(true));
+      dispatch(detachDocument());
     };
-  }, [projectID, client, search]);
+  }, [doc, client]);
 
   useEffect(() => {
-    if (!doc) {
+    if (status !== DocStatus.Detached) {
       return () => {};
     }
+
     dispatch(updateProject({ project: JSON.parse(doc.toJSON()).project }));
     const networkIDs = Object.keys(doc.getRoot().project.networks);
     dispatch(initDiagramInfos({ networkIDs }));
-    function handleEvent(event) {
+    const unsubscribe = doc.subscribe((event) => {
       if (event.type === 'local-change' || event.type === 'remote-change') {
         for (const changeInfo of event.value) {
           if (changeInfo.paths[0].startsWith('$.project')) {
@@ -93,17 +110,20 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
           }
         }
       }
-    }
-    doc.subscribe((event) => {
-      handleEvent(event);
     });
+
     dispatch(selectFirstNetwork());
+
     return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+
       if (doc) {
         dispatch(detachDocument());
       }
     };
-  }, [doc]);
+  }, [status]);
 
   if (!project.id) {
     return (

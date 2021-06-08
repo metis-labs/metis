@@ -14,8 +14,8 @@ export type MetisDoc = {
   peers: { [id: string]: Peer };
 };
 export enum DocStatus {
-  Disconnect = 'disconnect',
-  Connect = 'connect',
+  Attached = 'attached',
+  Detached = 'detached',
 }
 
 export interface DocState {
@@ -30,7 +30,7 @@ export interface DocState {
 const initialDocState: DocState = {
   loading: true,
   errorMessage: '',
-  status: DocStatus.Connect,
+  status: DocStatus.Attached,
   repaintingCounter: 0,
 };
 
@@ -58,11 +58,10 @@ export const activateClient = createAsyncThunk<ActivateClientResult, undefined, 
   },
 );
 
-export const attachDoc = createAsyncThunk<AttachDocResult, AttachDocArgs, { rejectValue: string }>(
+export const attachDocument = createAsyncThunk<AttachDocResult, AttachDocArgs, { rejectValue: string }>(
   'doc/attach',
-  async ({ client, projectID }, thunkApi) => {
+  async ({ client, doc }, thunkApi) => {
     try {
-      const doc = yorkie.createDocument<MetisDoc>('projects', projectID);
       await client.attach(doc);
       doc.update((root) => {
         if (!root.peers) {
@@ -370,10 +369,18 @@ const docSlice = createSlice({
       state.client = undefined;
       client.deactivate();
     },
+    createDocument(state, action: PayloadAction<string>) {
+      const projectID = action.payload;
+      const doc = yorkie.createDocument<MetisDoc>('projects', projectID);
+      state.doc = doc;
+    },
     detachDocument(state) {
-      const { doc, client } = state;
-      state.doc = undefined;
-      client.detach(doc as DocumentReplica<MetisDoc>);
+      if (state.status === DocStatus.Detached) {
+        const { doc, client } = state;
+        state.doc = undefined;
+        client.detach(doc as DocumentReplica<MetisDoc>);
+        state.status = DocStatus.Attached;
+      }
     },
     attachDocLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
@@ -392,11 +399,12 @@ const docSlice = createSlice({
     builder.addCase(activateClient.rejected, (state, { payload }) => {
       state.errorMessage = payload!;
     });
-    builder.addCase(attachDoc.fulfilled, (state, { payload }) => {
+    builder.addCase(attachDocument.fulfilled, (state, { payload }) => {
       state.doc = payload.doc;
+      state.status = DocStatus.Detached;
       state.client = payload.client;
     });
-    builder.addCase(attachDoc.rejected, (state, { payload }) => {
+    builder.addCase(attachDocument.rejected, (state, { payload }) => {
       state.errorMessage = payload!;
     });
     builder.addCase(updateSelectedNetworkID.fulfilled, (state, { payload }) => {
@@ -486,12 +494,21 @@ const docSlice = createSlice({
   },
 });
 
-export const { deactivateClient, detachDocument, attachDocLoading, setStatus, setRepaintCounter, selectFirstNetwork } =
-  docSlice.actions;
+export const {
+  deactivateClient,
+  createDocument,
+  detachDocument,
+  attachDocLoading,
+  setStatus,
+  setRepaintCounter,
+  selectFirstNetwork,
+} = docSlice.actions;
+
 export default docSlice.reducer;
 
 type ActivateClientResult = { client: Client };
-type AttachDocArgs = { client: Client; projectID: string };
+type AttachDocArgs = { client: Client; doc: DocumentReplica<MetisDoc>; };
+
 type AttachDocResult = { doc: DocumentReplica<MetisDoc>; client: Client };
 type UpdateNetworkIDArgs = { doc: DocumentReplica<MetisDoc>; client: Client; networkID: string };
 type UpdateNetworkIDResult = { doc: DocumentReplica<MetisDoc> };
