@@ -9,7 +9,6 @@ import Engine from 'components/DiagramView/Engine';
 import { Position } from 'store/types/base';
 import { BlockType } from 'store/types/blocks';
 
-import { syncCursor, syncSelectedNetwork } from 'features/peersSlice';
 import { syncSelfSelectedBlock, syncOffset, syncZoom } from 'features/localSlice';
 import { AppState } from 'app/rootReducer';
 import {
@@ -66,6 +65,7 @@ export default function DiagramView() {
   const diagramInfoState = useSelector((state: AppState) => state.localInfoState.diagramInfos);
   const client = useSelector((state: AppState) => state.docState.client);
   const clientID = client.getID();
+  const project = useSelector((state: AppState) => state.projectState);
 
   const rootElement = useRef(null);
   const [engine] = useState(new Engine());
@@ -109,7 +109,6 @@ export default function DiagramView() {
   );
 
   useEffect(() => {
-    const { project } = doc.getRoot();
     const diagramInfo = diagramInfoState[selectedNetworkID];
     const network = project.networks[selectedNetworkID];
     engine.update(network, project.networks, diagramInfo);
@@ -166,28 +165,7 @@ export default function DiagramView() {
       }
     });
     return () => deregister();
-  }, [engine, doc, diagramInfoState, setChangeEvents]);
-
-  useEffect(() => {
-    const remoteDoc = doc.getRoot();
-    Object.keys(peers).forEach((clientID) =>
-      remoteDoc.peers[clientID]?.cursor
-        ? (dispatch(
-            syncCursor({
-              myClientID: clientID,
-              x: remoteDoc.peers[clientID].cursor.x,
-              y: remoteDoc.peers[clientID].cursor.y,
-            }),
-          ),
-          dispatch(
-            syncSelectedNetwork({
-              myClientID: clientID,
-              networkID: remoteDoc.peers[clientID].selectedNetworkID,
-            }),
-          ))
-        : '',
-    );
-  }, [doc, syncCursor, syncSelectedNetwork]);
+  }, [engine, project, setChangeEvents, selectedNetworkID]);
 
   const peerCursors = [];
   for (const [peerID, peer] of Object.entries(peers || {})) {

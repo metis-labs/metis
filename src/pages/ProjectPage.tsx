@@ -17,6 +17,7 @@ import { attachDoc, attachDocLoading, detachDocument, selectFirstNetwork, setRep
 import { AppState } from 'app/rootReducer';
 import { deleteNetwork, initDiagramInfos } from 'features/localSlice';
 import { updatePeers } from 'features/peersSlice';
+import { updateProject } from 'features/projectSlice';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -48,6 +49,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
   const doc = useSelector((state: AppState) => state.docState.doc);
   const client = useSelector((state: AppState) => state.docState.client);
   const peers = useSelector((state: AppState) => state.peerState.peers);
+  const project = useSelector((state: AppState) => state.projectState);
 
   useEffect(() => {
     async function attachDocAsync() {
@@ -67,12 +69,15 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
     if (!doc) {
       return () => {};
     }
+    dispatch(updateProject({ project: JSON.parse(doc.toJSON()).project }));
     const networkIDs = Object.keys(doc.getRoot().project.networks);
     dispatch(initDiagramInfos({ networkIDs }));
     function handleEvent(event) {
       if (event.type === 'local-change' || event.type === 'remote-change') {
         for (const changeInfo of event.value) {
           if (changeInfo.paths[0].startsWith('$.project')) {
+            const project = JSON.parse(doc.toJSON()).project;
+            dispatch(updateProject({ project }));
             dispatch(setRepaintCounter(1));
           } else if (changeInfo.paths[0].startsWith('$.peers')) {
             const peers = JSON.parse(doc.toJSON()).peers;
@@ -100,7 +105,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
     };
   }, [doc]);
 
-  if (!doc?.getRoot().project) {
+  if (!project.id) {
     return (
       <div className={classes.root}>
         <CircularProgress />

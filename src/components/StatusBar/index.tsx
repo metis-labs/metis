@@ -32,8 +32,7 @@ const useStyles = makeStyles(() =>
 export default function StatusBar(props: { viewMode: string; setViewMode: Function }) {
   const { viewMode, setViewMode } = props;
   const classes = useStyles();
-  const docState = useSelector((state: AppState) => state.docState.doc);
-  const { project } = docState.getRoot();
+  const project = useSelector((state: AppState) => state.projectState);
   const client = useSelector((state: AppState) => state.docState.client);
   const peers = useSelector((state: AppState) => state.peerState.peers);
   const selectedNetworkID = peers[client.getID()].selectedNetworkID;

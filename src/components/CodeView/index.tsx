@@ -20,19 +20,17 @@ const useStyles = makeStyles(() =>
 
 export default function CodeView() {
   const classes = useStyles();
-  const doc = useSelector((state: AppState) => state.docState.doc);
   const client = useSelector((state: AppState) => state.docState.client);
   const peers = useSelector((state: AppState) => state.peerState.peers);
   const selectedNetworkID = peers[client.getID()].selectedNetworkID;
   const [converter] = useState(new Converter());
   const [codeString, setCodeString] = useState('');
-  const project = doc.getRoot().project!;
-  const repaintCounter = useSelector((state: AppState) => state.docState.repaintingCounter);
+  const project = useSelector((state: AppState) => state.projectState);
 
   useEffect(() => {
     converter.update(project, selectedNetworkID);
     setCodeString(converter.getResult());
-  }, [doc, setCodeString, selectedNetworkID, repaintCounter]);
+  }, [setCodeString, selectedNetworkID, project]);
 
   return (
     <div className={classes.root}>

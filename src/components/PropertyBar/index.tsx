@@ -61,7 +61,7 @@ export default function PropertyBar() {
   const client = useSelector((state: AppState) => state.docState.client);
   const peers = useSelector((state: AppState) => state.peerState.peers);
   const selectedNetworkID = peers[client.getID()].selectedNetworkID;
-  const project = doc.getRoot().project;
+  const project = useSelector((state: AppState) => state.projectState);
   const network = project.networks[selectedNetworkID];
   const { selectedBlockID } = diagramInfos[selectedNetworkID];
 

@@ -1,5 +1,6 @@
 import { Project } from 'store/types';
 import { BlockType, NetworkBlock } from 'store/types/blocks';
+import { Network } from 'store/types/networks';
 import ImportConverter from './importConverter';
 import InitConverter from './initConverter';
 import ForwardConverter from './forwardConverter';
@@ -10,7 +11,7 @@ export default class Converter {
   update(project: Project, selectedNetworkID: string): void {
     this.result = '';
 
-    const network = project.networks[selectedNetworkID];
+    const network = JSON.parse(JSON.stringify(project.networks[selectedNetworkID])) as Network;
 
     // Update Dependencies
     const refNetworkBlockNameList = [];
@@ -18,6 +19,7 @@ export default class Converter {
       block.refNetwork ? refNetworkBlockNameList.push(project.networks[block.refNetwork].name) : '',
     );
     refNetworkBlockNameList.push.apply(refNetworkBlockNameList, ['torch', 'torchNN']);
+
     const noNeedDeps = Object.keys(network.dependencies).filter((dep) => !refNetworkBlockNameList.includes(dep));
     noNeedDeps.map((noNeedDep) => delete network.dependencies[noNeedDep]);
     refNetworkBlockNameList
