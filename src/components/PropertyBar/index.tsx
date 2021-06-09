@@ -22,7 +22,7 @@ import {
 
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
-import { changeBlockType, changeProperty } from 'features/docSlice';
+import { changeBlokType, changeProperty } from 'features/docSlice';
 import IOProperties from './IOProperties';
 import NetworkProperties from './NetworkProperties';
 import NormalProperties from './NormalProperties';
@@ -67,7 +67,7 @@ export default function PropertyBar() {
 
   const onTypeChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      dispatch(changeBlockType({ doc, event, selectedNetworkID, selectedBlockID }));
+      dispatch(changeBlokType({ event, selectedNetworkID, selectedBlockID }));
     },
     [doc, selectedBlockID, selectedNetworkID, repaintCounter],
   );
@@ -75,7 +75,7 @@ export default function PropertyBar() {
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(changeProperty({ doc, event, selectedNetworkID, selectedBlockID, key }));
+      dispatch(changeProperty({ event, selectedNetworkID, selectedBlockID, key }));
     },
     [doc, selectedBlockID, selectedNetworkID, repaintCounter],
   );

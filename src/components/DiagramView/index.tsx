@@ -14,10 +14,10 @@ import { AppState } from 'app/rootReducer';
 import {
   updateBlockPosition,
   updateCursorPosition,
-  updateDeletedBlock,
-  updateDeletedLink,
-  updatePortChange,
-  updateSelectedNetworkID,
+  deleteBlock,
+  selectNetwork,
+  deleteLink,
+  changePort,
 } from 'features/docSlice';
 import SideBar from './SideBar';
 import MetisNodeModel from './MetisNodeModel';
@@ -78,9 +78,8 @@ export default function DiagramView() {
       if (event.funcName === 'selectionChanged' && selectedBlockID) {
         dispatch(lUpdateSelectedBlock({ selectedNetworkID, selectedBlockID }));
       } else if (event.funcName === 'positionChanged' && selectedBlockID) {
-        dispatch(
-          updateBlockPosition({ networkID: selectedNetworkID, blockID: event.blockID, position: event.position }),
-        );
+        const blockPosition = event.position;
+        dispatch(updateBlockPosition({ selectedNetworkID, selectedBlockID, blockPosition }));
         dispatch(lUpdateSelectedBlock({ selectedNetworkID, selectedBlockID }));
       }
     }
@@ -89,21 +88,17 @@ export default function DiagramView() {
 
   const diagramInfo = diagramInfoState[selectedNetworkID];
   const rect = rootElement.current?.getBoundingClientRect();
+
   const handleMouseMove = useCallback(
     (event: React.MouseEvent) => {
       if (!rect) {
         return;
       }
-      dispatch(
-        updateCursorPosition({
-          doc,
-          clientID,
-          position: {
-            x: (event.nativeEvent.clientX - rect.x - diagramInfo.offset.x) / (diagramInfo.zoom / 100),
-            y: (event.nativeEvent.clientY - rect.y - diagramInfo.offset.y) / (diagramInfo.zoom / 100),
-          },
-        }),
-      );
+      const cursorPosition: Position = {
+        x: (event.nativeEvent.clientX - rect.x - diagramInfo.offset.x) / (diagramInfo.zoom / 100),
+        y: (event.nativeEvent.clientY - rect.y - diagramInfo.offset.y) / (diagramInfo.zoom / 100),
+      };
+      dispatch(updateCursorPosition({ cursorPosition }));
     },
     [clientID, rect, diagramInfo, doc, diagramInfoState],
   );
@@ -127,7 +122,8 @@ export default function DiagramView() {
             }),
           );
         } else if (event.function === 'entityRemoved') {
-          dispatch(updateDeletedBlock({ doc, networkID: selectedNetworkID, blockID: entity.getBlockID() }));
+          const selectedBlockID = entity.getBlockID();
+          dispatch(deleteBlock({ selectedNetworkID, selectedBlockID }));
         } else if (event.function === 'doubleClicked') {
           const network = project.networks[selectedNetworkID];
           const block = network.blocks[entity.getBlockID()];
@@ -135,13 +131,13 @@ export default function DiagramView() {
             return;
           }
           const networkID = block.refNetwork;
-          dispatch(updateSelectedNetworkID({ client, doc, networkID }));
+          dispatch(selectNetwork({ selectedNetworkID: networkID }));
         }
       } else if (entity instanceof MetisLinkModel) {
         if (event.function === 'targetPortChanged') {
-          dispatch(updatePortChange({ doc, networkID: selectedNetworkID, entity: event.entity }));
+          dispatch(changePort({ networkID: selectedNetworkID, entity: event.entity }));
         } else if (event.function === 'entityRemoved') {
-          dispatch(updateDeletedLink({ doc, networkID: selectedNetworkID, linkID: entity.getLinkID() }));
+          dispatch(deleteLink({ networkID: selectedNetworkID, linkID: entity.getLinkID() }));
         }
       } else if (entity instanceof DiagramModel) {
         if (event.function === 'offsetUpdated') {

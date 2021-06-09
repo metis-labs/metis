@@ -35,7 +35,7 @@ export default function NetworkProperties(props: { block: IOBlock }) {
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(changeProperty({ doc, event, selectedNetworkID, selectedBlockID, key }));
+      dispatch(changeProperty({ event, selectedNetworkID, selectedBlockID, key }));
     },
     [doc, selectedBlockID, selectedNetworkID, repaintCounter],
   );

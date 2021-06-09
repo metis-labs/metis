@@ -12,7 +12,7 @@ import { BlockType, NetworkBlock } from 'store/types/blocks';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
-import { changePrameter, changeProperty, changeRefNetwork } from 'features/docSlice';
+import { changeParameter, changeProperty, changeRefNetwork } from 'features/docSlice';
 import { preserveCaret, stopPropagationOnKeydown } from './utils';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -48,7 +48,7 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
 
   const onRefNetworkChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      dispatch(changeRefNetwork({ doc, event, selectedNetworkID, selectedBlockID }));
+      dispatch(changeRefNetwork({ event, selectedNetworkID, selectedBlockID }));
     },
     [doc, selectedBlockID, selectedNetworkID, repaintCounter],
   );
@@ -56,7 +56,7 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(changeProperty({ doc, event, selectedNetworkID, selectedBlockID, key }));
+      dispatch(changeProperty({ event, selectedNetworkID, selectedBlockID, key }));
     },
     [doc, selectedBlockID, selectedNetworkID, repaintCounter],
   );
@@ -64,7 +64,7 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
   const handleParameterChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(changePrameter({ doc, event, selectedNetworkID, selectedBlockID, key }));
+      dispatch(changeParameter({ event, selectedNetworkID, selectedBlockID, key }));
     },
     [doc, selectedBlockID, selectedNetworkID, repaintCounter],
   );

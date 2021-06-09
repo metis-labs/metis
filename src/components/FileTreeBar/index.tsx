@@ -11,7 +11,7 @@ import { createNetwork } from 'store/types/networks';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
 import { syncSelectedNetwork } from 'features/peersSlice';
-import { updateCreatedNetwork, updateSelectedNetworkID } from 'features/docSlice';
+import { initiateNetwork, selectNetwork } from 'features/docSlice';
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 
 function MinusSquare(props: SvgIconProps) {
@@ -104,16 +104,15 @@ export default function FileTreeBar() {
       if (!project.networks[networkID]) {
         return;
       }
-      dispatch(updateSelectedNetworkID({ client, doc, networkID }));
+      dispatch(selectNetwork({ selectedNetworkID: networkID }));
     },
     [project, clientID, repaintCounter],
   );
 
   const handleAddNetwork = useCallback(async () => {
     const network = createNetwork('Untitled');
-
-    dispatch(updateCreatedNetwork({ client, doc, network }));
-    dispatch(updateSelectedNetworkID({ client, doc, networkID: network.id }));
+    dispatch(initiateNetwork({ network }));
+    dispatch(selectNetwork({ selectedNetworkID: network.id }));
   }, [doc, clientID]);
 
   useEffect(() => {

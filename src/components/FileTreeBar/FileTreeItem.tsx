@@ -17,7 +17,7 @@ import { Peer } from 'store/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Network } from 'store/types/networks';
 import { AppState } from 'app/rootReducer';
-import { updateDeletedNetwork, updateRenamedNetwork } from 'features/docSlice';
+import { deleteNetwork, renameNetwork } from 'features/docSlice';
 import RenameDialog from './RenameDialog';
 
 function TransitionComponent(props: TransitionProps) {
@@ -97,7 +97,6 @@ export default function FileTreeItem(props: { network: Network; peers: Array<Pee
   const classes = useStyles();
   const dispatch = useDispatch();
   const doc = useSelector((state: AppState) => state.docState.doc);
-  const client = useSelector((state: AppState) => state.docState.client);
   const { network, peers } = props;
   const [menuOpen, setMenuOpen] = useState(false);
   const [moreButtonOpen, setMoreButtonOpen] = useState(false);
@@ -154,13 +153,13 @@ export default function FileTreeItem(props: { network: Network; peers: Array<Pee
   }, [setRenameDialogOpen]);
 
   const handleDeleteButtonClick = useCallback(() => {
-    dispatch(updateDeletedNetwork({ doc, network, client }));
+    dispatch(deleteNetwork({ network }));
   }, [doc, network.id]);
 
   const handleRenameDialogClose = useCallback(
     (modelName: string | undefined) => {
       if (modelName) {
-        dispatch(updateRenamedNetwork({ doc, network, modelName }));
+        dispatch(renameNetwork({ network, modelName }));
       }
       setRenameDialogOpen(false);
       setMoreButtonOpen(false);

@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { NormalBlock, getOrderedParamNames } from 'store/types/blocks';
 
-import { changePrameter, changeProperty } from 'features/docSlice';
+import { changeParameter, changeProperty } from 'features/docSlice';
 import { AppState } from 'app/rootReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { preserveCaret, stopPropagationOnKeydown } from './utils';
@@ -42,7 +42,7 @@ export default function NetworkProperties(props: { block: NormalBlock }) {
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(changeProperty({ doc, selectedNetworkID, selectedBlockID, event, key }));
+      dispatch(changeProperty({ selectedNetworkID, selectedBlockID, event, key }));
     },
     [doc, selectedBlockID, selectedNetworkID, repaintCounter],
   );
@@ -50,7 +50,7 @@ export default function NetworkProperties(props: { block: NormalBlock }) {
   const handleParameterChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(changePrameter({ doc, selectedNetworkID, selectedBlockID, event, key }));
+      dispatch(changeParameter({ selectedNetworkID, selectedBlockID, event, key }));
     },
     [doc, selectedBlockID, selectedNetworkID, repaintCounter],
   );

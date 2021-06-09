@@ -10,7 +10,7 @@ import AddIcon from '@material-ui/icons/Add';
 import { BlockType } from 'store/types/blocks';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
-import { updateAddedBlock } from 'features/docSlice';
+import { addBlock } from 'features/docSlice';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -42,7 +42,7 @@ export default function SideBar() {
   const handleAddBlockClick = useCallback(
     (type: BlockType) => {
       const diagramOffset = diagramInfos[selectedNetworkID].offset;
-      dispatch(updateAddedBlock({ doc, networkID: selectedNetworkID, type, diagramOffset }));
+      dispatch(addBlock({ networkID: selectedNetworkID, type, diagramOffset }));
     },
     [doc, selectedNetworkID, diagramInfos],
   );
