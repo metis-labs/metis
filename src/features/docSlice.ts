@@ -107,8 +107,8 @@ const docSlice = createSlice({
   initialState: initialDocState,
   reducers: {
     selectFirstNetwork(state) {
-      const { client } = state;
-      state.doc.update((root) => {
+      const { doc, client } = state;
+      doc.update((root) => {
         const networkIDs = Object.keys(root.project.networks);
         const selectedNetworkID = networkIDs[0];
         root.peers[client.getID()] = {
@@ -419,21 +419,21 @@ const docSlice = createSlice({
 });
 
 export const {
-  createDocument,
   attachDocLoading,
   setStatus,
+  createDocument,
   setRepaintCounter,
-  selectFirstNetwork,
-  updateBlockPosition,
-  updateCursorPosition,
-  deleteNetwork,
-  deleteBlock,
-  selectNetwork,
-  deleteLink,
-  changePort,
   initiateNetwork,
   renameNetwork,
+  selectFirstNetwork,
+  selectNetwork,
+  deleteNetwork,
   addBlock,
+  updateBlockPosition,
+  deleteBlock,
+  changePort,
+  deleteLink,
+  updateCursorPosition,
   changeBlokType,
   changeRefNetwork,
   changeProperty,

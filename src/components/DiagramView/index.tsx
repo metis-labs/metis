@@ -61,7 +61,6 @@ export default function DiagramView() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const peers = useSelector((state: AppState) => state.peerState.peers);
-  const doc = useSelector((state: AppState) => state.docState.doc);
   const diagramInfoState = useSelector((state: AppState) => state.localInfoState.diagramInfos);
   const client = useSelector((state: AppState) => state.docState.client);
   const clientID = client.getID();
@@ -84,7 +83,7 @@ export default function DiagramView() {
       }
     }
     setChangeEvents({});
-  }, [changeEvents, selectedNetworkID, doc]);
+  }, [changeEvents, selectedNetworkID]);
 
   const diagramInfo = diagramInfoState[selectedNetworkID];
   const rect = rootElement.current?.getBoundingClientRect();
@@ -100,7 +99,7 @@ export default function DiagramView() {
       };
       dispatch(updateCursorPosition({ cursorPosition }));
     },
-    [clientID, rect, diagramInfo, doc, diagramInfoState],
+    [clientID, rect, diagramInfo, diagramInfoState],
   );
 
   useEffect(() => {

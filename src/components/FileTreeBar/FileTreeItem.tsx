@@ -14,9 +14,8 @@ import { TransitionProps } from '@material-ui/core/transitions';
 import Collapse from '@material-ui/core/Collapse';
 
 import { Peer } from 'store/types';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Network } from 'store/types/networks';
-import { AppState } from 'app/rootReducer';
 import { deleteNetwork, renameNetwork } from 'features/docSlice';
 import RenameDialog from './RenameDialog';
 
@@ -96,7 +95,6 @@ const useStyles = makeStyles(() =>
 export default function FileTreeItem(props: { network: Network; peers: Array<Peer> }) {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const doc = useSelector((state: AppState) => state.docState.doc);
   const { network, peers } = props;
   const [menuOpen, setMenuOpen] = useState(false);
   const [moreButtonOpen, setMoreButtonOpen] = useState(false);
@@ -154,7 +152,7 @@ export default function FileTreeItem(props: { network: Network; peers: Array<Pee
 
   const handleDeleteButtonClick = useCallback(() => {
     dispatch(deleteNetwork({ network }));
-  }, [doc, network.id]);
+  }, [network.id]);
 
   const handleRenameDialogClose = useCallback(
     (modelName: string | undefined) => {
@@ -165,7 +163,7 @@ export default function FileTreeItem(props: { network: Network; peers: Array<Pee
       setMoreButtonOpen(false);
       setMenuOpen(false);
     },
-    [setRenameDialogOpen, setMoreButtonOpen, setMenuOpen, doc, network.id],
+    [setRenameDialogOpen, setMoreButtonOpen, setMenuOpen, network.id],
   );
 
   return (

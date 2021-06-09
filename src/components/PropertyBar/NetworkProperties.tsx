@@ -7,9 +7,7 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { Project } from 'store/types';
 import { BlockType, NetworkBlock } from 'store/types/blocks';
-
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
 import { changeParameter, changeProperty, changeRefNetwork } from 'features/docSlice';
@@ -34,13 +32,11 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function NetworkProperties(props: { block: NetworkBlock }) {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const doc = useSelector((state: AppState) => state.docState.doc);
-  const repaintCounter = useSelector((state: AppState) => state.docState.repaintingCounter);
   const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
   const client = useSelector((state: AppState) => state.docState.client);
   const peers = useSelector((state: AppState) => state.peerState.peers);
   const selectedNetworkID = peers[client.getID()].selectedNetworkID;
-  const project = doc.getRoot().project as Project;
+  const project = useSelector((state: AppState) => state.projectState.project);
   const { selectedBlockID } = diagramInfos[selectedNetworkID];
   const { block: selectedBlock } = props;
 
@@ -50,7 +46,7 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
     (event: ChangeEvent<HTMLSelectElement>) => {
       dispatch(changeRefNetwork({ event, selectedNetworkID, selectedBlockID }));
     },
-    [doc, selectedBlockID, selectedNetworkID, repaintCounter],
+    [selectedBlockID, selectedNetworkID],
   );
 
   const handlePropertyChange = useCallback(
@@ -58,7 +54,7 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
       preserveCaret(event);
       dispatch(changeProperty({ event, selectedNetworkID, selectedBlockID, key }));
     },
-    [doc, selectedBlockID, selectedNetworkID, repaintCounter],
+    [selectedBlockID, selectedNetworkID],
   );
 
   const handleParameterChange = useCallback(
@@ -66,7 +62,7 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
       preserveCaret(event);
       dispatch(changeParameter({ event, selectedNetworkID, selectedBlockID, key }));
     },
-    [doc, selectedBlockID, selectedNetworkID, repaintCounter],
+    [selectedBlockID, selectedNetworkID],
   );
 
   const paramNames = Object.keys(selectedBlock.parameters);

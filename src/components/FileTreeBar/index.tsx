@@ -83,8 +83,6 @@ export default function FileTreeBar() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const client = useSelector((state: AppState) => state.docState.client);
-  const doc = useSelector((state: AppState) => state.docState.doc);
-  const repaintCounter = useSelector((state: AppState) => state.docState.repaintingCounter);
   const peers = useSelector((state: AppState) => state.peerState.peers);
   const clientID = client.getID();
   const selectedNetworkID = peers[clientID].selectedNetworkID;
@@ -106,14 +104,14 @@ export default function FileTreeBar() {
       }
       dispatch(selectNetwork({ selectedNetworkID: networkID }));
     },
-    [project, clientID, repaintCounter],
+    [project, clientID],
   );
 
   const handleAddNetwork = useCallback(async () => {
     const network = createNetwork('Untitled');
     dispatch(initiateNetwork({ network }));
     dispatch(selectNetwork({ selectedNetworkID: network.id }));
-  }, [doc, clientID]);
+  }, [clientID]);
 
   useEffect(() => {
     Object.keys(peers).forEach((clientID) =>

@@ -30,8 +30,6 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function NetworkProperties(props: { block: NormalBlock }) {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const doc = useSelector((state: AppState) => state.docState.doc);
-  const repaintCounter = useSelector((state: AppState) => state.docState.repaintingCounter);
   const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
   const client = useSelector((state: AppState) => state.docState.client);
   const peers = useSelector((state: AppState) => state.peerState.peers);
@@ -44,7 +42,7 @@ export default function NetworkProperties(props: { block: NormalBlock }) {
       preserveCaret(event);
       dispatch(changeProperty({ selectedNetworkID, selectedBlockID, event, key }));
     },
-    [doc, selectedBlockID, selectedNetworkID, repaintCounter],
+    [selectedBlockID, selectedNetworkID],
   );
 
   const handleParameterChange = useCallback(
@@ -52,7 +50,7 @@ export default function NetworkProperties(props: { block: NormalBlock }) {
       preserveCaret(event);
       dispatch(changeParameter({ selectedNetworkID, selectedBlockID, event, key }));
     },
-    [doc, selectedBlockID, selectedNetworkID, repaintCounter],
+    [selectedBlockID, selectedNetworkID],
   );
 
   const paramNames = getOrderedParamNames(selectedBlock.type);

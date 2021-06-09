@@ -55,8 +55,6 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function PropertyBar() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const doc = useSelector((state: AppState) => state.docState.doc);
-  const repaintCounter = useSelector((state: AppState) => state.docState.repaintingCounter);
   const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
   const client = useSelector((state: AppState) => state.docState.client);
   const peers = useSelector((state: AppState) => state.peerState.peers);
@@ -69,7 +67,7 @@ export default function PropertyBar() {
     (event: ChangeEvent<HTMLSelectElement>) => {
       dispatch(changeBlokType({ event, selectedNetworkID, selectedBlockID }));
     },
-    [doc, selectedBlockID, selectedNetworkID, repaintCounter],
+    [selectedBlockID, selectedNetworkID],
   );
 
   const handlePropertyChange = useCallback(
@@ -77,7 +75,7 @@ export default function PropertyBar() {
       preserveCaret(event);
       dispatch(changeProperty({ event, selectedNetworkID, selectedBlockID, key }));
     },
-    [doc, selectedBlockID, selectedNetworkID, repaintCounter],
+    [selectedBlockID, selectedNetworkID],
   );
 
   if (!selectedBlockID || !network.blocks[selectedBlockID]) {
