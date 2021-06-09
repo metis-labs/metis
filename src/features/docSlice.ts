@@ -13,6 +13,7 @@ export type MetisDoc = {
   project: Project;
   peers: { [id: string]: Peer };
 };
+
 export enum DocStatus {
   Attached = 'attached',
   Detached = 'detached',
@@ -240,22 +241,6 @@ export const updateDeletedLink = createAsyncThunk<
   }
 });
 
-export const updateBlockPosition = createAsyncThunk<
-  UpdateBlockPositionResult,
-  UpdateBlockPositionArgs,
-  { rejectValue: string }
->('doc/updateBlockPosition', async ({ doc, networkID, blockID, position }, thunkApi) => {
-  try {
-    doc.update((root) => {
-      const model = root.project.networks[networkID];
-      model.blocks[blockID].position = position;
-    });
-    return { doc };
-  } catch (err) {
-    return thunkApi.rejectWithValue(err.message);
-  }
-});
-
 export const updateCursorPosition = createAsyncThunk<
   UpdateCursorPositionResult,
   UpdateCursorPositionArgs,
@@ -391,6 +376,21 @@ const docSlice = createSlice({
     setRepaintCounter(state, action: PayloadAction<number>) {
       state.repaintingCounter += action.payload;
     },
+    updateBlockPosition(
+      state,
+      action: PayloadAction<{
+        networkID: string;
+        blockID: string;
+        position: Position;
+      }>,
+    ) {
+      const { doc } = state;
+      const { networkID, blockID, position } = action.payload;
+      doc.update((root) => {
+        const model = root.project.networks[networkID];
+        model.blocks[blockID].position = position;
+      });
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(activateClient.fulfilled, (state, { payload }) => {
@@ -455,12 +455,6 @@ const docSlice = createSlice({
     builder.addCase(updateDeletedLink.rejected, (state, { payload }) => {
       state.errorMessage = payload!;
     });
-    builder.addCase(updateBlockPosition.fulfilled, (state, { payload }) => {
-      state.doc = payload.doc;
-    });
-    builder.addCase(updateBlockPosition.rejected, (state, { payload }) => {
-      state.errorMessage = payload!;
-    });
     builder.addCase(updateCursorPosition.fulfilled, (state, { payload }) => {
       state.doc = payload.doc;
     });
@@ -502,12 +496,13 @@ export const {
   setStatus,
   setRepaintCounter,
   selectFirstNetwork,
+  updateBlockPosition,
 } = docSlice.actions;
 
 export default docSlice.reducer;
 
 type ActivateClientResult = { client: Client };
-type AttachDocArgs = { client: Client; doc: DocumentReplica<MetisDoc>; };
+type AttachDocArgs = { client: Client; doc: DocumentReplica<MetisDoc> };
 
 type AttachDocResult = { doc: DocumentReplica<MetisDoc>; client: Client };
 type UpdateNetworkIDArgs = { doc: DocumentReplica<MetisDoc>; client: Client; networkID: string };
@@ -531,13 +526,6 @@ type UpdateDeletedBlockArgs = { doc: DocumentReplica<MetisDoc>; networkID: strin
 type UpdateDeletedBlockResult = { doc: DocumentReplica<MetisDoc> };
 type UpdateDeletedLinkArgs = { doc: DocumentReplica<MetisDoc>; networkID: string; linkID: string };
 type UpdateDeletedLinkResult = { doc: DocumentReplica<MetisDoc> };
-type UpdateBlockPositionArgs = {
-  doc: DocumentReplica<MetisDoc>;
-  networkID: string;
-  blockID: string;
-  position: Position;
-};
-type UpdateBlockPositionResult = { doc: DocumentReplica<MetisDoc> };
 type UpdateCursorPositionArgs = { doc: DocumentReplica<MetisDoc>; clientID: string; position: Position };
 type UpdateCursorPositionResult = { doc: DocumentReplica<MetisDoc> };
 

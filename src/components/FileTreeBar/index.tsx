@@ -88,7 +88,7 @@ export default function FileTreeBar() {
   const peers = useSelector((state: AppState) => state.peerState.peers);
   const clientID = client.getID();
   const selectedNetworkID = peers[clientID].selectedNetworkID;
-  const project = useSelector((state: AppState) => state.projectState);
+  const project = useSelector((state: AppState) => state.projectState.project);
   const [expanded, setExpanded] = useState<string[]>([]);
 
   useEffect(() => {

@@ -9,7 +9,7 @@ import Engine from 'components/DiagramView/Engine';
 import { Position } from 'store/types/base';
 import { BlockType } from 'store/types/blocks';
 
-import { syncSelfSelectedBlock, syncOffset, syncZoom } from 'features/localSlice';
+import { syncOffset, syncZoom, lUpdateSelectedBlock } from 'features/localSlice';
 import { AppState } from 'app/rootReducer';
 import {
   updateBlockPosition,
@@ -65,7 +65,7 @@ export default function DiagramView() {
   const diagramInfoState = useSelector((state: AppState) => state.localInfoState.diagramInfos);
   const client = useSelector((state: AppState) => state.docState.client);
   const clientID = client.getID();
-  const project = useSelector((state: AppState) => state.projectState);
+  const project = useSelector((state: AppState) => state.projectState.project);
 
   const rootElement = useRef(null);
   const [engine] = useState(new Engine());
@@ -74,16 +74,16 @@ export default function DiagramView() {
 
   const handleMouseUp = useCallback(() => {
     for (const event of Object.values(changeEvents)) {
-      if (event.funcName === 'selectionChanged' && event.blockID) {
-        dispatch(syncSelfSelectedBlock({ networkID: selectedNetworkID, blockID: event.blockID }));
-      } else if (event.funcName === 'positionChanged' && event.blockID) {
+      const selectedBlockID = event.blockID;
+      if (event.funcName === 'selectionChanged' && selectedBlockID) {
+        dispatch(lUpdateSelectedBlock({ selectedNetworkID, selectedBlockID }));
+      } else if (event.funcName === 'positionChanged' && selectedBlockID) {
         dispatch(
-          updateBlockPosition({ doc, networkID: selectedNetworkID, blockID: event.blockID, position: event.position }),
+          updateBlockPosition({ networkID: selectedNetworkID, blockID: event.blockID, position: event.position }),
         );
-        dispatch(syncSelfSelectedBlock({ networkID: selectedNetworkID, blockID: event.blockID }));
+        dispatch(lUpdateSelectedBlock({ selectedNetworkID, selectedBlockID }));
       }
     }
-
     setChangeEvents({});
   }, [changeEvents, selectedNetworkID, doc]);
 

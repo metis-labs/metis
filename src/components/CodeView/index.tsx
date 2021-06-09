@@ -25,7 +25,7 @@ export default function CodeView() {
   const selectedNetworkID = peers[client.getID()].selectedNetworkID;
   const [converter] = useState(new Converter());
   const [codeString, setCodeString] = useState('');
-  const project = useSelector((state: AppState) => state.projectState);
+  const project = useSelector((state: AppState) => state.projectState.project);
 
   useEffect(() => {
     converter.update(project, selectedNetworkID);

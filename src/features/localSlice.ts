@@ -40,15 +40,15 @@ const localInfoSlice = createSlice({
       const { networkID } = action.payload;
       delete state.diagramInfos[networkID];
     },
-    syncSelfSelectedBlock(
+    lUpdateSelectedBlock(
       state,
       action: PayloadAction<{
-        networkID: string;
-        blockID: string;
+        selectedNetworkID: string;
+        selectedBlockID: string;
       }>,
     ) {
-      const { networkID, blockID } = action.payload;
-      state.diagramInfos[networkID].selectedBlockID = blockID;
+      const { selectedNetworkID, selectedBlockID } = action.payload;
+      state.diagramInfos[selectedNetworkID].selectedBlockID = selectedBlockID;
     },
     syncOffset(
       state,
@@ -76,5 +76,5 @@ const localInfoSlice = createSlice({
   },
 });
 
-export const { initDiagramInfos, syncSelfSelectedBlock, deleteNetwork, syncOffset, syncZoom } = localInfoSlice.actions;
+export const { initDiagramInfos, lUpdateSelectedBlock, deleteNetwork, syncOffset, syncZoom } = localInfoSlice.actions;
 export default localInfoSlice.reducer;
