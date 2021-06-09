@@ -13,7 +13,7 @@ function AppStateInitializer() {
   useEffect(() => {
     dispatch(activateClient());
     return () => {
-      dispatch(deactivateClient());
+      dispatch(deactivateClient({ client }));
     };
   }, []);
 

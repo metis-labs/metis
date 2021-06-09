@@ -76,7 +76,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
     attachDocAsync();
 
     return () => {
-      dispatch(detachDocument());
+      dispatch(detachDocument({ client, doc }));
     };
   }, [doc, client]);
 
@@ -119,7 +119,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       }
 
       if (doc) {
-        dispatch(detachDocument());
+        dispatch(detachDocument({ client, doc }));
       }
     };
   }, [status]);

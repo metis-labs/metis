@@ -59,6 +59,18 @@ export const activateClient = createAsyncThunk<ActivateClientResult, undefined, 
   },
 );
 
+export const deactivateClient = createAsyncThunk<DeactivateClientResult, DeactivateClientArgs, { rejectValue: string }>(
+  'doc/deactivate',
+  async ({ client }, thunkApi) => {
+    try {
+      await client.deactivate();
+      return { client };
+    } catch (err) {
+      return thunkApi.rejectWithValue(err.message);
+    }
+  },
+);
+
 export const attachDocument = createAsyncThunk<AttachDocResult, AttachDocArgs, { rejectValue: string }>(
   'doc/attach',
   async ({ client, doc }, thunkApi) => {
@@ -73,6 +85,19 @@ export const attachDocument = createAsyncThunk<AttachDocResult, AttachDocArgs, {
       await client.sync();
 
       return { doc, client };
+    } catch (err) {
+      return thunkApi.rejectWithValue(err.message);
+    }
+  },
+);
+
+export const detachDocument = createAsyncThunk<AttachDocResult, AttachDocArgs, { rejectValue: string }>(
+  'doc/detach',
+  async ({ client, doc }, thunkApi) => {
+    try {
+      await client.detach(doc);
+      doc = undefined;
+      return { client, doc };
     } catch (err) {
       return thunkApi.rejectWithValue(err.message);
     }
@@ -349,23 +374,10 @@ const docSlice = createSlice({
         };
       });
     },
-    deactivateClient(state) {
-      const { client } = state;
-      state.client = undefined;
-      client.deactivate();
-    },
     createDocument(state, action: PayloadAction<string>) {
       const projectID = action.payload;
       const doc = yorkie.createDocument<MetisDoc>('projects', projectID);
       state.doc = doc;
-    },
-    detachDocument(state) {
-      if (state.status === DocStatus.Detached) {
-        const { doc, client } = state;
-        state.doc = undefined;
-        client.detach(doc as DocumentReplica<MetisDoc>);
-        state.status = DocStatus.Attached;
-      }
     },
     attachDocLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
@@ -399,12 +411,26 @@ const docSlice = createSlice({
     builder.addCase(activateClient.rejected, (state, { payload }) => {
       state.errorMessage = payload!;
     });
+    builder.addCase(deactivateClient.fulfilled, (state, { payload }) => {
+      state.client = payload.client;
+    });
+    builder.addCase(deactivateClient.rejected, (state, { payload }) => {
+      state.errorMessage = payload!;
+    });
     builder.addCase(attachDocument.fulfilled, (state, { payload }) => {
       state.doc = payload.doc;
       state.status = DocStatus.Detached;
       state.client = payload.client;
     });
     builder.addCase(attachDocument.rejected, (state, { payload }) => {
+      state.errorMessage = payload!;
+    });
+    builder.addCase(detachDocument.fulfilled, (state, { payload }) => {
+      state.doc = payload.doc;
+      state.status = DocStatus.Attached;
+      state.client = payload.client;
+    });
+    builder.addCase(detachDocument.rejected, (state, { payload }) => {
       state.errorMessage = payload!;
     });
     builder.addCase(updateSelectedNetworkID.fulfilled, (state, { payload }) => {
@@ -489,9 +515,7 @@ const docSlice = createSlice({
 });
 
 export const {
-  deactivateClient,
   createDocument,
-  detachDocument,
   attachDocLoading,
   setStatus,
   setRepaintCounter,
@@ -502,8 +526,9 @@ export const {
 export default docSlice.reducer;
 
 type ActivateClientResult = { client: Client };
+type DeactivateClientArgs = { client: Client };
+type DeactivateClientResult = { client: Client };
 type AttachDocArgs = { client: Client; doc: DocumentReplica<MetisDoc> };
-
 type AttachDocResult = { doc: DocumentReplica<MetisDoc>; client: Client };
 type UpdateNetworkIDArgs = { doc: DocumentReplica<MetisDoc>; client: Client; networkID: string };
 type UpdateNetworkIDResult = { doc: DocumentReplica<MetisDoc> };
