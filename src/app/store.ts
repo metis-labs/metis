@@ -1,6 +1,6 @@
-import { Action, configureStore, getDefaultMiddleware, ThunkAction } from '@reduxjs/toolkit';
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { fromProjects } from 'api/converter';
-import rootReducer, { AppState } from 'app/rootReducer';
+import rootReducer from 'app/rootReducer';
 
 const store = configureStore({
   reducer: rootReducer,
@@ -12,9 +12,5 @@ const store = configureStore({
     imutableCheck: true,
   }),
 });
-
-export type AppDispatch = typeof store.dispatch;
-
-export type AppThunk = ThunkAction<void, AppState, unknown, Action<string>>;
 
 export default store;

@@ -30,7 +30,7 @@ export interface DocState {
 const initialDocState: DocState = {
   loading: true,
   errorMessage: '',
-  status: DocStatus.Attached,
+  status: DocStatus.Detached,
 };
 
 type EntityType = 'network';
@@ -351,14 +351,14 @@ const docSlice = createSlice({
     });
     builder.addCase(attachDocument.fulfilled, (state, { payload }) => {
       state.doc = payload.doc;
-      state.status = DocStatus.Detached;
+      state.status = DocStatus.Attached;
     });
     builder.addCase(attachDocument.rejected, (state, { payload }) => {
       state.errorMessage = payload!;
     });
     builder.addCase(detachDocument.fulfilled, (state, { payload }) => {
       state.doc = payload.doc;
-      state.status = DocStatus.Attached;
+      state.status = DocStatus.Detached;
     });
     builder.addCase(detachDocument.rejected, (state, { payload }) => {
       state.errorMessage = payload!;

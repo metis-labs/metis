@@ -61,16 +61,12 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
   }, [projectID]);
 
   useEffect(() => {
-    async function attachDocAsync() {
-      if (!client) {
-        return;
-      }
-      dispatch(attachDocLoading(true));
-      dispatch(attachDocument({ client, doc }));
-      dispatch(attachDocLoading(false));
+    if (!client) {
+      return () => {};
     }
-
-    attachDocAsync();
+    dispatch(attachDocLoading(true));
+    dispatch(attachDocument({ client, doc }));
+    dispatch(attachDocLoading(false));
 
     return () => {
       dispatch(detachDocument({ client, doc }));
@@ -78,7 +74,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
   }, [doc, client]);
 
   useEffect(() => {
-    if (status !== DocStatus.Detached) {
+    if (status !== DocStatus.Attached) {
       return () => {};
     }
 
@@ -115,10 +111,6 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
     return () => {
       if (unsubscribe) {
         unsubscribe();
-      }
-
-      if (doc) {
-        dispatch(detachDocument({ client, doc }));
       }
     };
   }, [status]);
