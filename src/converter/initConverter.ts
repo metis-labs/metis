@@ -1,7 +1,6 @@
+import { Project } from 'features/projectSlice';
 import { Block, NormalBlock, IOBlock, BlockType } from 'store/types/blocks';
 import { Network } from 'store/types/networks';
-import { Project } from 'store/types';
-
 import printParamValue from './parameterConverter';
 import operatorMetaInfos from './pytorch-metadata.json';
 

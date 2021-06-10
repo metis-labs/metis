@@ -1,4 +1,4 @@
-import { Project } from 'store/types';
+import { Project } from 'features/projectSlice';
 import { BlockType, NetworkBlock } from 'store/types/blocks';
 import { Network } from 'store/types/networks';
 import ImportConverter from './importConverter';

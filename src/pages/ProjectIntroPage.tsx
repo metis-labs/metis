@@ -1,16 +1,15 @@
 import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 
+import { AppState } from 'app/rootReducer';
+import { createProjectInfos } from 'features/projectInfosSlice';
 import NavBar from 'components/NavBar';
 import ProjectCard from 'components/ProjectCard';
 import NewProjectSection from 'components/NewProjectSection';
-
-import { useDispatch, useSelector } from 'react-redux';
-import { syncProjectInfos } from 'features/projectInfosSlice';
-import { AppState } from 'app/rootReducer';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -38,7 +37,7 @@ export default function ProjectIntroPage() {
   const projectInfos = useSelector((state: AppState) => state.projectInfosState.projectInfos);
 
   useEffect(() => {
-    dispatch(syncProjectInfos());
+    dispatch(createProjectInfos());
   }, []);
 
   return (
@@ -53,9 +52,9 @@ export default function ProjectIntroPage() {
           All projects
         </Typography>
         <Grid container spacing={2}>
-          {Object.values(projectInfos).map((project) => (
-            <Grid key={project.id} item>
-              <ProjectCard project={project} />
+          {Object.values(projectInfos).map((projectInfo) => (
+            <Grid key={projectInfo.id} item>
+              <ProjectCard projectInfo={projectInfo} />
             </Grid>
           ))}
         </Grid>

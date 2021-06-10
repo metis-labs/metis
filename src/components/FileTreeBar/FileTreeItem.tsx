@@ -1,5 +1,7 @@
 import React, { KeyboardEvent, MouseEvent, useRef, useState, useEffect, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { animated, useSpring } from 'react-spring';
+
 import { createStyles, fade, Theme, withStyles, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -13,10 +15,9 @@ import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
 import { TransitionProps } from '@material-ui/core/transitions';
 import Collapse from '@material-ui/core/Collapse';
 
-import { Peer } from 'store/types';
-import { useDispatch } from 'react-redux';
-import { Network } from 'store/types/networks';
 import { deleteNetwork, renameNetwork } from 'features/docSlice';
+import { Peer } from 'features/peersSlice';
+import { Network } from 'store/types/networks';
 import RenameDialog from './RenameDialog';
 
 function TransitionComponent(props: TransitionProps) {
@@ -151,13 +152,13 @@ export default function FileTreeItem(props: { network: Network; peers: Array<Pee
   }, [setRenameDialogOpen]);
 
   const handleDeleteButtonClick = useCallback(() => {
-    dispatch(deleteNetwork({ network }));
+    dispatch(deleteNetwork(network));
   }, [network.id]);
 
   const handleRenameDialogClose = useCallback(
-    (modelName: string | undefined) => {
-      if (modelName) {
-        dispatch(renameNetwork({ network, modelName }));
+    (newName: string | undefined) => {
+      if (newName) {
+        dispatch(renameNetwork({ network, newName }));
       }
       setRenameDialogOpen(false);
       setMoreButtonOpen(false);

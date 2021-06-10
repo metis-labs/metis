@@ -1,13 +1,13 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import anonymous from 'anonymous-animals-gen';
 import yorkie, { Client, DocumentReplica } from 'yorkie-js-sdk';
+import anonymous from 'anonymous-animals-gen';
 import randomColor from 'randomcolor';
-import { Peer, Project } from 'store/types';
-import { createNetworkParams, Network } from 'store/types/networks';
-import { encodeEventDesc } from 'store/types/events';
-import { Position } from 'store/types/base';
+
+import { createNetwork, createNetworkParams, Network } from 'store/types/networks';
 import { Block, BlockType, createBlock, createParams, isNormalBlockType } from 'store/types/blocks';
 import { valueTransition } from 'components/PropertyBar/utils';
+import { Project } from './projectSlice';
+import { Peer, Position } from './peersSlice';
 
 export type MetisDoc = {
   project: Project;
@@ -25,15 +25,30 @@ export interface DocState {
   loading: boolean;
   errorMessage: string;
   status: DocStatus;
-  repaintingCounter: number;
 }
 
 const initialDocState: DocState = {
   loading: true,
   errorMessage: '',
   status: DocStatus.Attached,
-  repaintingCounter: 0,
 };
+
+type EntityType = 'network';
+type ActionType = 'create' | 'delete';
+
+type EventDesc = {
+  id: string;
+  entityType: EntityType;
+  actionType: ActionType;
+};
+
+function encodeEventDesc(desc: EventDesc): string {
+  return JSON.stringify(desc);
+}
+
+export function decodeEventDesc(desc: string): EventDesc {
+  return JSON.parse(desc);
+}
 
 const testUserID = 'KR18401';
 
@@ -82,20 +97,20 @@ export const attachDocument = createAsyncThunk<AttachDocResult, AttachDocArgs, {
         }
       });
       await client.sync();
-      return { doc, client };
+      return { doc };
     } catch (err) {
       return thunkApi.rejectWithValue(err.message);
     }
   },
 );
 
-export const detachDocument = createAsyncThunk<AttachDocResult, AttachDocArgs, { rejectValue: string }>(
+export const detachDocument = createAsyncThunk<DetachDocResult, DetachDocArgs, { rejectValue: string }>(
   'doc/detach',
   async ({ client, doc }, thunkApi) => {
     try {
       await client.detach(doc);
       doc = undefined;
-      return { client, doc };
+      return { doc };
     } catch (err) {
       return thunkApi.rejectWithValue(err.message);
     }
@@ -107,14 +122,14 @@ const docSlice = createSlice({
   initialState: initialDocState,
   reducers: {
     selectFirstNetwork(state) {
-      const { doc, client } = state;
+      const { client, doc } = state;
       doc.update((root) => {
         const networkIDs = Object.keys(root.project.networks);
         const selectedNetworkID = networkIDs[0];
-        root.peers[client.getID()] = {
-          ...root.peers[client.getID()],
-          ...{ selectedNetworkID },
-        };
+        if (!root.peers[client.getID()]) {
+          root.peers[client.getID()] = {} as Peer;
+        }
+        root.peers[client.getID()].selectedNetworkID = selectedNetworkID;
       });
     },
     createDocument(state, action: PayloadAction<string>) {
@@ -128,17 +143,10 @@ const docSlice = createSlice({
     setStatus(state, action: PayloadAction<DocStatus>) {
       state.status = action.payload;
     },
-    setRepaintCounter(state, action: PayloadAction<number>) {
-      state.repaintingCounter += action.payload;
-    },
-    initiateNetwork(
-      state,
-      action: PayloadAction<{
-        network: Network;
-      }>,
-    ) {
-      const { doc, client } = state;
-      const { network } = action.payload;
+    addNetwork(state, action: PayloadAction<string>) {
+      const { client, doc } = state;
+      const networkName = action.payload;
+      const network = createNetwork(networkName);
       doc.update(
         (root) => {
           root.project.networks[network.id] = network;
@@ -151,14 +159,7 @@ const docSlice = createSlice({
         }),
       );
     },
-    changeRefNetwork(
-      state,
-      action: PayloadAction<{
-        event: any;
-        selectedNetworkID: string;
-        selectedBlockID: string;
-      }>,
-    ) {
+    updateRefNetwork(state, action: PayloadAction<UpdateRefNetworkArgs>) {
       const { doc } = state;
       const { event, selectedNetworkID, selectedBlockID } = action.payload;
       doc.update((root) => {
@@ -179,23 +180,16 @@ const docSlice = createSlice({
       state,
       action: PayloadAction<{
         network: Network;
-        modelName: string;
+        newName: string;
       }>,
     ) {
       const { doc } = state;
-      const { network, modelName } = action.payload;
+      const { network, newName } = action.payload;
       doc.update((root) => {
-        root.project.networks[network.id].name = modelName;
+        root.project.networks[network.id].name = newName;
       });
     },
-    updateBlockPosition(
-      state,
-      action: PayloadAction<{
-        selectedNetworkID: string;
-        selectedBlockID: string;
-        blockPosition: Position;
-      }>,
-    ) {
+    updateBlockPosition(state, action: PayloadAction<UpdateBlockPositionArgs>) {
       const { doc } = state;
       const { selectedNetworkID, selectedBlockID, blockPosition } = action.payload;
       doc.update((root) => {
@@ -221,26 +215,14 @@ const docSlice = createSlice({
         network.blocks[block.id] = block;
       });
     },
-    updateCursorPosition(
-      state,
-      action: PayloadAction<{
-        cursorPosition: Position;
-      }>,
-    ) {
-      const { doc, client } = state;
-      const { cursorPosition } = action.payload;
+    updateCursorPosition(state, action: PayloadAction<Position>) {
+      const { client, doc } = state;
+      const cursorPosition = action.payload;
       doc.update((root) => {
         root.peers[client.getID()].cursor = cursorPosition;
       });
     },
-    changeBlokType(
-      state,
-      action: PayloadAction<{
-        event: any;
-        selectedNetworkID: string;
-        selectedBlockID: string;
-      }>,
-    ) {
+    updateBlokType(state, action: PayloadAction<UpdateBlokTypeArgs>) {
       const { doc } = state;
       const { event, selectedNetworkID, selectedBlockID } = action.payload;
 
@@ -256,14 +238,9 @@ const docSlice = createSlice({
         }
       });
     },
-    deleteNetwork(
-      state,
-      action: PayloadAction<{
-        network: Network;
-      }>,
-    ) {
-      const { doc, client } = state;
-      const { network } = action.payload;
+    deleteNetwork(state, action: PayloadAction<Network>) {
+      const { client, doc } = state;
+      const network = action.payload;
       doc.update(
         (root) => {
           delete root.project.networks[network.id];
@@ -278,13 +255,7 @@ const docSlice = createSlice({
         }),
       );
     },
-    deleteBlock(
-      state,
-      action: PayloadAction<{
-        selectedNetworkID: string;
-        selectedBlockID: string;
-      }>,
-    ) {
+    deleteBlock(state, action: PayloadAction<DeleteBlockArgs>) {
       const { doc } = state;
       const { selectedNetworkID, selectedBlockID } = action.payload;
       doc.update((root) => {
@@ -292,17 +263,12 @@ const docSlice = createSlice({
         delete network.blocks[selectedBlockID];
       });
     },
-    selectNetwork(
-      state,
-      action: PayloadAction<{
-        selectedNetworkID: string;
-      }>,
-    ) {
-      const { doc, client } = state;
-      const { selectedNetworkID } = action.payload;
+    selectNetwork(state, action: PayloadAction<string>) {
+      const { client, doc } = state;
+      const NetworkID = action.payload;
 
       doc.update((root) => {
-        root.peers[client.getID()].selectedNetworkID = selectedNetworkID;
+        root.peers[client.getID()].selectedNetworkID = NetworkID;
       });
     },
     deleteLink(
@@ -322,7 +288,7 @@ const docSlice = createSlice({
         }
       });
     },
-    changePort(
+    addLink(
       state,
       action: PayloadAction<{
         networkID: string;
@@ -351,38 +317,22 @@ const docSlice = createSlice({
         };
       });
     },
-    changeProperty(
-      state,
-      action: PayloadAction<{
-        event: any;
-        selectedNetworkID: string;
-        selectedBlockID: string;
-        key: string;
-      }>,
-    ) {
+    updateProperty(state, action: PayloadAction<UpdatePropertyArgs>) {
       const { doc } = state;
-      const { event, selectedNetworkID, selectedBlockID, key } = action.payload;
+      const { selectedNetworkID, selectedBlockID, event, key } = action.payload;
       doc.update((root) => {
         const { project } = root;
-        const model = project.networks[selectedNetworkID];
-        model.blocks[selectedBlockID][key] = valueTransition(event.target.value as string);
+        const network = project.networks[selectedNetworkID];
+        network.blocks[selectedBlockID][key] = valueTransition(event.target.value as string);
       });
     },
-    changeParameter(
-      state,
-      action: PayloadAction<{
-        event: any;
-        selectedNetworkID: string;
-        selectedBlockID: string;
-        key: string;
-      }>,
-    ) {
+    updateParameter(state, action: PayloadAction<UpdateParameterArgs>) {
       const { doc } = state;
-      const { event, selectedNetworkID, selectedBlockID, key } = action.payload;
+      const { selectedNetworkID, selectedBlockID, event, key } = action.payload;
       doc.update((root) => {
         const { project } = root;
-        const model = project.networks[selectedNetworkID];
-        (model.blocks[selectedBlockID] as any).parameters[key] = valueTransition(event.target.value as string);
+        const network = project.networks[selectedNetworkID];
+        (network.blocks[selectedBlockID] as any).parameters[key] = valueTransition(event.target.value as string);
       });
     },
   },
@@ -402,7 +352,6 @@ const docSlice = createSlice({
     builder.addCase(attachDocument.fulfilled, (state, { payload }) => {
       state.doc = payload.doc;
       state.status = DocStatus.Detached;
-      state.client = payload.client;
     });
     builder.addCase(attachDocument.rejected, (state, { payload }) => {
       state.errorMessage = payload!;
@@ -410,7 +359,6 @@ const docSlice = createSlice({
     builder.addCase(detachDocument.fulfilled, (state, { payload }) => {
       state.doc = payload.doc;
       state.status = DocStatus.Attached;
-      state.client = payload.client;
     });
     builder.addCase(detachDocument.rejected, (state, { payload }) => {
       state.errorMessage = payload!;
@@ -422,8 +370,7 @@ export const {
   attachDocLoading,
   setStatus,
   createDocument,
-  setRepaintCounter,
-  initiateNetwork,
+  addNetwork,
   renameNetwork,
   selectFirstNetwork,
   selectNetwork,
@@ -431,19 +378,38 @@ export const {
   addBlock,
   updateBlockPosition,
   deleteBlock,
-  changePort,
+  addLink,
   deleteLink,
   updateCursorPosition,
-  changeBlokType,
-  changeRefNetwork,
-  changeProperty,
-  changeParameter,
+  updateBlokType,
+  updateRefNetwork,
+  updateProperty,
+  updateParameter,
 } = docSlice.actions;
 
 export default docSlice.reducer;
+
+export type BlockIDArgs = { selectedNetworkID: string; selectedBlockID: string };
+interface EventArgs extends BlockIDArgs {
+  event: any;
+}
+interface KeyArgs extends EventArgs {
+  key: string;
+}
+
+interface UpdateRefNetworkArgs extends EventArgs {}
+interface UpdateBlockPositionArgs extends BlockIDArgs {
+  blockPosition: Position;
+}
+interface UpdateBlokTypeArgs extends EventArgs {}
+interface DeleteBlockArgs extends BlockIDArgs {}
+interface UpdatePropertyArgs extends KeyArgs {}
+interface UpdateParameterArgs extends KeyArgs {}
 
 type ActivateClientResult = { client: Client };
 type DeactivateClientArgs = { client: Client };
 type DeactivateClientResult = { client: Client };
 type AttachDocArgs = { client: Client; doc: DocumentReplica<MetisDoc> };
-type AttachDocResult = { doc: DocumentReplica<MetisDoc>; client: Client };
+type AttachDocResult = { doc: DocumentReplica<MetisDoc> };
+type DetachDocArgs = { client: Client; doc: DocumentReplica<MetisDoc> };
+type DetachDocResult = { doc: DocumentReplica<MetisDoc> };

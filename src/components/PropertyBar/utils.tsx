@@ -1,4 +1,5 @@
 import { ChangeEvent } from 'react';
+
 import { ParameterValue } from 'store/types/blocks';
 
 export function valueTransition(value: string): ParameterValue {

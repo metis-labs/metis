@@ -1,4 +1,4 @@
-import { ProjectInfo } from 'store/types';
+import { ProjectInfo } from 'features/projectInfosSlice';
 import { Project as PbProject } from './metis_pb';
 
 export function fromProject(pbProject: PbProject): ProjectInfo {

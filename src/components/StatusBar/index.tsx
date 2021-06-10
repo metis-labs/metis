@@ -1,12 +1,11 @@
 import React, { useCallback } from 'react';
-
+import { useSelector } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import CodeIcon from '@material-ui/icons/Code';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-import { useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
 
 const useStyles = makeStyles(() =>

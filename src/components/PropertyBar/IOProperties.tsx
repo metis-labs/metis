@@ -1,13 +1,12 @@
 import React, { ChangeEvent, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl/FormControl';
 import TextField from '@material-ui/core/TextField';
 
-import { BlockType, IOBlock } from 'store/types/blocks';
-
-import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
-import { changeProperty } from 'features/docSlice';
+import { updateProperty } from 'features/docSlice';
+import { BlockType, IOBlock } from 'store/types/blocks';
 import { preserveCaret, stopPropagationOnKeydown } from './utils';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -27,13 +26,13 @@ export default function NetworkProperties(props: { block: IOBlock }) {
   const client = useSelector((state: AppState) => state.docState.client);
   const peers = useSelector((state: AppState) => state.peerState.peers);
   const selectedNetworkID = peers[client.getID()].selectedNetworkID;
-  const { selectedBlockID } = diagramInfos[selectedNetworkID];
+  const selectedBlockID = diagramInfos[selectedNetworkID].selectedBlockID;
   const { block: selectedBlock } = props;
 
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(changeProperty({ event, selectedNetworkID, selectedBlockID, key }));
+      dispatch(updateProperty({ selectedNetworkID, selectedBlockID, event, key }));
     },
     [selectedBlockID, selectedNetworkID],
   );

@@ -1,13 +1,12 @@
 import createEngine, { DiagramEngine, DiagramModel } from '@projectstorm/react-diagrams';
 
-import { DiagramInfo } from 'store/types';
+import { DiagramInfo } from 'features/localSlice';
 import { Network } from 'store/types/networks';
 import { isIOBlockType, BlockType } from 'store/types/blocks';
 import MetisNodeModel from 'components/DiagramView/MetisNodeModel';
 import MetisNodeFactory from 'components/DiagramView/MetisNodeFactory';
-
-import MetisLinkFactory from './MetisLinkFactory';
 import MetisLinkModel from './MetisLinkModel';
+import MetisLinkFactory from './MetisLinkFactory';
 
 export default class Engine {
   private engine: DiagramEngine;

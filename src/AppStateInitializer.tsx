@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { activateClient, deactivateClient, DocStatus, setStatus } from 'features/docSlice';
+
 import { AppState } from 'app/rootReducer';
-import { syncPeer } from 'features/peersSlice';
+import { activateClient, deactivateClient, DocStatus, setStatus } from 'features/docSlice';
+import { patchPeers } from 'features/peersSlice';
 
 function AppStateInitializer() {
   const dispatch = useDispatch();
@@ -26,7 +27,7 @@ function AppStateInitializer() {
         const documentKey = doc.getKey();
         const changedPeers = event.value[documentKey] as any;
         dispatch(
-          syncPeer({
+          patchPeers({
             myClientID: client.getID(),
             changedPeers,
           }),

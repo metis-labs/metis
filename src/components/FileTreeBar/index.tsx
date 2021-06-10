@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useState, useEffect, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -6,12 +7,10 @@ import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 import TreeView from '@material-ui/lab/TreeView';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
-import { Peer } from 'store/types';
-import { createNetwork } from 'store/types/networks';
-import { useDispatch, useSelector } from 'react-redux';
+
 import { AppState } from 'app/rootReducer';
-import { syncSelectedNetwork } from 'features/peersSlice';
-import { initiateNetwork, selectNetwork } from 'features/docSlice';
+import { addNetwork, selectNetwork } from 'features/docSlice';
+import { Peer } from 'features/peersSlice';
 import FileTreeItem, { StyledTreeItem } from './FileTreeItem';
 
 function MinusSquare(props: SvgIconProps) {
@@ -102,27 +101,15 @@ export default function FileTreeBar() {
       if (!project.networks[networkID]) {
         return;
       }
-      dispatch(selectNetwork({ selectedNetworkID: networkID }));
+      dispatch(selectNetwork(networkID));
     },
     [project, clientID],
   );
 
   const handleAddNetwork = useCallback(async () => {
-    const network = createNetwork('Untitled');
-    dispatch(initiateNetwork({ network }));
-    dispatch(selectNetwork({ selectedNetworkID: network.id }));
+    const networkName = 'Untitled';
+    dispatch(addNetwork(networkName));
   }, [clientID]);
-
-  useEffect(() => {
-    Object.keys(peers).forEach((clientID) =>
-      dispatch(
-        syncSelectedNetwork({
-          myClientID: clientID,
-          networkID: peers[clientID]?.selectedNetworkID,
-        }),
-      ),
-    );
-  }, [client, peers]);
 
   // TODO(youngteac.hong): Replace below with type parameter.
   const peersMapByNetworkID: { [networkID: string]: Array<Peer> } = {};

@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl/FormControl';
 import Select from '@material-ui/core/Select';
@@ -7,10 +8,9 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { BlockType, NetworkBlock } from 'store/types/blocks';
-import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
-import { changeParameter, changeProperty, changeRefNetwork } from 'features/docSlice';
+import { updateParameter, updateProperty, updateRefNetwork } from 'features/docSlice';
+import { BlockType, NetworkBlock } from 'store/types/blocks';
 import { preserveCaret, stopPropagationOnKeydown } from './utils';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -44,7 +44,7 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
 
   const onRefNetworkChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      dispatch(changeRefNetwork({ event, selectedNetworkID, selectedBlockID }));
+      dispatch(updateRefNetwork({ selectedNetworkID, selectedBlockID, event }));
     },
     [selectedBlockID, selectedNetworkID],
   );
@@ -52,7 +52,7 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(changeProperty({ event, selectedNetworkID, selectedBlockID, key }));
+      dispatch(updateProperty({ selectedNetworkID, selectedBlockID, event, key }));
     },
     [selectedBlockID, selectedNetworkID],
   );
@@ -60,7 +60,7 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
   const handleParameterChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(changeParameter({ event, selectedNetworkID, selectedBlockID, key }));
+      dispatch(updateParameter({ selectedNetworkID, selectedBlockID, event, key }));
     },
     [selectedBlockID, selectedNetworkID],
   );

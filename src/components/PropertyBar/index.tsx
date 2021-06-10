@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -10,6 +11,8 @@ import InputLabel from '@material-ui/core/InputLabel/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import { AppState } from 'app/rootReducer';
+import { updateBlokType, updateProperty } from 'features/docSlice';
 import {
   BlockType,
   IOBlock,
@@ -19,13 +22,9 @@ import {
   isNetworkBlockType,
   isNormalBlockType,
 } from 'store/types/blocks';
-
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'app/rootReducer';
-import { changeBlokType, changeProperty } from 'features/docSlice';
+import NormalProperties from './NormalProperties';
 import IOProperties from './IOProperties';
 import NetworkProperties from './NetworkProperties';
-import NormalProperties from './NormalProperties';
 import { preserveCaret, stopPropagationOnKeydown } from './utils';
 
 const drawerWidth = 240;
@@ -58,14 +57,14 @@ export default function PropertyBar() {
   const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
   const client = useSelector((state: AppState) => state.docState.client);
   const peers = useSelector((state: AppState) => state.peerState.peers);
-  const selectedNetworkID = peers[client.getID()].selectedNetworkID;
   const project = useSelector((state: AppState) => state.projectState.project);
+  const { selectedNetworkID } = peers[client.getID()];
   const network = project.networks[selectedNetworkID];
   const { selectedBlockID } = diagramInfos[selectedNetworkID];
 
   const onTypeChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      dispatch(changeBlokType({ event, selectedNetworkID, selectedBlockID }));
+      dispatch(updateBlokType({ selectedNetworkID, selectedBlockID, event }));
     },
     [selectedBlockID, selectedNetworkID],
   );
@@ -73,7 +72,7 @@ export default function PropertyBar() {
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(changeProperty({ event, selectedNetworkID, selectedBlockID, key }));
+      dispatch(updateProperty({ selectedNetworkID, selectedBlockID, event, key }));
     },
     [selectedBlockID, selectedNetworkID],
   );

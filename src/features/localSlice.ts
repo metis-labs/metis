@@ -1,7 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { DiagramInfo } from 'store/types';
-import { Position } from 'store/types/base';
+import { BlockIDArgs } from './docSlice';
+import { Position } from './peersSlice';
+
+export type DiagramInfo = {
+  offset: Position;
+  zoom: number;
+  selectedBlockID?: string;
+};
 
 type LocalInfoState = {
   diagramInfos: { [networkID: string]: DiagramInfo };
@@ -17,13 +23,8 @@ const localInfoSlice = createSlice({
   name: 'localInfo',
   initialState: initialLocalInfoState,
   reducers: {
-    initDiagramInfos(
-      state,
-      action: PayloadAction<{
-        networkIDs: string[];
-      }>,
-    ) {
-      const { networkIDs } = action.payload;
+    initDiagramInfos(state, action: PayloadAction<string[]>) {
+      const networkIDs = action.payload;
       for (const networkID of networkIDs) {
         state.diagramInfos[networkID] = {
           offset: { x: 0, y: 0 },
@@ -31,50 +32,41 @@ const localInfoSlice = createSlice({
         };
       }
     },
-    deleteNetwork(
-      state,
-      action: PayloadAction<{
-        networkID: string;
-      }>,
-    ) {
-      const { networkID } = action.payload;
+    deleteNetwork(state, action: PayloadAction<string>) {
+      const networkID = action.payload;
       delete state.diagramInfos[networkID];
     },
-    lUpdateSelectedBlock(
-      state,
-      action: PayloadAction<{
-        selectedNetworkID: string;
-        selectedBlockID: string;
-      }>,
-    ) {
+    selectBlock(state, action: PayloadAction<SelectBlockArgs>) {
       const { selectedNetworkID, selectedBlockID } = action.payload;
       state.diagramInfos[selectedNetworkID].selectedBlockID = selectedBlockID;
     },
-    syncOffset(
+    updateOffset(
       state,
       action: PayloadAction<{
-        networkID: string;
+        selectedNetworkID: string;
         offset: Position;
       }>,
     ) {
-      const { networkID, offset } = action.payload;
-      state.diagramInfos[networkID].offset = {
+      const { selectedNetworkID, offset } = action.payload;
+      state.diagramInfos[selectedNetworkID].offset = {
         x: offset.x,
         y: offset.y,
       };
     },
-    syncZoom(
+    updateZoom(
       state,
       action: PayloadAction<{
-        networkID: string;
+        selectedNetworkID: string;
         zoom: number;
       }>,
     ) {
-      const { networkID, zoom } = action.payload;
-      state.diagramInfos[networkID].zoom = zoom;
+      const { selectedNetworkID, zoom } = action.payload;
+      state.diagramInfos[selectedNetworkID].zoom = zoom;
     },
   },
 });
 
-export const { initDiagramInfos, lUpdateSelectedBlock, deleteNetwork, syncOffset, syncZoom } = localInfoSlice.actions;
+export const { initDiagramInfos, selectBlock, deleteNetwork, updateOffset, updateZoom } = localInfoSlice.actions;
 export default localInfoSlice.reducer;
+
+interface SelectBlockArgs extends BlockIDArgs {}

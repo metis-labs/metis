@@ -1,18 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router';
-
+import { useDispatch, useSelector } from 'react-redux';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import NavBar from 'components/NavBar';
-import FileTreeBar from 'components/FileTreeBar';
-import DiagramView from 'components/DiagramView';
-import CodeView from 'components/CodeView';
-import StatusBar from 'components/StatusBar';
-import PropertyBar from 'components/PropertyBar';
-
-import { decodeEventDesc } from 'store/types/events';
-import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from 'app/rootReducer';
 import {
   DocStatus,
   createDocument,
@@ -20,12 +12,17 @@ import {
   attachDocLoading,
   detachDocument,
   selectFirstNetwork,
-  setRepaintCounter,
+  decodeEventDesc,
 } from 'features/docSlice';
-import { AppState } from 'app/rootReducer';
 import { deleteNetwork, initDiagramInfos } from 'features/localSlice';
 import { updatePeers } from 'features/peersSlice';
 import { updateProject } from 'features/projectSlice';
+import NavBar from 'components/NavBar';
+import FileTreeBar from 'components/FileTreeBar';
+import DiagramView from 'components/DiagramView';
+import CodeView from 'components/CodeView';
+import StatusBar from 'components/StatusBar';
+import PropertyBar from 'components/PropertyBar';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -85,26 +82,28 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       return () => {};
     }
 
-    const networkIDs = Object.keys(doc.getRoot().project.networks);
-    dispatch(updateProject({ project: JSON.parse(doc.toJSON()).project }));
-    dispatch(initDiagramInfos({ networkIDs }));
+    const initProject = JSON.parse(doc.toJSON()).project;
+    const initNetworkIDs = Object.keys(doc.getRoot().project.networks);
+
+    dispatch(updateProject(initProject));
+    dispatch(initDiagramInfos(initNetworkIDs));
+
     const unsubscribe = doc.subscribe((event) => {
       if (event.type === 'local-change' || event.type === 'remote-change') {
         for (const changeInfo of event.value) {
           if (changeInfo.paths[0].startsWith('$.project')) {
-            const remoteProject = JSON.parse(doc.toJSON()).project;
-            dispatch(updateProject({ project: remoteProject }));
-            dispatch(setRepaintCounter(1));
+            const modifiedProject = JSON.parse(doc.toJSON()).project;
+            dispatch(updateProject(modifiedProject));
           } else if (changeInfo.paths[0].startsWith('$.peers')) {
-            const peers = JSON.parse(doc.toJSON()).peers;
-            dispatch(updatePeers({ client, peers }));
+            const modifiedPeers = JSON.parse(doc.toJSON()).peers;
+            dispatch(updatePeers(modifiedPeers));
           }
           if (changeInfo.change.getMessage()) {
             const desc = decodeEventDesc(changeInfo.change.getMessage());
             if (desc.actionType === 'create' && desc.entityType === 'network') {
-              dispatch(initDiagramInfos({ networkIDs: [desc.id] }));
+              dispatch(initDiagramInfos([desc.id]));
             } else if (desc.actionType === 'delete' && desc.entityType === 'network') {
-              dispatch(deleteNetwork({ networkID: desc.id }));
+              dispatch(deleteNetwork(desc.id));
             }
           }
         }

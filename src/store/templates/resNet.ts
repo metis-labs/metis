@@ -1,4 +1,4 @@
-import { Project } from 'store/types';
+import { Project } from 'features/projectSlice';
 import { Dependency, Link } from 'store/types/networks';
 import { Block, BlockType } from 'store/types/blocks';
 

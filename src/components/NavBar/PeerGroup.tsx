@@ -1,10 +1,10 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import anonymous from 'anonymous-animals-gen';
 import Avatar from '@material-ui/core/Avatar';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import { useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
 
 export default function PeerGroup() {
@@ -15,7 +15,7 @@ export default function PeerGroup() {
   }
 
   const onlinePeersState = Object.values(peersState).filter((peer) => peer.status === 'connected');
-  const myID = client.getID();
+  const myClientID = client.getID();
 
   return (
     <AvatarGroup max={4}>
@@ -26,7 +26,7 @@ export default function PeerGroup() {
             alt="Peer Image"
             style={{
               backgroundColor: peer.color,
-              border: peer.id === myID ? '2px solid black' : '',
+              border: peer.id === myClientID ? '2px solid black' : '',
             }}
             src={anonymous.getImage(peer.image)}
           />

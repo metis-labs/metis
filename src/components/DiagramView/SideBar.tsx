@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -7,10 +8,9 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import AddIcon from '@material-ui/icons/Add';
 
-import { BlockType } from 'store/types/blocks';
-import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'app/rootReducer';
 import { addBlock } from 'features/docSlice';
+import { BlockType } from 'store/types/blocks';
 
 const useStyles = makeStyles(() =>
   createStyles({

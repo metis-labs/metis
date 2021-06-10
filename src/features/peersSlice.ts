@@ -1,57 +1,50 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Peer } from 'store/types';
-import { ConnectionStatus } from 'store/types/base';
-import { Client } from 'yorkie-js-sdk';
+export type Position = {
+  x: number;
+  y: number;
+};
+
+export enum ConnectionStatus {
+  Connected = 'connected',
+  Disconnected = 'disconnected',
+}
+
+export type Peer = {
+  id: string;
+  color: string;
+  image: string;
+  username: string;
+  status: ConnectionStatus;
+  selectedNetworkID?: string;
+  cursor: Position;
+  isMine: boolean;
+};
+
+type Peers = {
+  [id: string]: Peer;
+};
 
 export interface PeersState {
-  peers: {
-    [id: string]: Peer;
-  };
+  peers: Peers;
 }
 
 const peersSlice = createSlice({
   name: 'peers',
   initialState: { peers: {} } as PeersState,
   reducers: {
-    updatePeers(
-      state,
-      action: PayloadAction<{
-        client: Client;
-        peers: { [id: string]: Peer };
-      }>,
-    ) {
-      for (const id of Object.keys(state.peers)) {
-        state.peers[id] = { ...state.peers[id], ...action.payload.peers[id] };
-      }
-    },
-    registerPeer(
-      state,
-      action: PayloadAction<{
-        myClientID: string;
-        peerMeta: any;
-        peerStatus: string;
-      }>,
-    ) {
-      const { myClientID, peerMeta, peerStatus } = action.payload;
+    updatePeers(state, action: PayloadAction<Peers>) {
       const { peers } = state;
-      if (!peers[myClientID]) {
-        peers[myClientID] = {} as Peer;
+      const modifiedPeers = action.payload;
+      for (const id of Object.keys(state.peers)) {
+        peers[id] = { ...peers[id], ...modifiedPeers[id] };
       }
-      const peer = {
-        id: myClientID,
-        color: peerMeta.color,
-        image: peerMeta.image,
-        username: peerMeta.username,
-        status: peerStatus === 'activated' ? ConnectionStatus.Connected : ConnectionStatus.Disconnected,
-      };
-      peers[myClientID] = { ...peers[myClientID], ...peer };
     },
-    syncPeer(
+    patchPeers(
       state,
       action: PayloadAction<{
         myClientID: string;
-        changedPeers: { [id: string]: Peer };
+        changedPeers: Peers;
       }>,
     ) {
       const { myClientID, changedPeers } = action.payload;
@@ -78,34 +71,8 @@ const peersSlice = createSlice({
         }
       }
     },
-    syncSelectedNetwork(
-      state,
-      action: PayloadAction<{
-        myClientID: string;
-        networkID: string;
-      }>,
-    ) {
-      const { peers } = state;
-      const { myClientID, networkID } = action.payload;
-      peers[myClientID].selectedNetworkID = networkID;
-    },
-    syncCursor(
-      state,
-      action: PayloadAction<{
-        myClientID: string;
-        x: number;
-        y: number;
-      }>,
-    ) {
-      const { peers } = state;
-      const { myClientID, x, y } = action.payload;
-      peers[myClientID].cursor = {
-        x,
-        y,
-      };
-    },
   },
 });
 
-export const { registerPeer, syncPeer, syncSelectedNetwork, syncCursor, updatePeers } = peersSlice.actions;
+export const { updatePeers, patchPeers } = peersSlice.actions;
 export default peersSlice.reducer;

@@ -1,15 +1,21 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+
 import api from 'api';
 import { fromProjects } from 'api/converter';
-import { ProjectInfo } from 'store/types';
+
+export type ProjectInfo = {
+  id: string;
+  name: string;
+  createdAt: Date;
+};
 
 type ProjectInfosState = {
   projectInfos: { [projectID: string]: ProjectInfo };
   errorMessage: string;
 };
 
-export const syncProjectInfos = createAsyncThunk<SyncProjectInfosResult, undefined, { rejectValue: string }>(
-  'projectInfos/sync',
+export const createProjectInfos = createAsyncThunk<CreateProjectInfosResult, undefined, { rejectValue: string }>(
+  'projectInfos/create',
   async (_: undefined, thunkApi) => {
     try {
       let projectInfos = {};
@@ -51,10 +57,10 @@ const projectInfosSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(syncProjectInfos.fulfilled, (state, { payload }) => {
+    builder.addCase(createProjectInfos.fulfilled, (state, { payload }) => {
       state.projectInfos = payload.projectInfos;
     });
-    builder.addCase(syncProjectInfos.rejected, (state, { payload }) => {
+    builder.addCase(createProjectInfos.rejected, (state, { payload }) => {
       state.errorMessage = payload!;
     });
   },
@@ -63,4 +69,4 @@ const projectInfosSlice = createSlice({
 export const { renameProject, deleteProject } = projectInfosSlice.actions;
 export default projectInfosSlice.reducer;
 
-type SyncProjectInfosResult = { projectInfos: { [projectID: string]: ProjectInfo } };
+type CreateProjectInfosResult = { projectInfos: { [projectID: string]: ProjectInfo } };

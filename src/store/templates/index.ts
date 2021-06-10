@@ -1,5 +1,4 @@
-import { Project } from 'store/types';
-
+import { Project } from 'features/projectSlice';
 import vggProject from './vggNet';
 import resnetProject from './resNet';
 

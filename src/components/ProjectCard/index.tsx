@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState, useEffect, MouseEvent, KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
-
+import { useDispatch } from 'react-redux';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -16,9 +16,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 import api from 'api';
-import { ProjectInfo } from 'store/types';
-import { deleteProject, renameProject } from 'features/projectInfosSlice';
-import { useDispatch } from 'react-redux';
+import { deleteProject, ProjectInfo, renameProject } from 'features/projectInfosSlice';
 import RenameDialog from './RenameDialog';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -52,12 +50,12 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-type ProjectItemProps = {
-  project: ProjectInfo;
+type ProjectInfoProps = {
+  projectInfo: ProjectInfo;
 };
 
-export default function ProjectCard(props: ProjectItemProps) {
-  const { project } = props;
+export default function ProjectCard(props: ProjectInfoProps) {
+  const { projectInfo } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
   const anchorRef = useRef<HTMLButtonElement>(null);
@@ -104,22 +102,22 @@ export default function ProjectCard(props: ProjectItemProps) {
   const handleRenameDialogClose = useCallback(
     (projectName: string | undefined) => {
       if (projectName) {
-        api.updateProject(project.id, projectName).then(() => {
-          dispatch(renameProject({ projectID: project.id, projectName }));
+        api.updateProject(projectInfo.id, projectName).then(() => {
+          dispatch(renameProject({ projectID: projectInfo.id, projectName }));
         });
       }
 
       setRenameDialogOpen(false);
       setPopperOpen(false);
     },
-    [setRenameDialogOpen, project.id],
+    [setRenameDialogOpen, projectInfo.id],
   );
 
   const handleDeleteButtonClick = useCallback(() => {
-    api.deleteProject(project.id).then(() => {
-      dispatch(deleteProject({ projectID: project.id }));
+    api.deleteProject(projectInfo.id).then(() => {
+      dispatch(deleteProject({ projectID: projectInfo.id }));
     });
-  }, [project.id]);
+  }, [projectInfo.id]);
 
   return (
     <Card className={classes.projectCard}>
@@ -137,7 +135,7 @@ export default function ProjectCard(props: ProjectItemProps) {
               aria-controls={popperOpen ? 'menu-list-grow' : undefined}
               aria-haspopup="true"
               onClick={handleToggle}
-              key={project.id}
+              key={projectInfo.id}
             >
               <MoreVertIcon className={classes.moreIcon} />
             </IconButton>
@@ -153,7 +151,11 @@ export default function ProjectCard(props: ProjectItemProps) {
                         <MenuItem className={classes.menuItem} onClick={handleRenameButtonClick}>
                           Rename
                         </MenuItem>
-                        <RenameDialog name={project.name} open={renameDialogOpen} onClose={handleRenameDialogClose} />
+                        <RenameDialog
+                          name={projectInfo.name}
+                          open={renameDialogOpen}
+                          onClose={handleRenameDialogClose}
+                        />
                         <MenuItem className={classes.menuItem} onClick={handleDeleteButtonClick}>
                           Delete
                         </MenuItem>
@@ -165,8 +167,8 @@ export default function ProjectCard(props: ProjectItemProps) {
             </Popper>
           </>
         }
-        title={<Link to={`/${project.id}`}>{project.name}</Link>}
-        subheader={project.createdAt.toLocaleString()}
+        title={<Link to={`/${projectInfo.id}`}>{projectInfo.name}</Link>}
+        subheader={projectInfo.createdAt.toLocaleString()}
       />
       <CardMedia className={classes.media} image="/static/images/cards/contemplative-reptile.jpg" />
     </Card>

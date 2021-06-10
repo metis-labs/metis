@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
+
+import { Position } from 'features/peersSlice';
 import operatorMetaInfos from 'converter/pytorch-metadata.json';
 import printParamValue from 'converter/parameterConverter';
-import { Position } from './base';
 
 export type ParameterValue = string | number | boolean;
 export type Parameters = { [key: string]: ParameterValue };
@@ -87,14 +88,14 @@ export function createParams(type: BlockType): Parameters {
 }
 
 export function createBlock(type: BlockType, position: Position, blockLength: number): Block {
-  switch(type) {
+  switch (type) {
     case BlockType.In:
       return {
         id: uuidv4(),
         name: `in_${blockLength + 1}`,
         type: BlockType.In,
         position,
-        initVariables: ''
+        initVariables: '',
       };
     case BlockType.Out:
       return {
@@ -102,7 +103,7 @@ export function createBlock(type: BlockType, position: Position, blockLength: nu
         name: `out_${blockLength + 1}`,
         type: BlockType.Out,
         position,
-        initVariables: ''
+        initVariables: '',
       };
     default:
       return {

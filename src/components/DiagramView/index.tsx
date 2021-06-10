@@ -5,23 +5,22 @@ import NearMeIcon from '@material-ui/icons/NearMe';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DiagramModel } from '@projectstorm/react-diagrams';
 
-import Engine from 'components/DiagramView/Engine';
-import { Position } from 'store/types/base';
-import { BlockType } from 'store/types/blocks';
-
-import { syncOffset, syncZoom, lUpdateSelectedBlock } from 'features/localSlice';
 import { AppState } from 'app/rootReducer';
 import {
-  updateBlockPosition,
-  updateCursorPosition,
-  deleteBlock,
   selectNetwork,
+  deleteBlock,
+  updateBlockPosition,
+  addLink,
   deleteLink,
-  changePort,
+  updateCursorPosition,
 } from 'features/docSlice';
-import SideBar from './SideBar';
+import { Position } from 'features/peersSlice';
+import { selectBlock, updateOffset, updateZoom } from 'features/localSlice';
+import { BlockType } from 'store/types/blocks';
+import Engine from 'components/DiagramView/Engine';
 import MetisNodeModel from './MetisNodeModel';
 import MetisLinkModel from './MetisLinkModel';
+import SideBar from './SideBar';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -75,11 +74,11 @@ export default function DiagramView() {
     for (const event of Object.values(changeEvents)) {
       const selectedBlockID = event.blockID;
       if (event.funcName === 'selectionChanged' && selectedBlockID) {
-        dispatch(lUpdateSelectedBlock({ selectedNetworkID, selectedBlockID }));
+        dispatch(selectBlock({ selectedNetworkID, selectedBlockID }));
       } else if (event.funcName === 'positionChanged' && selectedBlockID) {
         const blockPosition = event.position;
         dispatch(updateBlockPosition({ selectedNetworkID, selectedBlockID, blockPosition }));
-        dispatch(lUpdateSelectedBlock({ selectedNetworkID, selectedBlockID }));
+        dispatch(selectBlock({ selectedNetworkID, selectedBlockID }));
       }
     }
     setChangeEvents({});
@@ -97,7 +96,7 @@ export default function DiagramView() {
         x: (event.nativeEvent.clientX - rect.x - diagramInfo.offset.x) / (diagramInfo.zoom / 100),
         y: (event.nativeEvent.clientY - rect.y - diagramInfo.offset.y) / (diagramInfo.zoom / 100),
       };
-      dispatch(updateCursorPosition({ cursorPosition }));
+      dispatch(updateCursorPosition(cursorPosition));
     },
     [clientID, rect, diagramInfo, diagramInfoState],
   );
@@ -129,20 +128,20 @@ export default function DiagramView() {
           if (block.type !== BlockType.Network) {
             return;
           }
-          const networkID = block.refNetwork;
-          dispatch(selectNetwork({ selectedNetworkID: networkID }));
+          const refNetworkID = block.refNetwork;
+          dispatch(selectNetwork(refNetworkID));
         }
       } else if (entity instanceof MetisLinkModel) {
         if (event.function === 'targetPortChanged') {
-          dispatch(changePort({ networkID: selectedNetworkID, entity: event.entity }));
+          dispatch(addLink({ networkID: selectedNetworkID, entity: event.entity }));
         } else if (event.function === 'entityRemoved') {
           dispatch(deleteLink({ networkID: selectedNetworkID, linkID: entity.getLinkID() }));
         }
       } else if (entity instanceof DiagramModel) {
         if (event.function === 'offsetUpdated') {
           dispatch(
-            syncOffset({
-              networkID: selectedNetworkID,
+            updateOffset({
+              selectedNetworkID,
               offset: {
                 x: entity.getOffsetX(),
                 y: entity.getOffsetY(),
@@ -151,8 +150,8 @@ export default function DiagramView() {
           );
         } else if (event.function === 'zoomUpdated') {
           dispatch(
-            syncZoom({
-              networkID: selectedNetworkID,
+            updateZoom({
+              selectedNetworkID,
               zoom: event.zoom,
             }),
           );

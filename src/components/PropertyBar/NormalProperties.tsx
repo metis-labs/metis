@@ -1,14 +1,13 @@
 import React, { ChangeEvent, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl/FormControl';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import { NormalBlock, getOrderedParamNames } from 'store/types/blocks';
-
-import { changeParameter, changeProperty } from 'features/docSlice';
 import { AppState } from 'app/rootReducer';
-import { useDispatch, useSelector } from 'react-redux';
+import { updateParameter, updateProperty } from 'features/docSlice';
+import { NormalBlock, getOrderedParamNames } from 'store/types/blocks';
 import { preserveCaret, stopPropagationOnKeydown } from './utils';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -40,7 +39,7 @@ export default function NetworkProperties(props: { block: NormalBlock }) {
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(changeProperty({ selectedNetworkID, selectedBlockID, event, key }));
+      dispatch(updateProperty({ selectedNetworkID, selectedBlockID, event, key }));
     },
     [selectedBlockID, selectedNetworkID],
   );
@@ -48,7 +47,7 @@ export default function NetworkProperties(props: { block: NormalBlock }) {
   const handleParameterChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(changeParameter({ selectedNetworkID, selectedBlockID, event, key }));
+      dispatch(updateParameter({ selectedNetworkID, selectedBlockID, event, key }));
     },
     [selectedBlockID, selectedNetworkID],
   );
