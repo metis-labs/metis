@@ -59,11 +59,11 @@ interface ChangeEvent {
 export default function DiagramView() {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const client = useSelector((state: AppState) => state.docState.client);
+  const project = useSelector((state: AppState) => state.projectState.project);
   const peers = useSelector((state: AppState) => state.peerState.peers);
   const diagramInfoState = useSelector((state: AppState) => state.localInfoState.diagramInfos);
-  const client = useSelector((state: AppState) => state.docState.client);
   const clientID = client.getID();
-  const project = useSelector((state: AppState) => state.projectState.project);
 
   const rootElement = useRef(null);
   const [engine] = useState(new Engine());
@@ -133,7 +133,25 @@ export default function DiagramView() {
         }
       } else if (entity instanceof MetisLinkModel) {
         if (event.function === 'targetPortChanged') {
-          dispatch(addLink({ networkID: selectedNetworkID, entity: event.entity }));
+          let from: any;
+          let to: any;
+          if (event.entity.sourcePort.getName() === 'in') {
+            from = event.entity.targetPort.parent;
+            to = event.entity.sourcePort.parent;
+          } else if (event.entity.sourcePort.getName() === 'out') {
+            from = event.entity.sourcePort.parent;
+            to = event.entity.targetPort.parent;
+          } else {
+            return;
+          }
+          dispatch(
+            addLink({
+              selectedNetworkID,
+              linkID: event.entity.getID(),
+              fromBlockID: from.getBlockID(),
+              toBlockID: to.getBlockID(),
+            }),
+          );
         } else if (event.function === 'entityRemoved') {
           dispatch(deleteLink({ networkID: selectedNetworkID, linkID: entity.getLinkID() }));
         }

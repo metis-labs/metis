@@ -32,11 +32,11 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function NetworkProperties(props: { block: NetworkBlock }) {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
   const client = useSelector((state: AppState) => state.docState.client);
-  const peers = useSelector((state: AppState) => state.peerState.peers);
-  const selectedNetworkID = peers[client.getID()].selectedNetworkID;
   const project = useSelector((state: AppState) => state.projectState.project);
+  const peers = useSelector((state: AppState) => state.peerState.peers);
+  const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
+  const { selectedNetworkID } = peers[client.getID()];
   const { selectedBlockID } = diagramInfos[selectedNetworkID];
   const { block: selectedBlock } = props;
 
@@ -44,7 +44,14 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
 
   const onRefNetworkChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      dispatch(updateRefNetwork({ selectedNetworkID, selectedBlockID, event }));
+      const refNetworkName = event.target.value;
+      dispatch(
+        updateRefNetwork({
+          selectedNetworkID,
+          selectedBlockID,
+          networkName: refNetworkName,
+        }),
+      );
     },
     [selectedBlockID, selectedNetworkID],
   );
@@ -52,7 +59,15 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(updateProperty({ selectedNetworkID, selectedBlockID, event, key }));
+      const propertyValue = event.target.value;
+      dispatch(
+        updateProperty({
+          selectedNetworkID,
+          selectedBlockID,
+          key,
+          value: propertyValue,
+        }),
+      );
     },
     [selectedBlockID, selectedNetworkID],
   );
@@ -60,7 +75,15 @@ export default function NetworkProperties(props: { block: NetworkBlock }) {
   const handleParameterChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(updateParameter({ selectedNetworkID, selectedBlockID, event, key }));
+      const parameterValue = event.target.value;
+      dispatch(
+        updateParameter({
+          selectedNetworkID,
+          selectedBlockID,
+          key,
+          value: parameterValue,
+        }),
+      );
     },
     [selectedBlockID, selectedNetworkID],
   );

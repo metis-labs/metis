@@ -46,13 +46,8 @@ const projectInfosSlice = createSlice({
       const { projectID, projectName } = action.payload;
       state.projectInfos[projectID].name = projectName;
     },
-    deleteProject(
-      state,
-      action: PayloadAction<{
-        projectID: string;
-      }>,
-    ) {
-      const { projectID } = action.payload;
+    deleteProject(state, action: PayloadAction<string>) {
+      const projectID = action.payload;
       delete state.projectInfos[projectID];
     },
   },

@@ -115,7 +115,7 @@ export default function ProjectCard(props: ProjectInfoProps) {
 
   const handleDeleteButtonClick = useCallback(() => {
     api.deleteProject(projectInfo.id).then(() => {
-      dispatch(deleteProject({ projectID: projectInfo.id }));
+      dispatch(deleteProject(projectInfo.id));
     });
   }, [projectInfo.id]);
 

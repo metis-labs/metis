@@ -11,6 +11,7 @@ export default class Converter {
   update(project: Project, selectedNetworkID: string): void {
     this.result = '';
 
+    // TODO(genesis.kim): need a specific method to handle the data structure
     const network = JSON.parse(JSON.stringify(project.networks[selectedNetworkID])) as Network;
 
     // Update Dependencies

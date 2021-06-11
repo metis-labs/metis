@@ -12,7 +12,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import { AppState } from 'app/rootReducer';
-import { updateBlokType, updateProperty } from 'features/docSlice';
+import { updateBlockType, updateProperty } from 'features/docSlice';
 import {
   BlockType,
   IOBlock,
@@ -54,17 +54,19 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function PropertyBar() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
   const client = useSelector((state: AppState) => state.docState.client);
-  const peers = useSelector((state: AppState) => state.peerState.peers);
   const project = useSelector((state: AppState) => state.projectState.project);
+  const peers = useSelector((state: AppState) => state.peerState.peers);
+  const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
   const { selectedNetworkID } = peers[client.getID()];
   const network = project.networks[selectedNetworkID];
   const { selectedBlockID } = diagramInfos[selectedNetworkID];
 
   const onTypeChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      dispatch(updateBlokType({ selectedNetworkID, selectedBlockID, event }));
+      const blockType = event.target.value as BlockType;
+
+      dispatch(updateBlockType({ selectedNetworkID, selectedBlockID, blockType }));
     },
     [selectedBlockID, selectedNetworkID],
   );
@@ -72,7 +74,15 @@ export default function PropertyBar() {
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(updateProperty({ selectedNetworkID, selectedBlockID, event, key }));
+      const propertyValue = event.target.value;
+      dispatch(
+        updateProperty({
+          selectedNetworkID,
+          selectedBlockID,
+          key,
+          value: propertyValue,
+        }),
+      );
     },
     [selectedBlockID, selectedNetworkID],
   );

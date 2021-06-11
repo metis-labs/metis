@@ -22,17 +22,25 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function NetworkProperties(props: { block: IOBlock }) {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
   const client = useSelector((state: AppState) => state.docState.client);
   const peers = useSelector((state: AppState) => state.peerState.peers);
-  const selectedNetworkID = peers[client.getID()].selectedNetworkID;
-  const selectedBlockID = diagramInfos[selectedNetworkID].selectedBlockID;
+  const diagramInfos = useSelector((state: AppState) => state.localInfoState.diagramInfos);
+  const { selectedNetworkID } = peers[client.getID()];
+  const { selectedBlockID } = diagramInfos[selectedNetworkID];
   const { block: selectedBlock } = props;
 
   const handlePropertyChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
       preserveCaret(event);
-      dispatch(updateProperty({ selectedNetworkID, selectedBlockID, event, key }));
+      const propertyValue = event.target.value;
+      dispatch(
+        updateProperty({
+          selectedNetworkID,
+          selectedBlockID,
+          key,
+          value: propertyValue,
+        }),
+      );
     },
     [selectedBlockID, selectedNetworkID],
   );

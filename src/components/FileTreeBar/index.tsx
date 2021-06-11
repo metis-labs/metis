@@ -82,10 +82,9 @@ export default function FileTreeBar() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const client = useSelector((state: AppState) => state.docState.client);
-  const peers = useSelector((state: AppState) => state.peerState.peers);
-  const clientID = client.getID();
-  const selectedNetworkID = peers[clientID].selectedNetworkID;
   const project = useSelector((state: AppState) => state.projectState.project);
+  const peers = useSelector((state: AppState) => state.peerState.peers);
+  const selectedNetworkID = peers[client.getID()].selectedNetworkID;
   const [expanded, setExpanded] = useState<string[]>([]);
 
   useEffect(() => {
@@ -103,13 +102,13 @@ export default function FileTreeBar() {
       }
       dispatch(selectNetwork(networkID));
     },
-    [project, clientID],
+    [project, client],
   );
 
   const handleAddNetwork = useCallback(async () => {
     const networkName = 'Untitled';
     dispatch(addNetwork(networkName));
-  }, [clientID]);
+  }, [client]);
 
   // TODO(youngteac.hong): Replace below with type parameter.
   const peersMapByNetworkID: { [networkID: string]: Array<Peer> } = {};

@@ -22,10 +22,10 @@ export default function CodeView() {
   const classes = useStyles();
   const client = useSelector((state: AppState) => state.docState.client);
   const peers = useSelector((state: AppState) => state.peerState.peers);
+  const project = useSelector((state: AppState) => state.projectState.project);
   const selectedNetworkID = peers[client.getID()].selectedNetworkID;
   const [converter] = useState(new Converter());
   const [codeString, setCodeString] = useState('');
-  const project = useSelector((state: AppState) => state.projectState.project);
 
   useEffect(() => {
     converter.update(project, selectedNetworkID);

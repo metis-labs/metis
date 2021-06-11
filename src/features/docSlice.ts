@@ -79,6 +79,7 @@ export const deactivateClient = createAsyncThunk<DeactivateClientResult, Deactiv
   async ({ client }, thunkApi) => {
     try {
       await client.deactivate();
+      client = undefined;
       return { client };
     } catch (err) {
       return thunkApi.rejectWithValue(err.message);
@@ -161,10 +162,10 @@ const docSlice = createSlice({
     },
     updateRefNetwork(state, action: PayloadAction<UpdateRefNetworkArgs>) {
       const { doc } = state;
-      const { event, selectedNetworkID, selectedBlockID } = action.payload;
+      const { selectedNetworkID, selectedBlockID, networkName } = action.payload;
+
       doc.update((root) => {
-        const networkName = event.target.value;
-        const project = root.project as Project;
+        const project = root.project;
         const network = project.networks[selectedNetworkID];
 
         // Update network block
@@ -192,6 +193,7 @@ const docSlice = createSlice({
     updateBlockPosition(state, action: PayloadAction<UpdateBlockPositionArgs>) {
       const { doc } = state;
       const { selectedNetworkID, selectedBlockID, blockPosition } = action.payload;
+
       doc.update((root) => {
         const model = root.project.networks[selectedNetworkID];
         model.blocks[selectedBlockID].position = blockPosition;
@@ -207,6 +209,7 @@ const docSlice = createSlice({
     ) {
       const { doc } = state;
       const { networkID, type, diagramOffset } = action.payload;
+
       doc.update((root) => {
         const network = root.project.networks[networkID];
         const blockLength = Object.values(network.blocks).filter((block: Block) => block.type === type).length;
@@ -218,21 +221,23 @@ const docSlice = createSlice({
     updateCursorPosition(state, action: PayloadAction<Position>) {
       const { client, doc } = state;
       const cursorPosition = action.payload;
+
       doc.update((root) => {
-        root.peers[client.getID()].cursor = cursorPosition;
+        if (root.peers && root.peers[client.getID()]) {
+          root.peers[client.getID()].cursor = cursorPosition;
+        }
       });
     },
-    updateBlokType(state, action: PayloadAction<UpdateBlokTypeArgs>) {
+    updateBlockType(state, action: PayloadAction<UpdateBlockTypeArgs>) {
       const { doc } = state;
-      const { event, selectedNetworkID, selectedBlockID } = action.payload;
+      const { selectedNetworkID, selectedBlockID, blockType } = action.payload;
 
       doc.update((root) => {
         const { project } = root;
         const model = project.networks[selectedNetworkID];
-        const type = event.target.value as BlockType;
-        model.blocks[selectedBlockID].type = type;
-        if (isNormalBlockType(type)) {
-          (model.blocks[selectedBlockID] as any).parameters = createParams(type);
+        model.blocks[selectedBlockID].type = blockType;
+        if (isNormalBlockType(blockType)) {
+          (model.blocks[selectedBlockID] as any).parameters = createParams(blockType);
         } else {
           (model.blocks[selectedBlockID] as any).parameters = {};
         }
@@ -241,6 +246,7 @@ const docSlice = createSlice({
     deleteNetwork(state, action: PayloadAction<Network>) {
       const { client, doc } = state;
       const network = action.payload;
+
       doc.update(
         (root) => {
           delete root.project.networks[network.id];
@@ -258,6 +264,7 @@ const docSlice = createSlice({
     deleteBlock(state, action: PayloadAction<DeleteBlockArgs>) {
       const { doc } = state;
       const { selectedNetworkID, selectedBlockID } = action.payload;
+
       doc.update((root) => {
         const network = root.project.networks[selectedNetworkID];
         delete network.blocks[selectedBlockID];
@@ -291,48 +298,39 @@ const docSlice = createSlice({
     addLink(
       state,
       action: PayloadAction<{
-        networkID: string;
-        entity: any;
+        selectedNetworkID: string;
+        linkID: string;
+        fromBlockID: string;
+        toBlockID: string;
       }>,
     ) {
       const { doc } = state;
-      const { networkID, entity } = action.payload;
+      const { selectedNetworkID, linkID, fromBlockID, toBlockID } = action.payload;
       doc.update((root) => {
-        const network = root.project.networks[networkID];
-        let from;
-        let to;
-        if (entity.sourcePort.getName() === 'in') {
-          from = entity.targetPort.parent;
-          to = entity.sourcePort.parent;
-        } else if (entity.sourcePort.getName() === 'out') {
-          from = entity.sourcePort.parent;
-          to = entity.targetPort.parent;
-        } else {
-          return;
-        }
-        network.links[entity.getID()] = {
-          id: entity.getID(),
-          from: from.getBlockID(),
-          to: to.getBlockID(),
+        const network = root.project.networks[selectedNetworkID];
+        network.links[linkID] = {
+          id: linkID,
+          from: fromBlockID,
+          to: toBlockID,
         };
       });
     },
     updateProperty(state, action: PayloadAction<UpdatePropertyArgs>) {
       const { doc } = state;
-      const { selectedNetworkID, selectedBlockID, event, key } = action.payload;
+      const { selectedNetworkID, selectedBlockID, key, value } = action.payload;
       doc.update((root) => {
         const { project } = root;
         const network = project.networks[selectedNetworkID];
-        network.blocks[selectedBlockID][key] = valueTransition(event.target.value as string);
+        network.blocks[selectedBlockID][key] = valueTransition(value);
       });
     },
     updateParameter(state, action: PayloadAction<UpdateParameterArgs>) {
       const { doc } = state;
-      const { selectedNetworkID, selectedBlockID, event, key } = action.payload;
+      const { selectedNetworkID, selectedBlockID, key, value } = action.payload;
       doc.update((root) => {
         const { project } = root;
         const network = project.networks[selectedNetworkID];
-        (network.blocks[selectedBlockID] as any).parameters[key] = valueTransition(event.target.value as string);
+        (network.blocks[selectedBlockID] as any).parameters[key] = valueTransition(value);
       });
     },
   },
@@ -381,7 +379,7 @@ export const {
   addLink,
   deleteLink,
   updateCursorPosition,
-  updateBlokType,
+  updateBlockType,
   updateRefNetwork,
   updateProperty,
   updateParameter,
@@ -390,18 +388,20 @@ export const {
 export default docSlice.reducer;
 
 export type BlockIDArgs = { selectedNetworkID: string; selectedBlockID: string };
-interface EventArgs extends BlockIDArgs {
-  event: any;
-}
-interface KeyArgs extends EventArgs {
+interface KeyArgs extends BlockIDArgs {
   key: string;
+  value: string;
 }
 
-interface UpdateRefNetworkArgs extends EventArgs {}
+interface UpdateRefNetworkArgs extends BlockIDArgs {
+  networkName: string;
+}
 interface UpdateBlockPositionArgs extends BlockIDArgs {
   blockPosition: Position;
 }
-interface UpdateBlokTypeArgs extends EventArgs {}
+interface UpdateBlockTypeArgs extends BlockIDArgs {
+  blockType: BlockType;
+}
 interface DeleteBlockArgs extends BlockIDArgs {}
 interface UpdatePropertyArgs extends KeyArgs {}
 interface UpdateParameterArgs extends KeyArgs {}

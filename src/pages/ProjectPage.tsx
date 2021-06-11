@@ -53,8 +53,8 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
   const doc = useSelector((state: AppState) => state.docState.doc);
   const client = useSelector((state: AppState) => state.docState.client);
   const status = useSelector((state: AppState) => state.docState.status);
-  const peers = useSelector((state: AppState) => state.peerState.peers);
   const project = useSelector((state: AppState) => state.projectState.project);
+  const peers = useSelector((state: AppState) => state.peerState.peers);
 
   useEffect(() => {
     dispatch(createDocument(projectID));
@@ -78,6 +78,7 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       return () => {};
     }
 
+    // TODO(genesis.kim): need a specific method to handle the data structure
     const initProject = JSON.parse(doc.toJSON()).project;
     const initNetworkIDs = Object.keys(doc.getRoot().project.networks);
 
@@ -88,9 +89,11 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
       if (event.type === 'local-change' || event.type === 'remote-change') {
         for (const changeInfo of event.value) {
           if (changeInfo.paths[0].startsWith('$.project')) {
+            // TODO(genesis.kim): need a specific method to handle the data structure
             const modifiedProject = JSON.parse(doc.toJSON()).project;
             dispatch(updateProject(modifiedProject));
           } else if (changeInfo.paths[0].startsWith('$.peers')) {
+            // TODO(genesis.kim): need a specific method to handle the data structure
             const modifiedPeers = JSON.parse(doc.toJSON()).peers;
             dispatch(updatePeers(modifiedPeers));
           }
