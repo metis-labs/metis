@@ -14,10 +14,20 @@ export type Dependency = {
   package?: string;
 };
 
+export type Dependencies = {
+  [id: string]: Dependency;
+};
+
+export type AllDependencies = {
+  builtInDeps?: Dependencies;
+  thirdPartyDeps?: Dependencies;
+  projectDeps?: Dependencies;
+};
+
 export type Network = {
   id: string;
   name: string;
-  dependencies: { [id: string]: Dependency };
+  dependencies: AllDependencies;
   blocks: { [id: string]: Block };
   links: { [id: string]: Link };
 };
@@ -43,14 +53,16 @@ export function createNetwork(name: string): Network {
     id: uuidv4(),
     name,
     dependencies: {
-      torch: {
-        id: 'torch',
-        name: 'torch',
-      },
-      torchNN: {
-        id: 'torchNN',
-        name: 'torch.nn',
-        alias: 'nn',
+      thirdPartyDeps: {
+        torch: {
+          id: 'torch',
+          name: 'torch',
+        },
+        torchNN: {
+          id: 'torchNN',
+          name: 'torch.nn',
+          alias: 'nn',
+        },
       },
     },
     blocks: {

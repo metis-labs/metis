@@ -15,23 +15,19 @@ export default class Converter {
     const network = JSON.parse(JSON.stringify(project.networks[selectedNetworkID])) as Network;
 
     // Update Dependencies
-    const refNetworkBlockNameList = [];
+    let projectDeps: string[] = [];
     (Object.values(network.blocks).filter((block) => block.type === BlockType.Network) as NetworkBlock[]).map((block) =>
-      block.refNetwork ? refNetworkBlockNameList.push(project.networks[block.refNetwork].name) : '',
+      block.refNetwork ? projectDeps.push(project.networks[block.refNetwork].name) : '',
     );
-    refNetworkBlockNameList.push.apply(refNetworkBlockNameList, ['torch', 'torchNN']);
-
-    const noNeedDeps = Object.keys(network.dependencies).filter((dep) => !refNetworkBlockNameList.includes(dep));
-    noNeedDeps.map((noNeedDep) => delete network.dependencies[noNeedDep]);
-    refNetworkBlockNameList
-      .filter((refNetBlockName) => !Object.keys(network.dependencies).includes(refNetBlockName))
-      .forEach((includingRef) => {
-        network.dependencies[includingRef] = {
-          id: includingRef,
-          name: includingRef,
-          package: includingRef,
-        };
-      });
+    projectDeps = projectDeps.filter((v, i) => projectDeps.indexOf(v) === i);
+    network.dependencies.projectDeps = {};
+    projectDeps.forEach((projectDep) => {
+      network.dependencies.projectDeps[projectDep] = {
+        id: projectDep,
+        name: projectDep,
+        package: projectDep,
+      };
+    });
 
     const importConverter = new ImportConverter();
     importConverter.update(network.dependencies);
