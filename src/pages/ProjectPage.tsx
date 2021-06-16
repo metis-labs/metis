@@ -136,7 +136,6 @@ export default function ProjectPage(props: RouteComponentProps<{ projectID: stri
         <>
           <main className={classes.content}>
             {viewMode === 'diagram' ? <DiagramView /> : <CodeView />}
-            <DiagramView />
             <StatusBar viewMode={viewMode} setViewMode={setViewMode} />
           </main>
           <PropertyBar />
