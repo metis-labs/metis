@@ -52,7 +52,7 @@ export default class ForwardConverter {
     }
   }
 
-  updateSignature(links: { [id: string]: Link }, blocks: { [id: string]: Block }): void {
+  updateHeader(links: { [id: string]: Link }, blocks: { [id: string]: Block }): void {
     this.buildLinkMap(links);
     this.orderBlocks(blocks);
     this.result = `\n`;

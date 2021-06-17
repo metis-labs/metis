@@ -24,7 +24,7 @@ export default class InitConverter {
     this.bodyBlockIDs = [];
     this.inBlockIDs = [];
     this.outBlockIDs = [];
-    this.result = `\n\n`;
+    this.result = `\n`;
     this.indentSize = `    `;
     this.indentDepth = 1;
   }
@@ -41,8 +41,8 @@ export default class InitConverter {
     }
   }
 
-  updateSignature(network: Network): void {
-    this.result = `\n\n`;
+  updateHeader(network: Network): void {
+    this.result = `\n`;
     this.result += `class ${network.name}(nn.Module):\n`;
     this.result += this.indentSize;
     this.result += `def __init__(self`;
@@ -61,14 +61,16 @@ export default class InitConverter {
     this.result += `super(${network.name}, self).__init__()\n`;
   }
 
-  updateBody(project: Project, blocks: { [id: string]: Block }): void {
+  updateBody(project: Project, blocks: { [id: string]: Block }, partBlocks: string[], nonpartBlocks: string[]): void {
     this.result += `\n`;
-    for (const blockID of this.bodyBlockIDs) {
+    for (const nonPartBlock of nonpartBlocks) {
       for (let i = 0; i < this.indentDepth + 1; i += 1) {
         this.result += this.indentSize;
       }
-      const block = blocks[blockID];
-      if (block.type === BlockType.Network) {
+      const block = blocks[nonPartBlock];
+      if (block.type === BlockType.In || block.type === BlockType.Out) {
+        continue;
+      } else if (block.type === BlockType.Network) {
         this.result += `self.${block.name} = ${project.networks[block.refNetwork].name}(`;
       } else {
         this.result += `self.${block.name} = nn.${block.type}(`;
@@ -76,6 +78,34 @@ export default class InitConverter {
       this.updateParameters(block);
       this.result += `) \n`;
     }
+    for (const partBlock of partBlocks) {
+      for (let i = 0; i < this.indentDepth + 1; i += 1) {
+        this.result += this.indentSize;
+      }
+      const block = blocks[partBlock];
+      if (block.type === BlockType.In || block.type === BlockType.Out) {
+        continue;
+      } else if (block.type === BlockType.Network) {
+        this.result += `self.${block.name} = ${project.networks[block.refNetwork].name}(`;
+      } else {
+        this.result += `self.${block.name} = nn.${block.type}(`;
+      }
+      this.updateParameters(block);
+      this.result += `) \n`;
+    }
+    // for (const blockID of this.bodyBlockIDs) {
+    //   for (let i = 0; i < this.indentDepth + 1; i += 1) {
+    //     this.result += this.indentSize;
+    //   }
+    //   const block = blocks[blockID];
+    //   if (block.type === BlockType.Network) {
+    //     this.result += `self.${block.name} = ${project.networks[block.refNetwork].name}(`;
+    //   } else {
+    //     this.result += `self.${block.name} = nn.${block.type}(`;
+    //   }
+    //   this.updateParameters(block);
+    //   this.result += `) \n`;
+    // }
   }
 
   updateParameters(block: Block): void {
