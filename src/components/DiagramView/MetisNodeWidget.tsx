@@ -29,6 +29,8 @@ export class MetisNodeWidget extends React.Component<MetisNodeWidgetProps, Metis
           style={{
             color: 'white',
             backgroundColor: colorMap[node.getBlockType()],
+            boxShadow: 'none',
+            border: 'none',
           }}
         >
           <div className="metis-node-type">
