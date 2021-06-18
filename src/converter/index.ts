@@ -4,7 +4,7 @@ import { Network } from 'store/types/networks';
 import ImportConverter from './importConverter';
 import InitConverter from './initConverter';
 import ForwardConverter from './forwardConverter';
-import CreateGraph from './utils';
+import CreateGraph, { IncomingDegree } from './utils';
 
 export default class Converter {
   private result: string;
@@ -30,7 +30,8 @@ export default class Converter {
       };
     });
 
-    const { partBlocks, nonPartBlocks } = CreateGraph(network.links, network.blocks);
+    const { graph, nonPartBlocks } = CreateGraph(network.links, network.blocks);
+    const topologicalIndice = IncomingDegree(graph);
 
     const importConverter = new ImportConverter();
     importConverter.update(network.dependencies);
@@ -38,11 +39,11 @@ export default class Converter {
     const initConverter = new InitConverter();
     initConverter.orderBlocks(network.blocks);
     initConverter.updateHeader(network);
-    initConverter.updateBody(project, network.blocks, partBlocks, nonPartBlocks);
+    initConverter.updateBody(project, network.blocks, topologicalIndice, nonPartBlocks);
 
     const fowardConverter = new ForwardConverter();
     fowardConverter.updateHeader(network.links, network.blocks);
-    fowardConverter.updateBody(network.blocks);
+    fowardConverter.updateBody(network.blocks, graph, topologicalIndice);
 
     this.result += importConverter.getResult();
     this.result += initConverter.getResult();

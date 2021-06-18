@@ -58,7 +58,7 @@ export function IncomingDegree(graph: FromBlockCenteredGraph) {
 
   if (index === fromBlocks.length) {
     // TODO(genesis.kim): Warning for detecting a cycle nodes.
-    console.log('Detected a cycle');
+    console.warn('Detected a cycle');
   }
 
   return topologicalIndice;
