@@ -1,3 +1,7 @@
+// Metis
+// Copyright 2021-present NAVER Corp.
+// Apache License v2.0
+
 import React, { ChangeEvent, useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Drawer from '@material-ui/core/Drawer';

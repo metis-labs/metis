@@ -1,3 +1,7 @@
+// Metis
+// Copyright 2021-present NAVER Corp.
+// Apache License v2.0
+
 import { MetisPromiseClient } from 'api/metis_grpc_web_pb';
 import {
   ListProjectsRequest,
@@ -19,20 +23,16 @@ class UnaryInterceptor {
     this.userID = userID;
   }
 
-  intercept (request, invoker) {
+  intercept(request, invoker) {
     const metadata = request.getMetadata();
     metadata.Authorization = `${this.userID}`;
     return invoker(request);
   }
 }
 
-const client = new MetisPromiseClient(
-  `${process.env.REACT_APP_METIS_RPC_ADDR}`,
-  null,
-  {
-    unaryInterceptors: [new UnaryInterceptor(testUserID)]
-  }
-);
+const client = new MetisPromiseClient(`${process.env.REACT_APP_METIS_RPC_ADDR}`, null, {
+  unaryInterceptors: [new UnaryInterceptor(testUserID)],
+});
 
 const api = {
   createProject(name: string): Promise<CreateProjectResponse> {

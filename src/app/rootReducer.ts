@@ -1,3 +1,7 @@
+// Metis
+// Copyright 2021-present NAVER Corp.
+// Apache License v2.0
+
 import { combineReducers } from 'redux';
 
 import docReducer from 'features/docSlice';

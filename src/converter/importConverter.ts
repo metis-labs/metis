@@ -1,3 +1,7 @@
+// Metis
+// Copyright 2021-present NAVER Corp.
+// Apache License v2.0
+
 import { AllDependencies } from '../store/types/networks';
 
 export default class ImportConverter {

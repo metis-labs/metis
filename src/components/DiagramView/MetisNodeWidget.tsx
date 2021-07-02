@@ -1,3 +1,7 @@
+// Metis
+// Copyright 2021-present NAVER Corp.
+// Apache License v2.0
+
 import * as React from 'react';
 import { DiagramEngine, PortWidget } from '@projectstorm/react-diagrams-core';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';

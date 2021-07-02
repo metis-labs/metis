@@ -1,3 +1,7 @@
+// Metis
+// Copyright 2021-present NAVER Corp.
+// Apache License v2.0
+
 import { v4 as uuidv4 } from 'uuid';
 import { Block, IOBlock, BlockType, Parameters } from './blocks';
 

@@ -1,3 +1,7 @@
+// Metis
+// Copyright 2021-present NAVER Corp.
+// Apache License v2.0
+
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { fromProjects } from 'api/converter';
 import rootReducer from 'app/rootReducer';

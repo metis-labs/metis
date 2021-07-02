@@ -1,3 +1,7 @@
+// Metis
+// Copyright 2021-present NAVER Corp.
+// Apache License v2.0
+
 import React, { KeyboardEvent, MouseEvent, useRef, useState, useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { animated, useSpring } from 'react-spring';

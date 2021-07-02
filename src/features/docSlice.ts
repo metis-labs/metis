@@ -1,3 +1,7 @@
+// Metis
+// Copyright 2021-present NAVER Corp.
+// Apache License v2.0
+
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import yorkie, { Client, DocumentReplica } from 'yorkie-js-sdk';
 import anonymous from 'anonymous-animals-gen';

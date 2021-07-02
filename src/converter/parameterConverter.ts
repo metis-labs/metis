@@ -1,3 +1,7 @@
+// Metis
+// Copyright 2021-present NAVER Corp.
+// Apache License v2.0
+
 export default function printParamValue(value: any): string {
   if (value === 'true' || value === 'True') {
     return 'True';

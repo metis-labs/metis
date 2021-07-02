@@ -1,3 +1,7 @@
+// Metis
+// Copyright 2021-present NAVER Corp.
+// Apache License v2.0
+
 import { Project } from 'features/projectSlice';
 import { Dependency, Link } from 'store/types/networks';
 import { Block, BlockType } from 'store/types/blocks';

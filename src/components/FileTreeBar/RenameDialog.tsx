@@ -1,3 +1,7 @@
+// Metis
+// Copyright 2021-present NAVER Corp.
+// Apache License v2.0
+
 import React, { useRef, useCallback, KeyboardEvent } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField, { TextFieldProps } from '@material-ui/core/TextField';

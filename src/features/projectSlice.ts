@@ -1,3 +1,7 @@
+// Metis
+// Copyright 2021-present NAVER Corp.
+// Apache License v2.0
+
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Network } from 'store/types/networks';

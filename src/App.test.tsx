@@ -1,3 +1,7 @@
+// Metis
+// Copyright 2021-present NAVER Corp.
+// Apache License v2.0
+
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from './App';

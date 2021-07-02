@@ -1,3 +1,7 @@
+// Metis
+// Copyright 2021-present NAVER Corp.
+// Apache License v2.0
+
 import createEngine, { DiagramEngine, DiagramModel } from '@projectstorm/react-diagrams';
 
 import { DiagramInfo } from 'features/localSlice';
