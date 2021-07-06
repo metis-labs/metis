@@ -16,15 +16,9 @@ services:
       - yorkie
       - metis-server
   metis-server:
-    image: 'reg.navercorp.com/metis/metis-server:latest'
+    image: 'metislabs/metis-server:latest'
     container_name: 'metis-server'
-    command: [
-      'server',
-      '--mongo-connection-uri',
-      'mongodb://mongo:27017',
-      '--yorkie-rpc-addr',
-      'yorkie:11101',
-    ]
+    command: ['server', '--mongo-connection-uri', 'mongodb://mongo:27017', '--yorkie-rpc-addr', 'yorkie:11101']
     restart: always
     ports:
       - '10118:10118'
@@ -35,13 +29,14 @@ services:
   yorkie:
     image: 'yorkieteam/yorkie:0.1.5'
     container_name: 'yorkie'
-    command: [
-      'agent',
-      '--mongo-connection-uri',
-      'mongodb://mongo:27017',
-      '--authorization-webhook-url',
-      'http://host.docker.internal:10119/auth',
-    ]
+    command:
+      [
+        'agent',
+        '--mongo-connection-uri',
+        'mongodb://mongo:27017',
+        '--authorization-webhook-url',
+        'http://host.docker.internal:10119/auth',
+      ]
     restart: always
     ports:
       - '11101:11101'
